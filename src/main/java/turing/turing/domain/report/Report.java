@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
@@ -18,6 +20,8 @@ import turing.turing.domain.studyRoom.StudyRoom;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Report extends BaseEntity {
 
     @Id
@@ -50,4 +54,61 @@ public class Report extends BaseEntity {
     @Column(name = "closing", length = 800)
     private String closing;
 
+    public Report updateField(int paragraphNum, String content) {
+        switch (paragraphNum) {
+            case 1:
+                return Report.builder()
+                        .id(this.id)
+                        .opening(content)
+                        .studyProgress(this.studyProgress)
+                        .feedback(this.feedback)
+                        .money(this.money)
+                        .closing(this.closing)
+                        .studyRoom(this.studyRoom)
+                        .build();
+            case 2:
+                return Report.builder()
+                        .id(this.id)
+                        .opening(this.opening)
+                        .studyProgress(content)
+                        .feedback(this.feedback)
+                        .money(this.money)
+                        .closing(this.closing)
+                        .studyRoom(this.studyRoom)
+                        .build();
+            case 3:
+                return Report.builder()
+                        .id(this.id)
+                        .opening(this.opening)
+                        .studyProgress(this.studyProgress)
+                        .feedback(content)
+                        .money(this.money)
+                        .closing(this.closing)
+                        .studyRoom(this.studyRoom)
+                        .build();
+            case 4:
+                return Report.builder()
+                        .id(this.id)
+                        .opening(this.opening)
+                        .studyProgress(this.studyProgress)
+                        .feedback(this.feedback)
+                        .money(content)
+                        .closing(this.closing)
+                        .studyRoom(this.studyRoom)
+                        .build();
+            case 5:
+                return Report.builder()
+                        .id(this.id)
+                        .opening(this.opening)
+                        .studyProgress(this.studyProgress)
+                        .feedback(this.feedback)
+                        .money(this.money)
+                        .closing(content)
+                        .studyRoom(this.studyRoom)
+                        .build();
+            default:
+                //유효하지 않음
+                throw new IllegalArgumentException("Invalid paragraph number: " + paragraphNum);
+        }
+    }
 }
