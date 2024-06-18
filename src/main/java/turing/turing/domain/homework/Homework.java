@@ -77,20 +77,6 @@ public class Homework extends BaseEntity {
         this.notebook = notebook;
     }
 
-    public DetailedHomeworkDto toDetailedDto(Long homeworkId) {
-        return DetailedHomeworkDto.builder()
-                .homeworkId(homeworkId)
-                .category(category)
-                .title(title)
-                .rangeType(rangeType)
-                .rangeStart(rangeStart)
-                .rangeEnd(rangeEnd)
-                .content(content)
-                .memo(memo)
-                .notebookId(notebook.getId())
-                .build();
-    }
-
     public Long update(DetailedHomeworkDto request) {
         this.category = request.getCategory();
         this.title = request.getTitle();
