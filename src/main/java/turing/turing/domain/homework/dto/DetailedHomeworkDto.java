@@ -3,8 +3,6 @@ package turing.turing.domain.homework.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.homework.Homework;
-import turing.turing.domain.notebook.Notebook;
 
 @Getter
 @NoArgsConstructor
@@ -39,18 +37,5 @@ public class DetailedHomeworkDto {
         this.content = content;
         this.memo = memo;
         this.notebookId = notebookId;
-    }
-
-    public Homework toEntity(Notebook notebook) {
-        return Homework.builder()
-                .category(category)
-                .title(title)
-                .rangeType(rangeType)
-                .rangeStart(rangeStart)
-                .rangeEnd(rangeEnd)
-                .content(content)
-                .memo(memo)
-                .notebook(notebook)
-                .build();
     }
 }
