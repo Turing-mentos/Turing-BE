@@ -33,14 +33,14 @@ public class ReportController {
     }
 
     @Operation(summary = " 리포트 전체 조회 API")
-    @GetMapping("all/${studyRoomId}")
+    @GetMapping("all/{studyRoomId}")
     public ResponseEntity<List<ReportResDto>> readAllReport(@PathVariable (name="studyRoomId") Long studyRoomId){
         List<ReportResDto> reportResDto = reportService.readAllReport(studyRoomId);
         return ResponseEntity.ok(reportResDto);
     }
 
     @Operation(summary = " 리포트 단락 삭제 API")
-    @DeleteMapping("${reportId}/${paragraphNum}")
+    @DeleteMapping("{reportId}/{paragraphNum}")
     public ResponseEntity<ReportResDto> deleteReport(@PathVariable (name="reportId") Long reportId, @PathVariable (name="paragraphNum") int paragraphNum ){
          reportService.deleteReport(reportId, paragraphNum);
         return ResponseEntity.ok(null);
@@ -48,7 +48,7 @@ public class ReportController {
 
     @Operation(summary = " 리포트 단락 수정 API")
     //requestBody만 사용해도 되지만 path variable 사용: delete와 일관성을 위해
-    @PatchMapping("${reportId}/${paragraphNum}")
+    @PatchMapping("{reportId}/{paragraphNum}")
     public ResponseEntity<ReportResDto> updateReport(@PathVariable (name="reportId") Long reportId, @PathVariable (name="paragraphNum") int paragraphNum,
                                                      @RequestBody String  reportUpdateContent){
         reportService.updateReport(reportId, paragraphNum, reportUpdateContent);
