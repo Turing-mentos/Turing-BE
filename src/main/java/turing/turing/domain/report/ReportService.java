@@ -1,14 +1,10 @@
 package turing.turing.domain.report;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.NotFound;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import turing.turing.domain.gpt.dto.GPTRequest;
 import turing.turing.domain.gpt.dto.GPTResponse;
-import turing.turing.domain.gpt.service.GptService;
-import turing.turing.domain.gpt.service.PromptService;
+import turing.turing.domain.gpt.GptService;
+import turing.turing.domain.gpt.PromptGenerator;
 import turing.turing.domain.report.converter.ReportConverter;
 import turing.turing.domain.report.dto.ReportReqDto;
 import turing.turing.domain.report.dto.ReportResDto;
@@ -25,18 +21,17 @@ import java.util.List;
 public class ReportService {
 
     private final GptService gptService;
-    private final PromptService promptService;
     private final ReportRepository reportRepository;
     private final StudyRoomRepository studyRoomRepository;
 
     public void createReport(ReportReqDto reportReq) {
 
-        StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+        //StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
+          //      .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
         //과외비와 날짜는 추후 반영, 아직 ui가 제대로 안나옴
-        String prompt1 = promptService.generatePrompt1(reportReq);
-        String prompt2 = promptService.generatePrompt2(reportReq);
+        String prompt1 = PromptGenerator.generatePrompt1(reportReq);
+        String prompt2 = PromptGenerator.generatePrompt2(reportReq);
 
         try {
             GPTResponse gptResponse1 = gptService.getGptResponse(prompt1);
@@ -54,8 +49,8 @@ public class ReportService {
             log.info("과외비"+ money);
             log.info("마무리 멘트"+ closing);
 
-            Report report = ReportConverter.toEntity(opening, studyProgress, feedback, money, closing, studyRoom);
-            reportRepository.save(report);
+           // Report report = ReportConverter.toEntity(opening, studyProgress, feedback, money, closing, studyRoom);
+            // reportRepository.save(report);
         } catch (Exception e) {
             log.error("Error creating report: " + e.getMessage(), e);
         }
