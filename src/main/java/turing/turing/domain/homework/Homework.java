@@ -67,6 +67,11 @@ public class Homework extends BaseEntity {
     @JoinColumn(name = "notebook_id", nullable = false)
     private Notebook notebook;
 
+    @NotNull
+    @Column(name = "is_done", nullable = false)
+    @ColumnDefault("false")
+    private Boolean isDone;
+
     @Builder
     public Homework(String category, String title, String rangeType, int rangeStart, int rangeEnd, String content, String memo, Notebook notebook) {
         super();
@@ -91,9 +96,10 @@ public class Homework extends BaseEntity {
 
         return request.getHomeworkId();
     }
-    @NotNull
-    @Column(name = "is_done", nullable = false)
-    @ColumnDefault("false")
-    private Boolean isDone;
 
+    public Long updateDone(Boolean newDone) {
+        this.isDone = newDone;
+
+        return this.id;
+    }
 }

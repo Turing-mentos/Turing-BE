@@ -42,6 +42,15 @@ public class HomeworkService {
         return homework.update(request);
     }
 
+    public Long updateDone(Long homeworkId) {
+        Homework homework = homeworkRepository.findById(homeworkId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        Boolean nowDone = homework.getIsDone();
+
+        return homework.updateDone(!nowDone);
+    }
+
     public void deleteHomework(Long homeworkId) {
         Homework homework = homeworkRepository.findById(homeworkId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
