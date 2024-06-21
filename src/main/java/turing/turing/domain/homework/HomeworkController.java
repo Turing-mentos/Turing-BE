@@ -2,7 +2,6 @@ package turing.turing.domain.homework;
 
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +41,7 @@ public class HomeworkController {
     }
 
     @DeleteMapping("/{homeworkId}")
-    public ResponseEntity<Long> deleteHomework(@PathVariable Long homeworkId) {
+    public ResponseEntity<Void> deleteHomework(@PathVariable Long homeworkId) {
         homeworkService.deleteHomework(homeworkId);
 
         return ResponseEntity.noContent().build();
