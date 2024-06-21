@@ -13,6 +13,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import turing.turing.domain.BaseEntity;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
 import turing.turing.domain.notebook.Notebook;
@@ -20,6 +22,7 @@ import turing.turing.domain.notebook.Notebook;
 @Getter
 @Entity
 @NoArgsConstructor
+@DynamicInsert
 public class Homework extends BaseEntity {
 
     @Id
@@ -88,4 +91,9 @@ public class Homework extends BaseEntity {
 
         return request.getHomeworkId();
     }
+    @NotNull
+    @Column(name = "is_done", nullable = false)
+    @ColumnDefault("false")
+    private Boolean isDone;
+
 }
