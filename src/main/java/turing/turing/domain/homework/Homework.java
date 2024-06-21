@@ -96,4 +96,10 @@ public class Homework extends BaseEntity {
 
         return request.getHomeworkId();
     }
+
+    public Long updateDone(Boolean newDone) {
+        this.isDone = newDone;
+
+        return this.id;
+    }
 }
