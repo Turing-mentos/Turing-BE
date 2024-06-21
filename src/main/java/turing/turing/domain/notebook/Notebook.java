@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,7 @@ public class Notebook extends BaseEntity {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
+    @NotNull
+    @Column(name = "deadline", nullable = false)
+    private Timestamp deadline;
 }
