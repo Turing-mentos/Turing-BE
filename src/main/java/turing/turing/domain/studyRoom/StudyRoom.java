@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.student.Student;
 import turing.turing.domain.teacher.Teacher;
 
 @Getter
@@ -57,4 +58,8 @@ public class StudyRoom extends BaseEntity {
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 }
