@@ -32,4 +32,7 @@ public abstract class BaseEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
     protected Timestamp updatedAt;
 
+    protected BaseEntity() {
+        this.status = Status.ACTIVE;
+    }
 }
