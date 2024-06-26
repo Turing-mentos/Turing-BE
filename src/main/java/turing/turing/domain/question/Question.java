@@ -31,6 +31,11 @@ public class Question extends BaseEntity {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
+    @Size(max = 10)
+    @NotNull
+    @Column(name = "category", nullable = false, length = 10)
+    private String category;
+
     @Size(max = 300)
     @NotNull
     @Column(name = "content", nullable = false, length = 300)
