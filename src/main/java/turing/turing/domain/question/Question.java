@@ -58,4 +58,11 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
+    public void switchPinStatus(){
+        this.pinStatus = !this.pinStatus;
+    }
+
+    public void switchSolveStatus(){
+        this.solveStatus= !this.solveStatus;
+    }
 }

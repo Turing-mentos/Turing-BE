@@ -43,4 +43,20 @@ public class QuestionService {
         return QuestionWithCommentsResDto.of(question, commentList);
     }
 
+    @Transactional
+    public void pin(Long questionId){
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        question.switchPinStatus();
+    }
+
+    @Transactional
+    public void solve(Long questionId){
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        question.switchSolveStatus();
+    }
+
 }

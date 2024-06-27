@@ -2,10 +2,7 @@ package turing.turing.domain.question;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.question.dto.response.QuestionPreviewResDto;
 import turing.turing.domain.question.dto.response.QuestionWithCommentsResDto;
 
@@ -28,5 +25,17 @@ public class QuestionController {
     public ResponseEntity<QuestionWithCommentsResDto> getQuestion(@PathVariable(name = "questionId") Long questionId){
         QuestionWithCommentsResDto questionWithCommentsResDto = questionService.getDetailedQuestion(questionId);
         return ResponseEntity.ok(questionWithCommentsResDto);
+    }
+
+    @PatchMapping("/{questionId}/pin")
+    public ResponseEntity<Void> pin(@PathVariable(name = "questionId") Long questionId) {
+        questionService.pin(questionId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{questionId}/solve")
+    public ResponseEntity<Void> solve(@PathVariable(name = "questionId") Long questionId) {
+        questionService.solve(questionId);
+        return ResponseEntity.ok().build();
     }
 }
