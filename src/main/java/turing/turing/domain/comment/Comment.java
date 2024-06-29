@@ -1,4 +1,4 @@
-package turing.turing.domain.answer;
+package turing.turing.domain.comment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,20 +18,29 @@ import turing.turing.domain.question.Question;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Answer extends BaseEntity {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "answer_id", nullable = false)
+    @Column(name = "comment_id", nullable = false)
     private Long id;
 
-    @Size(max = 200)
-    @Column(name = "answer_image", length = 200)
-    private String answerImage;
+    @NotNull
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @NotNull
+    @Size(max = 10)
+    @Column(name = "role", nullable = false, length = 10)
+    private String role;
 
     @Size(max = 300)
-    @Column(name = "content", length = 300)
+    @Column(name = "content", nullable = false, length = 300)
     private String content;
+
+    @Size(max = 200)
+    @Column(name = "comment_image", length = 200)
+    private String commentImage;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
