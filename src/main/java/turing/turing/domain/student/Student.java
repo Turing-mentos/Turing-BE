@@ -45,4 +45,8 @@ public class Student extends BaseEntity {
     @Column(name = "parent_phone", length = 30)
     private String parentPhone;
 
+    @Size(max = 300)
+    @Column(name = "fcm_token", nullable = false, length = 300)
+    private String fcmToken;
+
 }
