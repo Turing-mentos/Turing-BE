@@ -15,4 +15,6 @@ public class FcmSendDto {
 
     private String body;
 
+    private String category;
+
 }

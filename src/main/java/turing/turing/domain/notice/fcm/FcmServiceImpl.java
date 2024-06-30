@@ -12,14 +12,22 @@ import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
 import com.google.firebase.messaging.Notification;
+import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
+import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
+import turing.turing.domain.studyRoom.StudyRoom;
+import turing.turing.domain.teacher.Teacher;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +41,7 @@ public class FcmServiceImpl implements FcmService{
     private final HomeworkRepository homeworkRepository;
     private final ScheduleRepository scheduleRepository;
     private final StudentRepository studentRepository;
+    private final NoticeSettingRepository noticeSettingRepository;
     @Override
     public int sendMessageTo(FcmSendDto fcmSendDto){
         Message message = makeMessage(fcmSendDto);
@@ -48,45 +57,79 @@ public class FcmServiceImpl implements FcmService{
 
     @Override
     @Transactional(readOnly = true)
+    //알림이 켜져있는지 확인해야함
     public List<FcmSendDeviceDto> selectFcmSendList() {
         List<FcmSendDeviceDto> fcmSendDeviceDtos = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
 
         //토큰 가져오기
-      //  뭘.....가져오기
         //알림장 작성 (수업이 끝나기 10분전)
-        List<Notebook> notebookLis1t = null;
+        LocalDateTime targetDateTime = currentDateTime.plusMinutes(10).withSecond(0).withNano(0);
+        LocalDate targetDate = targetDateTime.toLocalDate();
+        LocalTime targetTime = targetDateTime.toLocalTime();
 
-
-        //숙제 알리미 (수업 하루전까지 숙제를 끝나지 못했을 때)
-        LocalDate targetDate = LocalDate.now().plusDays(1);
-        List<Notebook> notebookList =noticeRepository.findNoteBookByDate(targetDate);
-
-        for (Notebook notebook : notebookList) {
-            List<Homework> homeworkList = homeworkRepository.findAllByNotebook(notebook);
-            for (Homework homework : homeworkList) {
-//                if (!homework.isDone()) {
-//                    Schedule schedule = scheduleRepository.findById(notebook.getSchedule().getId()).orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND));
-//                    StudyRoom studyRoom =schedule.getStudyRoom;
-//                    Student student = studentRepository.findById(studyRoom.getStudent.getId());
-//                    FcmSendDeviceDto dto = FcmSendDeviceDto.builder()
-//                            .dvcTkn(student.getFcmToken())
-//                            .category("HOMEWORK")
-//                            .build();
-//                    fcmSendDeviceDtos.add(dto);
-//                    break;
-//                }
+        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetTime);
+        //for문을 통해 과외공간 ID 가져 온 다음 과외공간을 통해 선생님ID로 알림 전송
+        for(Schedule s : scheduleList){
+            Teacher teacher = s.getStudyRoom().getTeacher();
+            Student student = s.getStudyRoom().getStudent();
+            boolean isTurned = noticeSettingRepository.findByMemberIdAndRoleAndCategory(teacher.getId(), "TEACHER", "NOTEBOOK").getEnabled();
+            if(isTurned) {
+                FcmSendDeviceDto dto = FcmSendDeviceDto.builder()
+                        .dvcTkn(teacher.getFcmToken())
+                        .category("NOTEBOOK")
+                        .senderName(student.getName())
+                        .session(s.getSession())
+                        .build();
+                fcmSendDeviceDtos.add(dto);
             }
         }
 
-        //기준 회차 수업이 끝났을 때
-        List<Schedule> scheduleList = null;
-        LocalDate targetDate1 = LocalDate.now();
-       // List<Schedule> scheduleList1 =  scheduleRepository.findAllBySession();
-        List<FcmSendDeviceDto> s = new ArrayList<>();
-        //FcmSendDeviceDto d = new FcmSendDeviceDto("");
-        //s.add();
+        //숙제 알리미 (수업 하루전까지 숙제를 끝나지 못했을 때)
+        //하루 추가
+        LocalDate homeworkDate = currentDate.plusDays(1);
+        LocalDateTime hwTargetDateTime = homeworkDate.atTime(currentDateTime.getHour(), currentDateTime.getMinute(), 0, 0);
+        Timestamp hwTargetDate = Timestamp.from(hwTargetDateTime.toInstant(ZoneOffset.UTC));
 
-        return s;
+        //하루 전인 알림장 가져오기
+        System.out.println("Target Timestamp: " + hwTargetDate);
+        List<Notebook> notebookList =noticeRepository.serachNoteBookByDate(hwTargetDate);
+        //for문 돌리면 알림장 안에 숙제 중 안된게 있으면 fcmSendDeviceDto에 추가
+        
+        for (Notebook notebook : notebookList) {
+            List<Homework> homeworkList = homeworkRepository.findAllByNotebook(notebook);
+            for (Homework homework : homeworkList) {
+                if (!homework.getIsDone()) {
+//                    //알림보낼 학생 토큰 찾기
+
+//                    Schedule schedule = scheduleRepository.findById(notebook.getSchedule().getId())
+//                            .orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND));
+//                    StudyRoom studyRoom =schedule.getStudyRoom();
+//                    Student student = studentRepository.findById(studyRoom.getStudent().getId())
+//                            .orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+                    Schedule schedule = notebook.getSchedule();
+                    Teacher teacher = schedule.getStudyRoom().getTeacher();
+                    Student student = schedule.getStudyRoom().getStudent();
+                    boolean isTurned = noticeSettingRepository.findByMemberIdAndRoleAndCategory(teacher.getId(), "TEACHER", "NOTEBOOK").getEnabled();
+                    if(isTurned) {
+                        //토큰 담기
+                        FcmSendDeviceDto dto = FcmSendDeviceDto.builder()
+                                .dvcTkn(teacher.getFcmToken())
+                                .senderName(student.getName())
+                                .category("HOMEWORK")
+                                .build();
+                        fcmSendDeviceDtos.add(dto);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        return fcmSendDeviceDtos;
     }
 
 
@@ -100,12 +143,12 @@ public class FcmServiceImpl implements FcmService{
         Notification notification = Notification.builder()
                 .setTitle(fcmSendDto.getTitle())
                 .setBody(fcmSendDto.getBody())
-                .setImage(null)
                 .build();
 
         Message message = Message.builder()
                 .setToken(fcmSendDto.getToken())
                 .setNotification(notification)
+                .putData("category", fcmSendDto.getCategory())
                 .build();
 
         return message;

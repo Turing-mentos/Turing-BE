@@ -32,13 +32,25 @@ public class FcmJob implements Job {
 
         for (FcmSendDeviceDto fcmSendItem : selectFcmSendList) {
             //FCM 전송 데이터를 구성.
-//            switch (){
-//
-//            }
+            String title = null;
+            String body = null;
+            switch (fcmSendItem.getCategory()){
+                case "NOTEBOOK":
+                    title ="알림장 작성하기";
+                    body = fcmSendItem.getSenderName()+"학생의 "+fcmSendItem.getSession()+"회차 수업이 끝났어요.\n" +
+                            "새로운 알림장을 전달해보세요.";
+                    break;
+                case "HOMEWORK":
+                    title ="숙제 알리미";
+                    body = fcmSendItem.getSenderName()+ "학생이 아직 숙제를 다 하지 못했어요.\n수업 전까지 숙제를 끝낼 수 있도록 독려해주세요.";
+                    break;
+
+            }
             FcmSendDto fcmSendDto = FcmSendDto.builder()
                     .token(fcmSendItem.getDvcTkn())
-                    .title("푸시 메시지입니다!")
-                    .body("계획된 시간이 되었어요!")
+                    .title(title)
+                    .body(body)
+                    .category(fcmSendItem.getCategory())
                     .build();
             try {// FCM 전송.
                 fcmService.sendMessageTo(fcmSendDto);

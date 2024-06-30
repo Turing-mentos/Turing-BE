@@ -16,8 +16,12 @@ import turing.turing.domain.noticeSetting.NoticeSetting;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.question.Question;
 import turing.turing.domain.question.QuestionRepository;
+import turing.turing.domain.schedule.Schedule;
+import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
+import turing.turing.domain.studyRoom.StudyRoom;
+import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
@@ -39,6 +43,8 @@ public class AfterAspect {
     private final StudentRepository studentRepository;
     private final QuestionRepository questionRepository;
     private final  NoticeRepository noticeRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final StudyRoomRepository studyRoomRepository;
 
     @Pointcut("execution(* test1())") //포인트 컷 설정
     public void pointcut(){}
@@ -77,27 +83,29 @@ public class AfterAspect {
         receiverIdField.setAccessible(false);
         receiverRoleField.setAccessible(false);
 
+        Student receiverStudent = null;
         Student senderStudent = null;
         Teacher senderTeacher = null;
+        Teacher receiverTeacher = null;
         String senderName = null;
         // 타켓 fcm token 가져오기
         String fcmToken = null;
         switch (receiverRole){
             case "TEACHER":
-                Teacher teacher = teacherRepository.findById(receiverId)
+                receiverTeacher = teacherRepository.findById(receiverId)
                         .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
                 //보낸사람
                 senderStudent = studentRepository.findById(senderId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                senderName = senderStudent.getName();
-                fcmToken = teacher.getPhone(); // 추후 fcm 으로 바꾸기
+                senderName = senderStudent.getFcmToken();
+                fcmToken = receiverTeacher.getFcmToken(); // 추후 fcm 으로 바꾸기
                 // break;
             case "STUDENT":
-                Student student = studentRepository.findById(receiverId)
+                receiverStudent = studentRepository.findById(receiverId)
                         .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
                 senderTeacher = teacherRepository.findById(senderId)
                         .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                senderName = senderTeacher.getName();
-                fcmToken = student.getPhone(); // 추후 fcm 으로 바꾸기
+                senderName = senderTeacher.getFcmToken();
+                fcmToken = receiverStudent.getFcmToken(); // 추후 fcm 으로 바꾸기
             }
 
             String targetAlarm = null;
@@ -109,13 +117,13 @@ public class AfterAspect {
             // 메소드에 따라 메세지 셍성....
             switch(joinPoint.getSignature().getName()){
                 // 새 질문 등록
-                case "메소드이름":
+                case "메소드이름1":
                     targetAlarm = "COMMENT";
                     title = "새로운 댓글";
                     body = senderName+ "학생이 새로운 댓글을 남겼어요.";
                     //..추후 추가
                     break;
-                case "메소드 이름":
+                case "메소드 이름2":
                     targetAlarm = "QUESTION";
                     title= "새로운 질문";
                     Field questionField = result.getClass().getDeclaredField("questionId");
@@ -126,18 +134,30 @@ public class AfterAspect {
                     String category =questionRepository.findById(questionId).orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND)).getContent();
                     body = senderName+" 학생이 ["+category+"] 질문을 남겼어요";
                     break;
-                case "메소드 이름":
+                case "메소드 이름3":
                     targetAlarm = "SCHEDULE_CHANGE";
                     title ="수업 일정 변정 요청";
                     //시간 받아서 시간 받기
                     body = senderName+"학생이 ["+"("+")]수업을 옮기고 싶어해요.";
                     break;
-                case "메소드 이름":
+                case "메소드 이름4":
                     targetAlarm = "NEW_SCHEDULE";
-                    title ="학생의 새로운 시험 일정";
+                    title = "학생의 새로운 시험 일정";
                     body = senderName+"학생이 시험 일정을 등록했어요.";
                     break;
-
+                case "메소드 이름5":
+                    if(receiverRole.equals("TEACHER")) {
+                        //이거 고민 필요...
+                        StudyRoom studyRoom = studyRoomRepository.findByTeacherAndStudent(receiverTeacher, senderStudent);
+                        Schedule schedule = scheduleRepository.findByStudyRoom(studyRoom);
+                        boolean b = studyRoom.getBaseSession() == schedule.getSession();
+                        if(b) {
+                            targetAlarm = "REPORT";
+                            title = "리포트 작성하기";
+                            body = senderName + "학생의 기준 회차를 모두 끝냈어요.\n 리포트를 작성하고 학부모님께 전달해주세요.";
+                        }
+                    }
+                    break;
         }
 
         //타겟 id가 알람 설정이 켜져있는지 확인한 후
@@ -148,12 +168,21 @@ public class AfterAspect {
             FcmSendDto fcmSendDto = FcmSendDto.builder()
                     .token(fcmToken)
                     .title(title)
-                    .body(body).build();
+                    .body(body)
+                    .category(targetAlarm).build();
 
             fcmService.sendMessageTo(fcmSendDto);
 
             //디비에 기록 저장
-            Notice notice = new Notice(senderId, senderRole, receiverId,receiverRole, 0, title, body);
+            Notice notice = Notice.builder()
+                    .body(body)
+                    .title(title)
+                    .senderId(senderId)
+                    .senderRole(senderRole)
+                    .receiverId(receiverId)
+                    .receiverRole(receiverRole)
+                    .readStatus(false)
+                    .build();
             noticeRepository.save(notice);
         }
     }
