@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.studyRoom.StudyRoom;
 
 @Getter
@@ -27,8 +28,8 @@ public class Report extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "study_room_id", nullable = false)
-    private StudyRoom studyRoom;
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
 
     @Size(max = 800)
     @Column(name = "opening", length = 800)
