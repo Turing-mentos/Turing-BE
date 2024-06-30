@@ -1,4 +1,4 @@
-package turing.turing.domain.studyDatetime;
+package turing.turing.domain.studyTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,11 +18,11 @@ import turing.turing.domain.studyRoom.StudyRoom;
 @Getter
 @Entity
 @NoArgsConstructor
-public class StudyDatetime extends BaseEntity {
+public class StudyTime extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_datetime_id", nullable = false)
+    @Column(name = "study_time_id", nullable = false)
     private Long id;
 
     @NotNull
@@ -42,4 +42,10 @@ public class StudyDatetime extends BaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
+    public StudyTime(Integer day, LocalTime startTime, LocalTime endTime, StudyRoom studyRoom) {
+        this.day = day;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.studyRoom = studyRoom;
+    }
 }
