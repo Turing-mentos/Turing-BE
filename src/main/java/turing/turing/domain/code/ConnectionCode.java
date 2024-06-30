@@ -23,4 +23,9 @@ public class ConnectionCode extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
+
+    public ConnectionCode(Integer connectionCode, StudyRoom studyRoom) {
+        this.connectionCode = connectionCode;
+        this.studyRoom = studyRoom;
+    }
 }

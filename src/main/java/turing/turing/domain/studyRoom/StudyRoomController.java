@@ -17,4 +17,10 @@ public class StudyRoomController {
         Long studyRoomId = studyRoomService.createStudyRoom(1L, studyRoomReqDto);
         return ResponseEntity.ok(studyRoomId);
     }
+
+    @GetMapping("/{studyRoomId}/codes")
+    public ResponseEntity<Integer> getConnectionCode(@PathVariable Long studyRoomId){
+        Integer connectionCode = studyRoomService.getConnectionCode(studyRoomId);
+        return ResponseEntity.ok(connectionCode);
+    }
 }
