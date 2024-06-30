@@ -37,7 +37,19 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//firebase
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'     // Jackson Data Bind
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1'
+
+	//quartz
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: '2.3.2.RELEASE'
+
+	//aop
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

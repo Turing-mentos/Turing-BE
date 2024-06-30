@@ -43,9 +43,14 @@ public class Notice extends BaseEntity {
     @Column(name = "read_status", nullable = false)
     private Boolean readStatus = false;
 
+    @Size(max = 150)
+    @NotNull
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
+
     @Size(max = 200)
     @NotNull
-    @Column(name = "message", nullable = false, length = 200)
-    private String message;
+    @Column(name = "body", nullable = false, length = 200)
+    private String body;
 
 }
