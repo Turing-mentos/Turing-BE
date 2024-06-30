@@ -29,3 +29,10 @@ server:
 #JWT
 
 #S3
+
+#GPT
+gpt:
+  model: ${GPT_MODEL}
+  api:
+    key: ${GPT_API_KEY}
+    url: ${GPT_URL}
