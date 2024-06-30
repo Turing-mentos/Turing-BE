@@ -37,8 +37,7 @@ public class Student extends BaseEntity {
     private String year;
 
     @Size(max = 30)
-    @NotNull
-    @Column(name = "phone", nullable = false, length = 30)
+    @Column(name = "phone", length = 30)
     private String phone;
 
     @Size(max = 30)
@@ -46,7 +45,12 @@ public class Student extends BaseEntity {
     private String parentPhone;
 
     @Size(max = 300)
-    @Column(name = "fcm_token", nullable = false, length = 300)
+    @Column(name = "fcm_token", length = 300)
     private String fcmToken;
 
+    public Student(String name, String school, String year) {
+        this.name = name;
+        this.school = school;
+        this.year = year;
+    }
 }
