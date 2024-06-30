@@ -28,10 +28,6 @@ public class StudyRoom extends BaseEntity {
     private Long id;
 
     @NotNull
-    @Column(name = "code", nullable = false)
-    private Integer code;
-
-    @NotNull
     @Column(name = "link_status", nullable = false)
     private Boolean linkStatus = false;
 
@@ -43,11 +39,6 @@ public class StudyRoom extends BaseEntity {
     @NotNull
     @Column(name = "base_session", nullable = false)
     private Integer baseSession;
-
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "color", nullable = false, length = 50)
-    private String color;
 
     @Size(max = 200)
     @Column(name = "description", length = 200)
@@ -62,4 +53,11 @@ public class StudyRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
+
+    public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
+        this.subject = subject;
+        this.baseSession = baseSession;
+        this.teacher = teacher;
+        this.student = student;
+    }
 }
