@@ -9,6 +9,7 @@ import turing.turing.domain.code.ConnectionCodeRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.dto.StudyRoomReqDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.studyTime.StudyTimeRepository;
 import turing.turing.domain.teacher.Teacher;
@@ -86,6 +87,18 @@ public class StudyRoomService {
 
         // 연결 후, 연결 코드는 삭제됨
         connectionCodeRepository.delete(connectionCode);
+    }
+
+    public List<StudyRoomResDto> getStudyRooms(Long memberId){
+
+        // role == teacher
+        Teacher teacher = teacherRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        List<StudyRoom> studyRoomList = studyRoomRepository.findAllWithStudentByTeacher(teacher);
+
+        List<StudyRoomResDto> studyRoomResDtoList = studyRoomList.stream().map(StudyRoomResDto::of).toList();
+        return studyRoomResDtoList;
     }
 
     // 중복되지 않는 6자리 연결 코드를 생성함

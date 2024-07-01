@@ -13,7 +13,9 @@ public interface ConnectionCodeRepository extends JpaRepository<ConnectionCode, 
 
     Boolean existsByCode(Integer code);
 
-    @Query("select c from ConnectionCode c join fetch c.studyRoom s where c.code = :code")
+    @Query("select c from ConnectionCode c " +
+            "join fetch c.studyRoom sr " +
+            "where c.code = :code")
     Optional<ConnectionCode> findWithStudyRoomByCode(@Param(value = "code") Integer code);
 
 
