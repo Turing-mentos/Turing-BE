@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.studyRoom.dto.StudyRoomReqDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,4 +35,10 @@ public class StudyRoomController {
         return ResponseEntity.ok().build();
     }
 
+    // 학생 or 선생님 ID 필요 (+ role)
+    @GetMapping
+    public ResponseEntity<List<StudyRoomResDto>> getStudyRooms(){
+        List<StudyRoomResDto> studyRoomResDtoList = studyRoomService.getStudyRooms(1L);
+        return ResponseEntity.ok(studyRoomResDtoList);
+    }
 }
