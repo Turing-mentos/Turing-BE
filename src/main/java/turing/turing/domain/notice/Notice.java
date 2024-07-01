@@ -57,4 +57,12 @@ public class Notice extends BaseEntity {
     @Column(name = "body", nullable = false, length = 200)
     private String body;
 
+    @Column(name = "target_id", nullable = false)
+    private Long targetId;
+
+    public Notice updateRead(Boolean readStatus) {
+        this.readStatus = readStatus;
+
+        return this;
+    }
 }

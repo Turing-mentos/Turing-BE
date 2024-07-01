@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.notice.Notice;
 
 @Getter
 @Entity
@@ -38,5 +39,11 @@ public class NoticeSetting extends BaseEntity {
     @NotNull
     @Column(name = "role", nullable = false, length = 20)
     private String role;
+
+    public NoticeSetting changeEnabled(Boolean enabled) {
+        this.enabled = enabled;
+
+        return this;
+    }
 
 }

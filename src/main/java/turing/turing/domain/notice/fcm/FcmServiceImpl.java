@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.notebook.Notebook;
+import turing.turing.domain.notebook.NotebookRepository;
 import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
@@ -42,6 +43,7 @@ public class FcmServiceImpl implements FcmService{
     private final ScheduleRepository scheduleRepository;
     private final StudentRepository studentRepository;
     private final NoticeSettingRepository noticeSettingRepository;
+    private final NotebookRepository notebookRepository;
     @Override
     public int sendMessageTo(FcmSendDto fcmSendDto){
         Message message = makeMessage(fcmSendDto);
@@ -95,7 +97,7 @@ public class FcmServiceImpl implements FcmService{
 
         //하루 전인 알림장 가져오기
         System.out.println("Target Timestamp: " + hwTargetDate);
-        List<Notebook> notebookList =noticeRepository.serachNoteBookByDate(hwTargetDate);
+        List<Notebook> notebookList =notebookRepository.serachNoteBookByDate(hwTargetDate);
         //for문 돌리면 알림장 안에 숙제 중 안된게 있으면 fcmSendDeviceDto에 추가
         
         for (Notebook notebook : notebookList) {

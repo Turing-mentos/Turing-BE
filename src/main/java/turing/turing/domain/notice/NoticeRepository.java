@@ -11,11 +11,5 @@ import java.util.List;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    @Query("SELECT n FROM Notebook n WHERE " +
-            "YEAR(n.deadline) = YEAR(:targetDate) AND " +
-            "MONTH(n.deadline) = MONTH(:targetDate) AND " +
-            "DAY(n.deadline) = DAY(:targetDate) AND " +
-            "HOUR(n.deadline) = HOUR(:targetDate) AND " +
-            "MINUTE(n.deadline) = MINUTE(:targetDate)")
-    List<Notebook> serachNoteBookByDate(@Param("targetDate") Timestamp targetDate);
+    List<Notice> searchNoticeByReceiverIdAndReceiverRoleAndReadStatus(Long recevierId, String receiverRole, boolean readStatus);
 }
