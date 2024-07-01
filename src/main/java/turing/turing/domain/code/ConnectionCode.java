@@ -17,15 +17,15 @@ public class ConnectionCode extends BaseEntity {
     private Long id;
 
     @NotNull
-    @Column(name = "connection_code", nullable = false)
-    private Integer connectionCode;
+    @Column(name = "code", nullable = false)
+    private Integer code;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
-    public ConnectionCode(Integer connectionCode, StudyRoom studyRoom) {
-        this.connectionCode = connectionCode;
+    public ConnectionCode(Integer code, StudyRoom studyRoom) {
+        this.code = code;
         this.studyRoom = studyRoom;
     }
 }
