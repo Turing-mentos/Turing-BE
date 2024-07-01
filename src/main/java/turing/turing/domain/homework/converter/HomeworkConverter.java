@@ -2,6 +2,7 @@ package turing.turing.domain.homework.converter;
 
 import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
+import turing.turing.domain.homework.dto.HomeworkDto;
 import turing.turing.domain.notebook.Notebook;
 
 public class HomeworkConverter {
