@@ -60,4 +60,11 @@ public class StudyRoom extends BaseEntity {
         this.teacher = teacher;
         this.student = student;
     }
+
+    // 기존에는 선생님이 등록해놓은 (가입되지 않은) 학생과 연결되어 있지만
+    // 가입한 학생과 연결 시에 student 참조를 변경해주고, linkStatus를 업데이트 해주어야 함
+    public void connectStudent(Student student){
+        this.student = student;
+        this.linkStatus = true;
+    }
 }

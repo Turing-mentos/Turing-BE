@@ -54,25 +54,46 @@ public class StudyRoomService {
 
     @Transactional
     public Integer getConnectionCode(Long studyRoomId){
+
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
+        // 이미 연결된 경우에는 코드를 생성하지 않음
+        if(studyRoom.getLinkStatus())
+            throw new RestApiException(CommonErrorCode.BAD_REQUEST);
+
         // 이미 연결 코드가 존재한다면 그대로 리턴, 존재하지 않는다면 중복되지 않는 연결 코드 생성하여 리턴
         return connectionCodeRepository.findByStudyRoom(studyRoom)
-                .map(ConnectionCode::getConnectionCode)
+                .map(ConnectionCode::getCode)
                 .orElseGet(() -> {
-                    ConnectionCode connectionCode = new ConnectionCode(generateConnectionCode(), studyRoom);
+                    ConnectionCode connectionCode = new ConnectionCode(generateCode(), studyRoom);
                     connectionCodeRepository.save(connectionCode);
-                    return connectionCode.getConnectionCode();
+                    return connectionCode.getCode();
                 });
     }
 
+    @Transactional
+    public void connectTeacherStudent(Long studentId, Integer code){
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomByCode(code)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        // 실제로 가입한 학생과 연결 (참조를 변경)
+        connectionCode.getStudyRoom().connectStudent(student);
+
+        // 연결 후, 연결 코드는 삭제됨
+        connectionCodeRepository.delete(connectionCode);
+    }
+
     // 중복되지 않는 6자리 연결 코드를 생성함
-    public Integer generateConnectionCode(){
+    public Integer generateCode(){
         while (true){
             Integer generatedCode = ThreadLocalRandom.current().nextInt(100000, 1000000);  // 6자리 코드 생성
 
-            if(!connectionCodeRepository.existsByConnectionCode(generatedCode))   // 중복되지 않는 코드인지 검증
+            if(!connectionCodeRepository.existsByCode(generatedCode))   // 중복되지 않는 코드인지 검증
                 return generatedCode;
         }
     }
