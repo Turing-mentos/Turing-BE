@@ -62,10 +62,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException e,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request
+            @NonNull MethodArgumentNotValidException e,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
     ) {
         ErrorCode errorCode = CommonErrorCode.BAD_REQUEST;
         return handleExceptionInternal(e, errorCode);
