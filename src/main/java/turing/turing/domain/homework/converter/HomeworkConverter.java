@@ -33,4 +33,18 @@ public class HomeworkConverter {
                 .notebookId(homework.getNotebook().getId())
                 .build();
     }
+
+    public static HomeworkDto toDto(Homework homework) {
+        return HomeworkDto.builder()
+                .homeworkId(homework.getId())
+                .category(homework.getCategory())
+                .title(homework.getTitle())
+                .rangeType(homework.getRangeType())
+                .rangeStart(homework.getRangeStart())
+                .rangeEnd(homework.getRangeEnd())
+                .content(homework.getContent())
+                .memo(homework.getMemo())
+                .isDone(homework.getIsDone())
+                .build();
+    }
 }
