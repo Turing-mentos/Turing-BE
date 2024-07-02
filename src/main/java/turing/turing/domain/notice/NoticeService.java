@@ -33,7 +33,7 @@ public class NoticeService {
     }
 
     public List<NoticeDto.ResponseDto> readAllNotification(Long memberId, String memberRole) {
-        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndRecAndReceiverRole(memberId, memberRole);
+        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRole(memberId, memberRole);
         if (noticeList.isEmpty()) {
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }

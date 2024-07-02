@@ -111,19 +111,19 @@ public class AfterAspect {
             String targetAlarm = null;
             String title = null;
             String body = null;
-
+            Long targetId = 0L;
             //어디서 왔는지 확인
 
             // 메소드에 따라 메세지 셍성....
             switch(joinPoint.getSignature().getName()){
                 // 새 질문 등록
-                case "메소드이름1":
+                case "createComment":
                     targetAlarm = "COMMENT";
                     title = "새로운 댓글";
                     body = senderName+ "학생이 새로운 댓글을 남겼어요.";
                     //..추후 추가
                     break;
-                case "메소드 이름2":
+                case "createQuestion":
                     targetAlarm = "QUESTION";
                     title= "새로운 질문";
                     Field questionField = result.getClass().getDeclaredField("questionId");
@@ -169,8 +169,9 @@ public class AfterAspect {
                     .token(fcmToken)
                     .title(title)
                     .body(body)
-                    .category(targetAlarm).build();
-
+                    .category(targetAlarm)
+                    .targetId(targetId)
+                    .build();
             fcmService.sendMessageTo(fcmSendDto);
 
             //디비에 기록 저장
@@ -181,6 +182,7 @@ public class AfterAspect {
                     .senderRole(senderRole)
                     .receiverId(receiverId)
                     .receiverRole(receiverRole)
+                    .targetId(targetId)
                     .readStatus(false)
                     .build();
             noticeRepository.save(notice);

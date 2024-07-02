@@ -24,12 +24,12 @@ public class NoticeController {
 
 
 
-    @Operation(summary = "알림 개수 조회")
-    @GetMapping("")
-    public void unCheckedNotification() {
-        noticeService.unCheckedNotification();
-    }
-
+//    @Operation(summary = "알림 개수 조회")
+//    @GetMapping("")
+//    public void unCheckedNotification() {
+//        noticeService.unCheckedNotification();
+//    }
+//
 
     @Operation(summary = "알림 전체 조회")
     @GetMapping("notification/all")

@@ -12,6 +12,7 @@ import lombok.*;
 public class FcmSendDeviceDto {
     private String dvcTkn;
     private String category;
+    Long targetId;
     String senderName;
     int session;
 }

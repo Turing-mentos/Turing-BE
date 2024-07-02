@@ -72,18 +72,30 @@ public class FcmServiceImpl implements FcmService{
         LocalDate targetDate = targetDateTime.toLocalDate();
         LocalTime targetTime = targetDateTime.toLocalTime();
 
-        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetTime);
+        int targetHour = targetTime.getHour();
+        int targetMinute = targetTime.getMinute();
+
+        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetHour, targetMinute);
         //for문을 통해 과외공간 ID 가져 온 다음 과외공간을 통해 선생님ID로 알림 전송
         for(Schedule s : scheduleList){
             Teacher teacher = s.getStudyRoom().getTeacher();
             Student student = s.getStudyRoom().getStudent();
+            Long targetId = -1L;
+
+            //알림장이 있는지 확인
+            Schedule latetestSchedule = scheduleRepository.searchByStudyRoomAndLatestDate(s.getStudyRoom());
+            if(latetestSchedule != null){
+                targetId = notebookRepository.findBySchedule(latetestSchedule).getId();
+            }
             boolean isTurned = noticeSettingRepository.findByMemberIdAndRoleAndCategory(teacher.getId(), "TEACHER", "NOTEBOOK").getEnabled();
+
             if(isTurned) {
                 FcmSendDeviceDto dto = FcmSendDeviceDto.builder()
                         .dvcTkn(teacher.getFcmToken())
                         .category("NOTEBOOK")
                         .senderName(student.getName())
                         .session(s.getSession())
+                        .targetId(targetId)
                         .build();
                 fcmSendDeviceDtos.add(dto);
             }
@@ -122,6 +134,7 @@ public class FcmServiceImpl implements FcmService{
                                 .dvcTkn(teacher.getFcmToken())
                                 .senderName(student.getName())
                                 .category("HOMEWORK")
+                                .targetId(0L)
                                 .build();
                         fcmSendDeviceDtos.add(dto);
                         break;
@@ -151,6 +164,7 @@ public class FcmServiceImpl implements FcmService{
                 .setToken(fcmSendDto.getToken())
                 .setNotification(notification)
                 .putData("category", fcmSendDto.getCategory())
+                .putData("targetId", String.valueOf(fcmSendDto.getTargetId()))
                 .build();
 
         return message;

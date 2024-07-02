@@ -51,6 +51,7 @@ public class FcmJob implements Job {
                     .title(title)
                     .body(body)
                     .category(fcmSendItem.getCategory())
+                    .targetId(fcmSendItem.getTargetId())
                     .build();
             try {// FCM 전송.
                 fcmService.sendMessageTo(fcmSendDto);
