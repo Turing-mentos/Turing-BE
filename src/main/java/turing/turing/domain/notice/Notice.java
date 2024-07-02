@@ -1,10 +1,6 @@
 package turing.turing.domain.notice;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.noticeSetting.NoticeSetting;
+import turing.turing.domain.schedule.Schedule;
 
 @Getter
 @Entity
@@ -59,6 +57,11 @@ public class Notice extends BaseEntity {
 
     @Column(name = "target_id", nullable = false)
     private Long targetId;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "notice_setting_id", nullable = false)
+    private NoticeSetting noticeSetting;
 
     public Notice updateRead(Boolean readStatus) {
         this.readStatus = readStatus;
