@@ -12,4 +12,5 @@ import java.util.List;
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     List<Notice> searchNoticeByReceiverIdAndReceiverRoleAndReadStatus(Long recevierId, String receiverRole, boolean readStatus);
+    List<Notice> findByReceiverIdAndRecAndReceiverRole(Long receiverId, String receiverRole);
 }
