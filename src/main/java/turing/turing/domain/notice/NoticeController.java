@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.notice.NoticeService;
 import turing.turing.domain.notice.dto.NoticeDto;
 
+import java.util.List;
+
 @RequestMapping("/api/notification/")
 @RestController
 @AllArgsConstructor
@@ -31,10 +33,11 @@ public class NoticeController {
 
     @Operation(summary = "알림 전체 조회")
     @GetMapping("notification/all")
-    public ResponseEntity<NoticeDto.ResponseDto> readAllNotification() {
+    public ResponseEntity<List<NoticeDto.ResponseDto>> readAllNotification() {
         Long memberId = 0L;
         String memberRole = "TEACHER";
-        return noticeService.readAllNotification(memberId, memberRole);
+
+        return ResponseEntity.ok(noticeService.readAllNotification(memberId, memberRole));
     }
 
 

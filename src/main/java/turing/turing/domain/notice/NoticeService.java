@@ -3,6 +3,7 @@ package turing.turing.domain.notice;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import turing.turing.domain.notice.converter.NoticeConverter;
 import turing.turing.domain.notice.dto.NoticeDto;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
@@ -30,8 +31,13 @@ public class NoticeService {
         return noticeList.size();
 
     }
-//
-//    public ResponseEntity<NoticeDto.ResponseDto> readAllNotification(Long memberId, String memberRole) {
-//        noticeRepository.findByReceiverIdAndRecAndReceiverRole(memberId, memberRole);
-//    }
+
+    public List<NoticeDto.ResponseDto> readAllNotification(Long memberId, String memberRole) {
+        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndRecAndReceiverRole(memberId, memberRole);
+        if (noticeList.isEmpty()) {
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+        }
+        return NoticeConverter.toDtoList(noticeList);
+
+    }
 }
