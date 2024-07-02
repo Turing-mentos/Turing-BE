@@ -3,6 +3,7 @@ package turing.turing.domain.studyRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomReqDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
 
@@ -40,5 +41,12 @@ public class StudyRoomController {
     public ResponseEntity<List<StudyRoomResDto>> getStudyRooms(){
         List<StudyRoomResDto> studyRoomResDtoList = studyRoomService.getStudyRooms(1L);
         return ResponseEntity.ok(studyRoomResDtoList);
+    }
+
+    // 학생 or 선생님 ID 필요 (+ role)
+    @GetMapping("/{studyRoomId}")
+    public ResponseEntity<DetailedStudyRoomResDto> getDetailedStudyRooms(@PathVariable Long studyRoomId){
+        DetailedStudyRoomResDto detailedStudyRoomResDto = studyRoomService.getDetailedStudyRooms(studyRoomId);
+        return ResponseEntity.ok(detailedStudyRoomResDto);
     }
 }

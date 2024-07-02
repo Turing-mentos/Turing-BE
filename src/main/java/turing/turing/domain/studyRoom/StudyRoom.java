@@ -1,13 +1,6 @@
 package turing.turing.domain.studyRoom;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -15,7 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
 import turing.turing.domain.student.Student;
+import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.teacher.Teacher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -54,7 +51,10 @@ public class StudyRoom extends BaseEntity {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
+    @OneToMany(mappedBy = "studyRoom")
+    private List<StudyTime> studyTimes = new ArrayList<>();
+
+            public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
         this.subject = subject;
         this.baseSession = baseSession;
         this.teacher = teacher;
