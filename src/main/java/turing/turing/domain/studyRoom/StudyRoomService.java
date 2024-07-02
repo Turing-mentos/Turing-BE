@@ -82,11 +82,17 @@ public class StudyRoomService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
-        ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomByCode(code)
+        ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomAndStudentByCode(code)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        // 기존 학생 가져오기
+        Student prevStudent = connectionCode.getStudyRoom().getStudent();
 
         // 실제로 가입한 학생과 연결 (참조를 변경)
         connectionCode.getStudyRoom().connectStudent(student);
+
+        // 기존 학생은 삭제
+        studentRepository.delete(prevStudent);
 
         // 연결 후, 연결 코드는 삭제됨
         connectionCodeRepository.delete(connectionCode);
