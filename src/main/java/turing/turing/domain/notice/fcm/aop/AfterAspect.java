@@ -121,7 +121,11 @@ public class AfterAspect {
                     targetAlarm = "COMMENT";
                     title = "새로운 댓글";
                     body = senderName+ "학생이 새로운 댓글을 남겼어요.";
-                    //..추후 추가
+                    Field commentField  = result.getClass().getDeclaredField("commendId");
+                    commentField.setAccessible(true);
+                    Long commentId = (Long) commentField.get(result);
+                    commentField.setAccessible(false);
+                    targetId = commentId;
                     break;
                 case "createQuestion":
                     targetAlarm = "QUESTION";
