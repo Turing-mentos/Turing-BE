@@ -23,7 +23,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("targetHour") int targetHour,
             @Param("targetMinute") int targetMinute);
 
-    Schedule findByStudyRoom(StudyRoom studyRoom);
+    List<Schedule> findByDateAndEndTime(LocalDate date, LocalTime endDate);
 
     @Query("SELECT s FROM Schedule s WHERE s.studyRoom = :studyRoom AND s.date <= CURRENT_DATE ORDER BY s.date DESC")
     Schedule searchByStudyRoomAndLatestDate(@Param("studyRoom") StudyRoom studyRoom);

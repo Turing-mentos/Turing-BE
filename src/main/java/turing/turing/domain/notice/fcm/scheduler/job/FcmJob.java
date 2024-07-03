@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.context.ApplicationContext;
+import turing.turing.domain.notice.Notice;
 import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
@@ -28,38 +29,70 @@ public class FcmJob implements Job {
 
         }
 //FCM 전송 리스트 구성.
+
         List<FcmSendDeviceDto> selectFcmSendList = fcmService.selectFcmSendList();
 
         for (FcmSendDeviceDto fcmSendItem : selectFcmSendList) {
             //FCM 전송 데이터를 구성.
-            String title = null;
-            String body = null;
-            switch (fcmSendItem.getCategory()){
-                case "NOTEBOOK":
-                    title ="알림장 작성하기";
-                    body = fcmSendItem.getSenderName()+"학생의 "+fcmSendItem.getSession()+"회차 수업이 끝났어요.\n" +
-                            "새로운 알림장을 전달해보세요.";
-                    break;
-                case "HOMEWORK":
-                    title ="숙제 알리미";
-                    body = fcmSendItem.getSenderName()+ "학생이 아직 숙제를 다 하지 못했어요.\n수업 전까지 숙제를 끝낼 수 있도록 독려해주세요.";
-                    break;
-
-            }
-            FcmSendDto fcmSendDto = FcmSendDto.builder()
-                    .token(fcmSendItem.getDvcTkn())
-                    .title(title)
-                    .body(body)
-                    .category(fcmSendItem.getCategory())
-                    .targetId(fcmSendItem.getTargetId())
-                    .build();
-            try {// FCM 전송.
+            FcmSendDto fcmSendDto = buildFcmSendDto(fcmSendItem);
+            try {
                 fcmService.sendMessageTo(fcmSendDto);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (FirebaseMessagingException e) {
+                saveNoticeToDatabase(fcmSendItem, fcmSendDto);
+            } catch (IOException | FirebaseMessagingException e) {
+                log.error("Error sending FCM message: {}", e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
+    }
+    private String getBodyByCategory(FcmSendDeviceDto fcmSendItem) {
+        String senderName = fcmSendItem.getSenderName();
+        int session = fcmSendItem.getSession();
+        switch (fcmSendItem.getCategory()) {
+            case "NOTEBOOK":
+                return String.format("%s학생의 %d회차 수업이 끝났어요.\n새로운 알림장을 전달해보세요.", senderName, session);
+            case "HOMEWORK":
+                return String.format("%s학생이 아직 숙제를 다 하지 못했어요.\n수업 전까지 숙제를 끝낼 수 있도록 독려해주세요.", senderName);
+            case "REPORT":
+                return String.format("%s학생의 기준 회차를 모두 끝냈어요.\n리포트를 작성하고 학부모님께 전달해주세요.", senderName);
+            default:
+                return "새로운 알림이 도착했습니다.";
+        }
+    }
+    private FcmSendDto buildFcmSendDto(FcmSendDeviceDto fcmSendItem) {
+        String title = getTitleByCategory(fcmSendItem.getCategory());
+        String body = getBodyByCategory(fcmSendItem);
+
+        return FcmSendDto.builder()
+                .token(fcmSendItem.getDvcTkn())
+                .title(title)
+                .body(body)
+                .category(fcmSendItem.getCategory())
+                .targetId(fcmSendItem.getTargetId())
+                .build();
+    }
+    private String getTitleByCategory(String category) {
+        switch (category) {
+            case "NOTEBOOK":
+                return "알림장 작성하기";
+            case "HOMEWORK":
+                return "숙제 알리미";
+            case "REPORT":
+                return "리포트 작성하기";
+            default:
+                return "알림";
+        }
+    }
+    private void saveNoticeToDatabase(FcmSendDeviceDto fcmSendItem, FcmSendDto fcmSendDto) {
+        Notice notice = Notice.builder()
+                .body(fcmSendDto.getBody())
+                .title(fcmSendDto.getTitle())
+                .senderId(fcmSendItem.getSenderId())
+                .senderRole("STUDENT")
+                .receiverId(fcmSendItem.getReceiverId())
+                .receiverRole("TEACHER")
+                .targetId(fcmSendItem.getTargetId())
+                .readStatus(false)
+                .build();
+        // fcmService.saveNotice(notice);
     }
 }

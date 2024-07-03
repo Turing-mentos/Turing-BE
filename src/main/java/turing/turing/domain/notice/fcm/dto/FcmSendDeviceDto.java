@@ -13,6 +13,8 @@ public class FcmSendDeviceDto {
     private String dvcTkn;
     private String category;
     Long targetId;
+    Long senderId;
+    Long receiverId;
     String senderName;
     int session;
 }

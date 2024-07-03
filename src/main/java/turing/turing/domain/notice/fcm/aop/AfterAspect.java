@@ -12,16 +12,12 @@ import turing.turing.domain.notice.Notice;
 import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
-import turing.turing.domain.noticeSetting.NoticeSetting;
+import turing.turing.domain.notice.fcm.dto.NotificationContent;
+import turing.turing.domain.notice.fcm.dto.NotificationDetails;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
-import turing.turing.domain.question.Question;
 import turing.turing.domain.question.QuestionRepository;
-import turing.turing.domain.schedule.Schedule;
-import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
-import turing.turing.domain.studyRoom.StudyRoom;
-import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
@@ -36,160 +32,154 @@ import java.lang.reflect.Field;
 @AllArgsConstructor
 public class AfterAspect {
 
-
     private final FcmService fcmService;
     private final NoticeSettingRepository noticeSettingRepository;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
     private final QuestionRepository questionRepository;
-    private final  NoticeRepository noticeRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final StudyRoomRepository studyRoomRepository;
+    private final NoticeRepository noticeRepository;
 
-    @Pointcut("execution(* test1())") //포인트 컷 설정
-    public void pointcut(){}
+    @Pointcut("execution(* test1())")
+    public void pointcut() {}
 
-    //수업 일정 변경 요청 - targetId(), 선생 학생인지
-    //시험 일정 등록 - targetId(), 선생 학생인지
-    //질문 등록 - targetId(질문 받는 상대방 id), 선생 학생인지
-    //댓글 등록 - targetId(알람을 보내야하는 상대방 id)
-
-    //senderId, senderRole) 수신자 수신자 역할(recevierId, receiverRole)
     @AfterReturning(pointcut = "pointcut()", returning = "result")
-    public void test1113(JoinPoint joinPoint, Object result) throws NoSuchFieldException, IllegalAccessException, IOException, FirebaseMessagingException {
+    public void handleAfterReturning(JoinPoint joinPoint, Object result) throws NoSuchFieldException, IllegalAccessException, IOException, FirebaseMessagingException {
+        log.info("메소드", joinPoint.getSignature().getName(), result);
 
-        log.info("test 성공, 반환 값: " + result.toString());
-        log.info("Join"+ joinPoint.getSignature().getName());
+        NotificationDetails notificationDetails = extractNotificationDetails(result);
+        String fcmToken = getFcmToken(notificationDetails.getReceiverRole(), notificationDetails.getReceiverId());
+        String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId());
 
-        Field senderField = result.getClass().getDeclaredField("senderId");
+        NotificationContent content = buildNotificationContent(joinPoint.getSignature().getName(), senderName, result);
+
+        if (isNotificationEnabled(notificationDetails.getReceiverId(), notificationDetails.getReceiverRole(), content.getCategory())) {
+            sendFcmNotification(fcmToken, content);
+            saveNotice(notificationDetails, content);
+        }
+    }
+    private NotificationDetails extractNotificationDetails(Object result) throws NoSuchFieldException, IllegalAccessException {
+        Field senderIdField = result.getClass().getDeclaredField("senderId");
         Field senderRoleField = result.getClass().getDeclaredField("senderRole");
-        Field receiverIdField  = result.getClass().getDeclaredField("senderId");
-        Field receiverRoleField = result.getClass().getDeclaredField("senderRole");
+        Field receiverIdField = result.getClass().getDeclaredField("receiverId");
+        Field receiverRoleField = result.getClass().getDeclaredField("receiverRole");
 
-
-        //보안상 문제
-        senderField.setAccessible(true);
+        senderIdField.setAccessible(true);
         senderRoleField.setAccessible(true);
         receiverIdField.setAccessible(true);
         receiverRoleField.setAccessible(true);
 
-        Long senderId = (Long) senderField.get(result);
+        Long senderId = (Long) senderIdField.get(result);
         String senderRole = (String) senderRoleField.get(result);
         Long receiverId = (Long) receiverIdField.get(result);
         String receiverRole = (String) receiverRoleField.get(result);
 
-        senderField.setAccessible(false);
+        senderIdField.setAccessible(false);
         senderRoleField.setAccessible(false);
         receiverIdField.setAccessible(false);
         receiverRoleField.setAccessible(false);
 
-        Student receiverStudent = null;
-        Student senderStudent = null;
-        Teacher senderTeacher = null;
-        Teacher receiverTeacher = null;
-        String senderName = null;
-        // 타켓 fcm token 가져오기
-        String fcmToken = null;
-        switch (receiverRole){
-            case "TEACHER":
-                receiverTeacher = teacherRepository.findById(receiverId)
-                        .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                //보낸사람
-                senderStudent = studentRepository.findById(senderId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                senderName = senderStudent.getFcmToken();
-                fcmToken = receiverTeacher.getFcmToken(); // 추후 fcm 으로 바꾸기
-                // break;
-            case "STUDENT":
-                receiverStudent = studentRepository.findById(receiverId)
-                        .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                senderTeacher = teacherRepository.findById(senderId)
-                        .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-                senderName = senderTeacher.getFcmToken();
-                fcmToken = receiverStudent.getFcmToken(); // 추후 fcm 으로 바꾸기
-            }
+        return new NotificationDetails(senderId, senderRole, receiverId, receiverRole);
+    }
 
-            String targetAlarm = null;
-            String title = null;
-            String body = null;
-            Long targetId = 0L;
-            //어디서 왔는지 확인
-
-            // 메소드에 따라 메세지 셍성....
-            switch(joinPoint.getSignature().getName()){
-                // 새 질문 등록
-                case "createComment":
-                    targetAlarm = "COMMENT";
-                    title = "새로운 댓글";
-                    body = senderName+ "학생이 새로운 댓글을 남겼어요.";
-                    Field commentField  = result.getClass().getDeclaredField("commendId");
-                    commentField.setAccessible(true);
-                    Long commentId = (Long) commentField.get(result);
-                    commentField.setAccessible(false);
-                    targetId = commentId;
-                    break;
-                case "createQuestion":
-                    targetAlarm = "QUESTION";
-                    title= "새로운 질문";
-                    Field questionField = result.getClass().getDeclaredField("questionId");
-                    questionField.setAccessible(true);
-                    Long questionId = (Long) questionField.get(result);
-                    questionField.setAccessible(false);
-                    //이거 엔티티 추가함
-                    String category =questionRepository.findById(questionId).orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND)).getContent();
-                    body = senderName+" 학생이 ["+category+"] 질문을 남겼어요";
-                    break;
-                case "메소드 이름3":
-                    targetAlarm = "SCHEDULE_CHANGE";
-                    title ="수업 일정 변정 요청";
-                    //시간 받아서 시간 받기
-                    body = senderName+"학생이 ["+"("+")]수업을 옮기고 싶어해요.";
-                    break;
-                case "메소드 이름4":
-                    targetAlarm = "NEW_SCHEDULE";
-                    title = "학생의 새로운 시험 일정";
-                    body = senderName+"학생이 시험 일정을 등록했어요.";
-                    break;
-                case "메소드 이름5":
-                    if(receiverRole.equals("TEACHER")) {
-                        //이거 고민 필요...
-                        StudyRoom studyRoom = studyRoomRepository.findByTeacherAndStudent(receiverTeacher, senderStudent);
-                        Schedule schedule = scheduleRepository.findByStudyRoom(studyRoom);
-                        boolean b = studyRoom.getBaseSession() == schedule.getSession();
-                        if(b) {
-                            targetAlarm = "REPORT";
-                            title = "리포트 작성하기";
-                            body = senderName + "학생의 기준 회차를 모두 끝냈어요.\n 리포트를 작성하고 학부모님께 전달해주세요.";
-                        }
-                    }
-                    break;
-        }
-
-        //타겟 id가 알람 설정이 켜져있는지 확인한 후
-        boolean turnOn = noticeSettingRepository.findByMemberIdAndRoleAndCategory(receiverId, receiverRole, targetAlarm).getEnabled();
-
-        if(turnOn){
-            // FcmSendDto만들기
-            FcmSendDto fcmSendDto = FcmSendDto.builder()
-                    .token(fcmToken)
-                    .title(title)
-                    .body(body)
-                    .category(targetAlarm)
-                    .targetId(targetId)
-                    .build();
-            fcmService.sendMessageTo(fcmSendDto);
-
-            //디비에 기록 저장
-            Notice notice = Notice.builder()
-                    .body(body)
-                    .title(title)
-                    .senderId(senderId)
-                    .senderRole(senderRole)
-                    .receiverId(receiverId)
-                    .receiverRole(receiverRole)
-                    .targetId(targetId)
-                    .readStatus(false)
-                    .build();
-            noticeRepository.save(notice);
+    private String getFcmToken(String receiverRole, Long receiverId) {
+        if ("TEACHER".equals(receiverRole)) {
+            return teacherRepository.findById(receiverId)
+                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
+                    .getFcmToken();
+        } else if ("STUDENT".equals(receiverRole)) {
+            return studentRepository.findById(receiverId)
+                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
+                    .getFcmToken();
+        } else {
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
     }
+
+    private String getSenderName(String senderRole, Long senderId) {
+        if ("TEACHER".equals(senderRole)) {
+            return teacherRepository.findById(senderId)
+                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
+                    .getName();
+        } else if ("STUDENT".equals(senderRole)) {
+            return studentRepository.findById(senderId)
+                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
+                    .getName();
+        } else {
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+        }
+    }
+    private NotificationContent buildNotificationContent(String methodName, String senderName, Object result) throws NoSuchFieldException, IllegalAccessException {
+        String targetAlarm = null;
+        String title = null;
+        String body = null;
+        Long targetId = 0L;
+
+        switch (methodName) {
+            case "createComment":
+                targetAlarm = "COMMENT";
+                title = "새로운 댓글";
+                body = senderName + " 학생이 새로운 댓글을 남겼어요.";
+                targetId = getFieldValue(result, "commendId");
+                break;
+            case "createQuestion":
+                targetAlarm = "QUESTION";
+                title = "새로운 질문";
+                Long questionId = getFieldValue(result, "questionId");
+                String category = questionRepository.findById(questionId)
+                        .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
+                        .getContent();
+                body = senderName + " 학생이 [" + category + "] 질문을 남겼어요";
+                break;
+            case "methodName3":
+                targetAlarm = "SCHEDULE_CHANGE";
+                title = "수업 일정 변경 요청";
+                body = senderName + " 학생이 수업을 옮기고 싶어해요.";
+                break;
+            case "methodName4":
+                targetAlarm = "NEW_SCHEDULE";
+                title = "학생의 새로운 시험 일정";
+                body = senderName + " 학생이 시험 일정을 등록했어요.";
+                break;
+        }
+
+        return new NotificationContent(targetAlarm, title, body, targetId);
+    }
+
+    private Long getFieldValue(Object result, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = result.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Long fieldValue = (Long) field.get(result);
+        field.setAccessible(false);
+        return fieldValue;
+    }
+    private boolean isNotificationEnabled(Long receiverId, String receiverRole, String category) {
+        return noticeSettingRepository.findByMemberIdAndRoleAndCategory(receiverId, receiverRole, category).getEnabled();
+    }
+
+    private void sendFcmNotification(String fcmToken, NotificationContent content) throws IOException, FirebaseMessagingException {
+        FcmSendDto fcmSendDto = FcmSendDto.builder()
+                .token(fcmToken)
+                .title(content.getTitle())
+                .body(content.getBody())
+                .category(content.getCategory())
+                .targetId(content.getTargetId())
+                .build();
+        fcmService.sendMessageTo(fcmSendDto);
+    }
+
+    private void saveNotice(NotificationDetails details, NotificationContent content) {
+        Notice notice = Notice.builder()
+                .body(content.getBody())
+                .title(content.getTitle())
+                .senderId(details.getSenderId())
+                .senderRole(details.getSenderRole())
+                .receiverId(details.getReceiverId())
+                .receiverRole(details.getReceiverRole())
+                .targetId(content.getTargetId())
+                .readStatus(false)
+                .build();
+        noticeRepository.save(notice);
+    }
+
+    
 }
