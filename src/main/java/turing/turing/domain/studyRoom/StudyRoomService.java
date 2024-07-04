@@ -10,8 +10,9 @@ import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomReqDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomCreateReqDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomUpdateReqDto;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.studyTime.StudyTimeRepository;
 import turing.turing.domain.teacher.Teacher;
@@ -35,18 +36,18 @@ public class StudyRoomService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public Long createStudyRoom(Long teacherId, StudyRoomReqDto studyRoomReqDto) {
+    public Long createStudyRoom(Long teacherId, StudyRoomCreateReqDto studyRoomCreateReqDto) {
 
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
-        Student student = studyRoomReqDto.toStudent();
+        Student student = studyRoomCreateReqDto.toStudent();
         studentRepository.save(student);
 
-        StudyRoom studyRoom = studyRoomReqDto.toStudyRoom(teacher, student);
+        StudyRoom studyRoom = studyRoomCreateReqDto.toStudyRoom(teacher, student);
         studyRoomRepository.save(studyRoom);
 
-        List<StudyTime> studyTimes = studyRoomReqDto.studyTimes().stream().map(studyTimeReqDto -> studyTimeReqDto.toEntity(studyRoom)).toList();
+        List<StudyTime> studyTimes = studyRoomCreateReqDto.studyTimes().stream().map(studyTimeReqDto -> studyTimeReqDto.toEntity(studyRoom)).toList();
         studyTimeRepository.saveAll(studyTimes);
 
         /*
@@ -54,6 +55,20 @@ public class StudyRoomService {
          */
 
         return studyRoom.getId();
+    }
+
+    @Transactional
+    public void updateStudyRoom(Long studyRoomId, StudyRoomUpdateReqDto studyRoomUpdateReqDto) {
+
+        StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        studyRoom.updateStudyRoom(studyRoomUpdateReqDto.subject(), studyRoomUpdateReqDto.baseSession());
+
+        // StudyTime의 경우, 요일이 추가/삭제될 수도 있기 때문에 변경 감지가 아닌 기존 StudyTime 삭제 후 다시 생성하도록 함
+        studyTimeRepository.deleteByStudyRoomId(studyRoomId);  // 벌크 연산을 통해 삭제
+        List<StudyTime> studyTimes = studyRoomUpdateReqDto.studyTimes().stream().map(studyTimeReqDto -> studyTimeReqDto.toEntity(studyRoom)).toList();
+        studyTimeRepository.saveAll(studyTimes);
     }
 
     @Transactional

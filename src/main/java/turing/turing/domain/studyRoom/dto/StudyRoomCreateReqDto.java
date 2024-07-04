@@ -9,7 +9,7 @@ import turing.turing.domain.teacher.Teacher;
 import java.time.LocalDate;
 import java.util.List;
 
-public record StudyRoomReqDto(
+public record StudyRoomCreateReqDto(
         String studentName,
         String studentSchool,
         String studentYear,

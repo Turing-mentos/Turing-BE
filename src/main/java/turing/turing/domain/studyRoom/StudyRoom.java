@@ -63,4 +63,9 @@ public class StudyRoom extends BaseEntity {
         this.student = student;
         this.linkStatus = true;
     }
+
+    public void updateStudyRoom(String subject, Integer baseSession){
+        this.subject = subject;
+        this.baseSession = baseSession;
+    }
 }
