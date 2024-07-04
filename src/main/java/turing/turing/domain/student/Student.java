@@ -9,12 +9,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.BaseEntity;
+import turing.turing.domain.Member;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Student extends BaseEntity {
+public class Student extends Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
