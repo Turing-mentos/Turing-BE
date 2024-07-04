@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import turing.turing.domain.auth.apple.VerifyAppleRequest;
 import turing.turing.domain.auth.dto.LoginRequest;
 import turing.turing.domain.auth.dto.LoginResponse;
+import turing.turing.domain.auth.dto.TokenReIssueRequest;
 import turing.turing.domain.auth.jwt.TokenResponse;
 
 @RestController
@@ -34,4 +35,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponse> reissue(@RequestBody @Valid TokenReIssueRequest request) {
+        TokenResponse response = authService.reissue(request);
+
+        return ResponseEntity.ok(response);
+    }
 }
