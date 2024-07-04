@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomReqDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomCreateReqDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.StudyRoomUpdateReqDto;
 
 import java.util.List;
 
@@ -18,9 +19,15 @@ public class StudyRoomController {
 
     // 선생님 ID 필요
     @PostMapping
-    public ResponseEntity<Long> createStudyRoom(@RequestBody StudyRoomReqDto studyRoomReqDto){
-        Long studyRoomId = studyRoomService.createStudyRoom(1L, studyRoomReqDto);
+    public ResponseEntity<Long> createStudyRoom(@RequestBody StudyRoomCreateReqDto studyRoomCreateReqDto){
+        Long studyRoomId = studyRoomService.createStudyRoom(1L, studyRoomCreateReqDto);
         return ResponseEntity.ok(studyRoomId);
+    }
+
+    @PutMapping("/{studyRoomId}")
+    public ResponseEntity<Void> updateStudyRoom(@PathVariable Long studyRoomId, @RequestBody StudyRoomUpdateReqDto studyRoomUpdateReqDto){
+        studyRoomService.updateStudyRoom(studyRoomId, studyRoomUpdateReqDto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{studyRoomId}/codes")
