@@ -15,6 +15,7 @@ import turing.turing.domain.auth.apple.VerifyAppleRequest;
 import turing.turing.domain.auth.apple.AppleTokenParser;
 import turing.turing.domain.auth.dto.LoginRequest;
 import turing.turing.domain.auth.dto.LoginResponse;
+import turing.turing.domain.auth.dto.TokenReIssueRequest;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.domain.auth.jwt.TokenResponse;
 import turing.turing.domain.student.Student;
@@ -26,6 +27,7 @@ import turing.turing.global.exception.errorCode.CommonErrorCode;
 
 @RequiredArgsConstructor
 @Component
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final AppleTokenParser appleTokenParser;
@@ -35,7 +37,6 @@ public class AuthService {
     private final StudentRepository studentRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
     public String verifyWithApple(final VerifyAppleRequest request) {
         String appleIdToken = request.getAppleIdToken();
         Map<String, String> appleTokenHeader = appleTokenParser.parseHeader(appleIdToken);
@@ -46,7 +47,6 @@ public class AuthService {
         return claims.get("email", String.class);
     }
 
-    @Transactional
     public TokenResponse confirmAssign(String email) {
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
         Optional<Student> student = studentRepository.findByEmail(email);
@@ -64,7 +64,6 @@ public class AuthService {
         return new TokenResponse(email, accessToken, refreshToken);
     }
 
-    @Transactional
     public LoginResponse login(LoginRequest request) {
         String token = request.getAccessToken();
         if (!jwtTokenProvider.validationToken(token)) {
@@ -82,6 +81,21 @@ public class AuthService {
             Student student = studentRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
             return new LoginResponse(role, student.getId());
+        }
+    }
+
+    public TokenResponse reissue(TokenReIssueRequest request) {
+        String token = request.getRefreshToken();
+
+        if (jwtTokenProvider.validationToken(token)) {
+            String email = jwtTokenProvider.getEmailFromToken(token);
+            Role role = jwtTokenProvider.getRoleFromToken(token);
+            String accessToken = jwtTokenProvider.createAccessToken(email, role);
+            String refreshToken = jwtTokenProvider.createRefreshToken(email);
+
+            return new TokenResponse(email, accessToken, refreshToken);
+        } else {
+            throw new IllegalArgumentException("Expired Refresh token");
         }
     }
 }
