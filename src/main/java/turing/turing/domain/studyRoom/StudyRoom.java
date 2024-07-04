@@ -37,10 +37,6 @@ public class StudyRoom extends BaseEntity {
     @Column(name = "base_session", nullable = false)
     private Integer baseSession;
 
-    @Size(max = 200)
-    @Column(name = "description", length = 200)
-    private String description;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "teacher_id", nullable = false)
