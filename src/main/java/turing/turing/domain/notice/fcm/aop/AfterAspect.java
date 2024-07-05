@@ -8,12 +8,14 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+import turing.turing.domain.comment.CommentRepository;
 import turing.turing.domain.notice.Notice;
 import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
 import turing.turing.domain.notice.fcm.dto.NotificationContent;
 import turing.turing.domain.notice.fcm.dto.NotificationDetails;
+import turing.turing.domain.noticeSetting.NoticeSetting;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.question.QuestionRepository;
 import turing.turing.domain.student.Student;
@@ -38,24 +40,27 @@ public class AfterAspect {
     private final StudentRepository studentRepository;
     private final QuestionRepository questionRepository;
     private final NoticeRepository noticeRepository;
+    private final CommentRepository commentRepository;
 
-    @Pointcut("execution(* test1())")
+    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..))")
     public void pointcut() {}
 
     @AfterReturning(pointcut = "pointcut()", returning = "result")
     public void handleAfterReturning(JoinPoint joinPoint, Object result) throws NoSuchFieldException, IllegalAccessException, IOException, FirebaseMessagingException {
-        log.info("메소드", joinPoint.getSignature().getName(), result);
+        log.info("메소드"+joinPoint.getSignature().getName()+result);
 
         NotificationDetails notificationDetails = extractNotificationDetails(result);
         String fcmToken = getFcmToken(notificationDetails.getReceiverRole(), notificationDetails.getReceiverId());
         String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId());
-
         NotificationContent content = buildNotificationContent(joinPoint.getSignature().getName(), senderName, result);
 
-        if (isNotificationEnabled(notificationDetails.getReceiverId(), notificationDetails.getReceiverRole(), content.getCategory())) {
+        NoticeSetting noticeSetting = noticeSettingRepository.findByMemberIdAndRoleAndCategory(notificationDetails.getReceiverId(), notificationDetails.getReceiverRole(), content.getCategory());
+
+        if (noticeSetting.getEnabled()) {
             sendFcmNotification(fcmToken, content);
             saveNotice(notificationDetails, content);
         }
+
     }
     private NotificationDetails extractNotificationDetails(Object result) throws NoSuchFieldException, IllegalAccessException {
         Field senderIdField = result.getClass().getDeclaredField("senderId");
@@ -119,18 +124,22 @@ public class AfterAspect {
                 targetAlarm = "COMMENT";
                 title = "새로운 댓글";
                 body = senderName + " 학생이 새로운 댓글을 남겼어요.";
-                targetId = getFieldValue(result, "commendId");
+                Long commentId = getFieldValue(result, "commentId");
+                //commentId로 question id 찾아서 반환해주기
+                targetId = commentRepository.findById(commentId).get().getQuestion().getId();
                 break;
             case "createQuestion":
                 targetAlarm = "QUESTION";
                 title = "새로운 질문";
                 Long questionId = getFieldValue(result, "questionId");
+                //질문 카테고리 가져오기 위한 디비 접근
                 String category = questionRepository.findById(questionId)
                         .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
                         .getContent();
                 body = senderName + " 학생이 [" + category + "] 질문을 남겼어요";
                 break;
             case "methodName3":
+                //이부분은 아직 메소드 구현 전
                 targetAlarm = "SCHEDULE_CHANGE";
                 title = "수업 일정 변경 요청";
                 body = senderName + " 학생이 수업을 옮기고 싶어해요.";
@@ -146,14 +155,12 @@ public class AfterAspect {
     }
 
     private Long getFieldValue(Object result, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+
         Field field = result.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         Long fieldValue = (Long) field.get(result);
         field.setAccessible(false);
         return fieldValue;
-    }
-    private boolean isNotificationEnabled(Long receiverId, String receiverRole, String category) {
-        return noticeSettingRepository.findByMemberIdAndRoleAndCategory(receiverId, receiverRole, category).getEnabled();
     }
 
     private void sendFcmNotification(String fcmToken, NotificationContent content) throws IOException, FirebaseMessagingException {
@@ -177,6 +184,7 @@ public class AfterAspect {
                 .receiverRole(details.getReceiverRole())
                 .targetId(content.getTargetId())
                 .readStatus(false)
+                .category(content.getCategory())
                 .build();
         noticeRepository.save(notice);
     }

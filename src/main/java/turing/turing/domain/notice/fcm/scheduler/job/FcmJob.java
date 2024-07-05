@@ -1,11 +1,13 @@
 package turing.turing.domain.notice.fcm.scheduler.job;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.context.ApplicationContext;
 import turing.turing.domain.notice.Notice;
+import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
@@ -14,9 +16,11 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@AllArgsConstructor
 public class FcmJob implements Job {
 
 
+    private final NoticeRepository noticeRepository;
     private FcmService fcmService;
 
     @Override
@@ -92,7 +96,8 @@ public class FcmJob implements Job {
                 .receiverRole("TEACHER")
                 .targetId(fcmSendItem.getTargetId())
                 .readStatus(false)
+                .category(fcmSendItem.getCategory())
                 .build();
-        // fcmService.saveNotice(notice);
+        noticeRepository.save(notice);
     }
 }

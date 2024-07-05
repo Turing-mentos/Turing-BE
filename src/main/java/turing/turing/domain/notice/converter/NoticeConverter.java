@@ -19,7 +19,7 @@ public class NoticeConverter {
                 .title(notice.getTitle())
                 .targetId(notice.getTargetId())
                 .readStatus(notice.getReadStatus())
-                .category(notice.getNoticeSetting().getCategory())
+                .category(notice.getCategory())
                 .createdAt(notice.getCreatedAt())
                 .build();
     }

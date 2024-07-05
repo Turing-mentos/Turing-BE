@@ -8,11 +8,12 @@ import turing.turing.domain.notebook.Notebook;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    List<Notice> searchNoticeByReceiverIdAndReceiverRoleAndReadStatus(Long receiverId, String receiverRole, boolean readStatus);
-    List<Notice> findAllByReceiverIdAndReceiverRole(Long receiverId, String receiverRole);
+    List<Notice> findAllByReceiverIdAndReceiverRoleAndReadStatus(Long receiverId, String receiverRole, boolean readStatus);
+    List<Notice> findAllByReceiverIdAndReceiverRoleAndCreatedAtAfter(Long receiverId, String receiverRole, LocalDateTime createdAt);
 }

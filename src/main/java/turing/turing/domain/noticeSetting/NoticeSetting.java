@@ -24,7 +24,7 @@ public class NoticeSetting extends BaseEntity {
 
     @NotNull
     @Column(name = "enabled", nullable = false)
-    private Boolean enabled = false;
+    private Boolean enabled ;
 
     @Size(max = 20)
     @NotNull

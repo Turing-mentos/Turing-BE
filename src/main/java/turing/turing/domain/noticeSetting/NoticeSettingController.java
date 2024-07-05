@@ -10,12 +10,12 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/notification/setting/")
+@RequestMapping("/api/notification/setting")
 public class NoticeSettingController {
     private final NoticeSettingService noticeSettingService;
 
     @Operation(summary = "설정 변경")
-    @PatchMapping("{notificationSettingId}")
+    @PatchMapping("/{notificationSettingId}")
     public void checkNotification(@PathVariable(name = "notificationSettingId") Long notificationSettingId){
         noticeSettingService.changeSetting(notificationSettingId);
     }
@@ -24,8 +24,9 @@ public class NoticeSettingController {
     @GetMapping("")
     public ResponseEntity<List<NoticeSettingDto.ResponseDto>> readSetting(){
         //추후 spring context에서 받아옴
-        Long memberId = 0L;
-        String memberRole = null;
+        Long memberId = 1L;
+        String memberRole = "TEACHER";
         return ResponseEntity.ok(noticeSettingService.readSetting(memberId, memberRole));
+
     }
 }

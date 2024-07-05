@@ -58,10 +58,10 @@ public class Notice extends BaseEntity {
     @Column(name = "target_id", nullable = false)
     private Long targetId;
 
+    @Size(max = 20)
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "notice_setting_id", nullable = false)
-    private NoticeSetting noticeSetting;
+    @Column(name = "category", nullable = false, length = 20)
+    private String category;
 
     public Notice updateRead(Boolean readStatus) {
         this.readStatus = readStatus;

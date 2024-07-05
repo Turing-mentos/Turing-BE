@@ -13,6 +13,7 @@ import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
 import com.google.firebase.messaging.Notification;
+import turing.turing.domain.notice.fcm.dto.TestDto;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
@@ -177,11 +178,14 @@ public class FcmServiceImpl implements FcmService{
         return message;
     }
 
-    public FcmSendDto test1() {
-        FcmSendDto f = FcmSendDto.builder()
-                .body("sd")
-                .title("s")
-                .token("sdds").build();
+    public TestDto createComment() {
+        TestDto f = TestDto.builder()
+                .commentId(1L)
+                .receiverRole("TEACHER")
+                .receiverId(1L)
+                .senderId(1L)
+                .senderRole("STUDENT")
+                .build();
         return f;
     }
 
