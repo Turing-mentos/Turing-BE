@@ -1,8 +1,10 @@
 package turing.turing.domain;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import turing.turing.domain.homework.Homework;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 import turing.turing.global.exception.errorCode.UserErrorCode;
@@ -12,8 +14,9 @@ import turing.turing.global.exception.errorCode.UserErrorCode;
 public class TestController {
 
     @GetMapping("")
-    public Response<String> test() {
-        return Response.ofSuccess("message", "data");
+    public ResponseEntity<Homework> test() {
+        Homework homework = new Homework();
+        return ResponseEntity.ok(homework);
     }
 
     @GetMapping("/exception/server")

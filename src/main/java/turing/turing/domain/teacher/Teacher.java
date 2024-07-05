@@ -42,18 +42,23 @@ public class Teacher extends Member {
     @Column(name = "main_subject", length = 10)
     private String mainSubject;
 
-    @Size(max = 255)
+    @Size(max = 100)
     @Column(name = "department")
     private String department;
 
-    @Size(max = 255)
+    @Size(max = 100)
     @Column(name = "student_number")
     private String studentNumber;
+
 
     public Teacher(String email, String name, Provider provider) {
         this.email=email;
         this.name = name;
         this.provider = provider;
     }
+
+    @Size(max = 300)
+    @Column(name = "fcm_token", nullable = false, length = 300)
+    private String fcmToken;
 
 }

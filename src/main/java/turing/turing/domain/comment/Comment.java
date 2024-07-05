@@ -1,4 +1,4 @@
-package turing.turing.domain.question;
+package turing.turing.domain.comment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,47 +10,41 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
-import turing.turing.domain.studyRoom.StudyRoom;
+import turing.turing.domain.question.Question;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Question extends BaseEntity {
+@NoArgsConstructor
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "question_id", nullable = false)
+    @Column(name = "comment_id", nullable = false)
     private Long id;
 
-    @Size(max = 100)
     @NotNull
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @NotNull
+    @Size(max = 10)
+    @Column(name = "role", nullable = false, length = 10)
+    private String role;
 
     @Size(max = 300)
-    @NotNull
     @Column(name = "content", nullable = false, length = 300)
     private String content;
 
     @Size(max = 200)
-    @Column(name = "question_image", length = 200)
-    private String questionImage;
-
-    @NotNull
-    @Column(name = "solve_status", nullable = false)
-    private Boolean solveStatus = false;
-
-    @NotNull
-    @Column(name = "pin_status", nullable = false)
-    private Boolean pinStatus = false;
+    @Column(name = "comment_image", length = 200)
+    private String commentImage;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "study_room_id", nullable = false)
-    private StudyRoom studyRoom;
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
 
 }
