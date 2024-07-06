@@ -72,6 +72,15 @@ public class StudyRoomService {
     }
 
     @Transactional
+    public void deleteStudyRoom(Long studyRoomId){
+
+        StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        studyRoomRepository.delete(studyRoom);
+    }
+
+    @Transactional
     public Integer getConnectionCode(Long studyRoomId){
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
@@ -101,16 +110,34 @@ public class StudyRoomService {
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
         // 기존 학생 가져오기
-        Student prevStudent = connectionCode.getStudyRoom().getStudent();
+        Student nonSignUpStudent = connectionCode.getStudyRoom().getStudent();
 
         // 실제로 가입한 학생과 연결 (참조를 변경)
         connectionCode.getStudyRoom().connectStudent(student);
 
         // 기존 학생은 삭제
-        studentRepository.delete(prevStudent);
+        studentRepository.delete(nonSignUpStudent);
 
         // 연결 후, 연결 코드는 삭제됨
         connectionCodeRepository.delete(connectionCode);
+    }
+
+    @Transactional
+    public void disconnectTeacherStudent(Long studyRoomId){
+
+        StudyRoom studyRoom = studyRoomRepository.findWithStudentById(studyRoomId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        // 기존 학생의 정보를 통해 nonSignedUpStudent 생성
+        Student nonSignUpStudent = new Student(
+                studyRoom.getStudent().getName(),
+                studyRoom.getStudent().getSchool(),
+                studyRoom.getStudent().getYear(),
+                studyRoom.getStudent().getPhone(),
+                studyRoom.getStudent().getParentPhone()
+        );
+        studentRepository.save(nonSignUpStudent);
+        studyRoom.disconnectStudent(nonSignUpStudent);
     }
 
     public List<StudyRoomResDto> getStudyRooms(Long memberId){

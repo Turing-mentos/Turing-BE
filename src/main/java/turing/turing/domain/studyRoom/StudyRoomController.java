@@ -30,6 +30,12 @@ public class StudyRoomController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{studyRoomId}")
+    public ResponseEntity<Void> deleteStudyRoom(@PathVariable Long studyRoomId){
+        studyRoomService.deleteStudyRoom(studyRoomId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{studyRoomId}/codes")
     public ResponseEntity<Integer> getConnectionCode(@PathVariable Long studyRoomId){
         Integer code = studyRoomService.getConnectionCode(studyRoomId);
@@ -40,6 +46,12 @@ public class StudyRoomController {
     @PatchMapping("/connect")
     public ResponseEntity<Void> connectTeacherStudent(@RequestParam(required = true) Integer code){
         studyRoomService.connectTeacherStudent(4L, code);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{studyRoomId}/disconnect")
+    public ResponseEntity<Void> disconnectTeacherStudent(@PathVariable Long studyRoomId){
+        studyRoomService.disconnectTeacherStudent(studyRoomId);
         return ResponseEntity.ok().build();
     }
 

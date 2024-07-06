@@ -20,7 +20,7 @@ public record StudyRoomCreateReqDto(
         LocalDate startDate
 ) {
         public Student toStudent(){
-                return new Student(studentName, studentSchool, studentYear);
+                return new Student(studentName, studentSchool, studentYear, null, null);
         }
 
         public StudyRoom toStudyRoom(Teacher teacher, Student student) {
