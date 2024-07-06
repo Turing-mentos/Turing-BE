@@ -12,10 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.Member;
 import turing.turing.domain.Provider;
-
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Teacher extends Member {
 
     @Id

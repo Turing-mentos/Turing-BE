@@ -16,6 +16,11 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
     List<StudyRoom> findAllWithStudentByTeacher(@Param(value = "teacher") Teacher teacher);
 
     @Query("select sr from StudyRoom sr " +
+            "join fetch sr.student s " +
+            "where sr.id = :studyRoomId")
+    Optional<StudyRoom> findWithStudentById(@Param(value = "studyRoomId") Long studyRoomId);
+
+    @Query("select distinct sr from StudyRoom sr " +
             "join fetch sr.studyTimes st " +
             "join fetch sr.student s " +
             "where sr.id = :studyRoomId")

@@ -7,6 +7,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.code.ConnectionCode;
+import turing.turing.domain.exam.Exam;
+import turing.turing.domain.question.Question;
+import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.teacher.Teacher;
@@ -47,10 +51,23 @@ public class StudyRoom extends BaseEntity {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @OneToMany(mappedBy = "studyRoom")
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
     private List<StudyTime> studyTimes = new ArrayList<>();
 
-            public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
+    @OneToOne(mappedBy = "studyRoom", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private ConnectionCode connectionCode;
+
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
+    private List<Schedule> schedules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
+    private List<Exam> exams = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
+    private List<Question> questions = new ArrayList<>();
+
+    public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
         this.subject = subject;
         this.baseSession = baseSession;
         this.teacher = teacher;
@@ -62,6 +79,12 @@ public class StudyRoom extends BaseEntity {
     public void connectStudent(Student student){
         this.student = student;
         this.linkStatus = true;
+    }
+
+    // 다시 nonSignUpStudent와 연결하고 linkStatus를 업데이트함
+    public void disconnectStudent(Student nonSignUpStudent){
+        this.student = nonSignUpStudent;
+        this.linkStatus = false;
     }
 
     public void updateStudyRoom(String subject, Integer baseSession){
