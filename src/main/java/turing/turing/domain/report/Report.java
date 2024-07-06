@@ -65,7 +65,7 @@ public class Report extends BaseEntity {
                         .feedback(this.feedback)
                         .money(this.money)
                         .closing(this.closing)
-                        .studyRoom(this.studyRoom)
+                        .schedule(this.schedule)
                         .build();
             case 2:
                 return Report.builder()
@@ -75,7 +75,7 @@ public class Report extends BaseEntity {
                         .feedback(this.feedback)
                         .money(this.money)
                         .closing(this.closing)
-                        .studyRoom(this.studyRoom)
+                        .schedule(this.schedule)
                         .build();
             case 3:
                 return Report.builder()
@@ -85,7 +85,7 @@ public class Report extends BaseEntity {
                         .feedback(content)
                         .money(this.money)
                         .closing(this.closing)
-                        .studyRoom(this.studyRoom)
+                        .schedule(this.schedule)
                         .build();
             case 4:
                 return Report.builder()
@@ -95,7 +95,7 @@ public class Report extends BaseEntity {
                         .feedback(this.feedback)
                         .money(content)
                         .closing(this.closing)
-                        .studyRoom(this.studyRoom)
+                        .schedule(this.schedule)
                         .build();
             case 5:
                 return Report.builder()
@@ -105,7 +105,7 @@ public class Report extends BaseEntity {
                         .feedback(this.feedback)
                         .money(this.money)
                         .closing(content)
-                        .studyRoom(this.studyRoom)
+                        .schedule(this.schedule)
                         .build();
             default:
                 //유효하지 않음

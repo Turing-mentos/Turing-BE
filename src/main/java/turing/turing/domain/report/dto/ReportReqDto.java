@@ -9,19 +9,39 @@ import lombok.*;
 @Builder
 public class ReportReqDto {
 
-    private Long studyRoomId;
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class CreateDto {
+        private Long studyRoomId;
 
-    private String name;
+        private String name;
 
-    private String subject;
+        private String subject;
 
-    private String comment;
+        private String comment;
 
-    private String attitude;
+        private String attitude;
 
-    private String request;
+        private String request;
 
-    private boolean pay;
+        private boolean pay;
 
+    }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UpdateDto{
+        private Long reportId;
+        private int paragraphNum;
+
+        private String content;
+    }
+
+    public static class PayDto{
+        
+    }
 }
