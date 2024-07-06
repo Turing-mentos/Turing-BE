@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
@@ -19,7 +18,6 @@ import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
-import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
@@ -30,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +37,8 @@ import java.util.List;
 public class FcmServiceImpl implements FcmService{
 
     private final FirebaseMessaging firebaseMessaging;
-    private final NoticeRepository noticeRepository;
     private final HomeworkRepository homeworkRepository;
     private final ScheduleRepository scheduleRepository;
-    private final StudentRepository studentRepository;
     private final NoticeSettingRepository noticeSettingRepository;
     private final NotebookRepository notebookRepository;
     @Override
@@ -78,33 +73,14 @@ public class FcmServiceImpl implements FcmService{
 
     }
 
-    private void addSessionNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
-        LocalDateTime targetDateTime = currentDateTime.minusHours(1L).withSecond(0).withNano(0);
-
-        LocalDate targetDate = targetDateTime.toLocalDate();
-        LocalTime targetTime = targetDateTime.toLocalTime();
-
-        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetTime.getHour(), targetTime.getMinute());
-
-        for (Schedule schedule : scheduleList) {
-            //마지막 회차인 스케쥴 가져오기
-            if (schedule.getStudyRoom().getBaseSession() == schedule.getSession()) {
-                Teacher teacher = schedule.getStudyRoom().getTeacher();
-                Student student = schedule.getStudyRoom().getStudent();
-
-                if(!scheduleRepository.existsLatestScheduleAfterDate(targetDate, schedule.getStudyRoom().getId())) {
-                    if (isNotificationEnabled(teacher.getId(), "TEACHER", "SESSION")) {
-                        fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "SESSION", schedule.getSession(), 0L));
-                    }
-                }
-            }
-        }
-
-
+    private void addReportNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
+        addNotificationForLastSession(fcmSendDeviceDtos, currentDateTime, "REPORT", "REPORT");
     }
 
-    //현재 시간과 일치하는 schedule 속에서 회차가 base회차랑 일치하는 것 찾기
-    private void addReportNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
+    private void addSessionNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
+        addNotificationForLastSession(fcmSendDeviceDtos, currentDateTime.minusHours(1L), "SESSION", "SESSION");
+    }
+    private void addNotificationForLastSession(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime, String category, String notificationType) {
         LocalDateTime targetDateTime = currentDateTime.withSecond(0).withNano(0);
         LocalDate targetDate = targetDateTime.toLocalDate();
         LocalTime targetTime = targetDateTime.toLocalTime();
@@ -116,12 +92,22 @@ public class FcmServiceImpl implements FcmService{
                 Teacher teacher = schedule.getStudyRoom().getTeacher();
                 Student student = schedule.getStudyRoom().getStudent();
 
-                if (isNotificationEnabled(teacher.getId(), "TEACHER", "REPORT")) {
-                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "REPORT", schedule.getSession(), 0L));
+                boolean isNotificationEnabled = false;
+                if (notificationType.equals("REPORT")) {
+                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), "TEACHER", "REPORT");
+                } else if (notificationType.equals("SESSION")) {
+                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), "TEACHER", "SESSION")
+                            //다음 스케줄이 없음 - 기준회차 등록 안했다는 뜻
+                            && !scheduleRepository.existsLatestScheduleAfterDate(targetDate, schedule.getStudyRoom().getId());
+                }
+
+                if (isNotificationEnabled) {
+                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, category, schedule.getSession(), 0L));
                 }
             }
         }
     }
+
     private FcmSendDeviceDto buildFcmSendDeviceDto(Teacher teacher, Student student, String category, int session, Long targetId) {
         return FcmSendDeviceDto.builder()
                 .dvcTkn(teacher.getFcmToken())
@@ -192,7 +178,6 @@ public class FcmServiceImpl implements FcmService{
     private boolean isNotificationEnabled(Long memberId, String role, String category) {
         return noticeSettingRepository.findByMemberIdAndRoleAndCategory(memberId, role, category).getEnabled();
     }
-
 
     //시간별 푸시 알림
     //리포트 작성 - 끝날 때
