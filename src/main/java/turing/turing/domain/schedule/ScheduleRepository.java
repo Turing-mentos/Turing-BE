@@ -8,6 +8,7 @@ import turing.turing.domain.studyRoom.StudyRoom;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s FROM Schedule s WHERE " +
-            "DATE(s.endTime) = :targetDate AND " +
+            "DATE(s.date) = :targetDate AND " +
             "HOUR(s.endTime) = :targetHour AND " +
             "MINUTE(s.endTime) = :targetMinute")
     List<Schedule> searchScheduleByDateAndTime(
@@ -23,8 +24,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("targetHour") int targetHour,
             @Param("targetMinute") int targetMinute);
 
-    List<Schedule> findByDateAndEndTime(LocalDate date, LocalTime endDate);
-
     @Query("SELECT s FROM Schedule s WHERE s.studyRoom = :studyRoom AND s.date <= CURRENT_DATE ORDER BY s.date DESC")
     Schedule searchByStudyRoomAndLatestDate(@Param("studyRoom") StudyRoom studyRoom);
+
+    @Query("SELECT COUNT(s) > 0 " +
+            "FROM Schedule s " +
+            "WHERE s.date > :targetDate " +
+            "AND s.studyRoom.id = :studyRoomId")
+    boolean existsLatestScheduleAfterDate(@Param("targetDate") LocalDate targetDate,
+                                          @Param("studyRoomId") Long studyRoomId);
+
 }

@@ -46,10 +46,10 @@ public class NoticeController {
         return ResponseEntity.ok(noticeService.readAllNotification(memberId, memberRole));
     }
     
-//    @Operation(summary = "알림 테스트용")
-//    @GetMapping("/test")
-//    public TestDto test(){
-//        return fcmService.createComment();
-//    }
+    @Operation(summary = "알림 테스트용")
+    @GetMapping("/test")
+    public TestDto test(){
+        return fcmService.createComment();
+    }
 
 }

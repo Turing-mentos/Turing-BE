@@ -16,11 +16,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-@AllArgsConstructor
 public class FcmJob implements Job {
 
 
-    private final NoticeRepository noticeRepository;
+    private  NoticeRepository noticeRepository;
     private FcmService fcmService;
 
     @Override
@@ -30,7 +29,10 @@ public class FcmJob implements Job {
             //Service 인터페이스를 호출하기 위해 ApplicationContext에 appContext 이름으로 bean을 등록
             ApplicationContext appCtx = (ApplicationContext) context.getJobDetail().getJobDataMap().get("appContext");
             fcmService = appCtx.getBean(FcmService.class);
-
+        }
+        if(noticeRepository ==null){
+            ApplicationContext appCtx = (ApplicationContext) context.getJobDetail().getJobDataMap().get("appContext");
+            noticeRepository = appCtx.getBean(NoticeRepository.class);
         }
 //FCM 전송 리스트 구성.
 
@@ -58,6 +60,8 @@ public class FcmJob implements Job {
                 return String.format("%s학생이 아직 숙제를 다 하지 못했어요.\n수업 전까지 숙제를 끝낼 수 있도록 독려해주세요.", senderName);
             case "REPORT":
                 return String.format("%s학생의 기준 회차를 모두 끝냈어요.\n리포트를 작성하고 학부모님께 전달해주세요.", senderName);
+            case "SESSION":
+                return String.format("%s학생의 기준 회차를 모두 끝냈어요.\n새 수업 일정을 등록해보세요!.", senderName);
             default:
                 return "새로운 알림이 도착했습니다.";
         }

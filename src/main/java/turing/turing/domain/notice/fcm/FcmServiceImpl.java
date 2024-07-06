@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,19 +66,50 @@ public class FcmServiceImpl implements FcmService{
         List<FcmSendDeviceDto> fcmSendDeviceDtos = new ArrayList<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
+        log.info("알림장 수업 끝나기 10분전에 알랴주기-------");
         addNotebookNotifications(fcmSendDeviceDtos, currentDateTime);
+        log.info("하루전 숙제 안했으면 알려주기-------");
         addHomeworkNotifications(fcmSendDeviceDtos, currentDateTime);
-        addSessionEndNotifications(fcmSendDeviceDtos);
-
+        log.info("마지막 회차면 레포트 알림주기");
+        addReportNotifications(fcmSendDeviceDtos,currentDateTime);
+        log.info("마지막 회차면 세션 추가 알림 주기");
+        addSessionNotifications(fcmSendDeviceDtos,currentDateTime);
         return fcmSendDeviceDtos;
 
     }
-    //현재 시간과 일치하는 schedule 속에서 회차가 base회차랑 일치하는 것 찾기
-    private void addSessionEndNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos) {
-        LocalDate currentDate = LocalDate.now();
-        LocalTime currentTime = LocalTime.now();
 
-        List<Schedule> scheduleList = scheduleRepository.findByDateAndEndTime(currentDate, currentTime);
+    private void addSessionNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
+        LocalDateTime targetDateTime = currentDateTime.minusHours(1L).withSecond(0).withNano(0);
+
+        LocalDate targetDate = targetDateTime.toLocalDate();
+        LocalTime targetTime = targetDateTime.toLocalTime();
+
+        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetTime.getHour(), targetTime.getMinute());
+
+        for (Schedule schedule : scheduleList) {
+            //마지막 회차인 스케쥴 가져오기
+            if (schedule.getStudyRoom().getBaseSession() == schedule.getSession()) {
+                Teacher teacher = schedule.getStudyRoom().getTeacher();
+                Student student = schedule.getStudyRoom().getStudent();
+
+                if(!scheduleRepository.existsLatestScheduleAfterDate(targetDate, schedule.getStudyRoom().getId())) {
+                    if (isNotificationEnabled(teacher.getId(), "TEACHER", "SESSION")) {
+                        fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "SESSION", schedule.getSession(), 0L));
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    //현재 시간과 일치하는 schedule 속에서 회차가 base회차랑 일치하는 것 찾기
+    private void addReportNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
+        LocalDateTime targetDateTime = currentDateTime.withSecond(0).withNano(0);
+        LocalDate targetDate = targetDateTime.toLocalDate();
+        LocalTime targetTime = targetDateTime.toLocalTime();
+
+        List<Schedule> scheduleList = scheduleRepository.searchScheduleByDateAndTime(targetDate, targetTime.getHour(), targetTime.getMinute());
 
         for (Schedule schedule : scheduleList) {
             if (schedule.getStudyRoom().getBaseSession() == schedule.getSession()) {
@@ -85,23 +117,25 @@ public class FcmServiceImpl implements FcmService{
                 Student student = schedule.getStudyRoom().getStudent();
 
                 if (isNotificationEnabled(teacher.getId(), "TEACHER", "REPORT")) {
-                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher.getFcmToken(), student.getName(), "REPORT", schedule.getSession(), 0L));
+                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "REPORT", schedule.getSession(), 0L));
                 }
             }
         }
     }
-    private FcmSendDeviceDto buildFcmSendDeviceDto(String fcmToken, String senderName, String category, int session, Long targetId) {
+    private FcmSendDeviceDto buildFcmSendDeviceDto(Teacher teacher, Student student, String category, int session, Long targetId) {
         return FcmSendDeviceDto.builder()
-                .dvcTkn(fcmToken)
-                .senderName(senderName)
+                .dvcTkn(teacher.getFcmToken())
+                .senderName(student.getName())
                 .category(category)
                 .session(session)
+                .receiverId(teacher.getId())
+                .senderId(student.getId())
                 .targetId(targetId)
                 .build();
     }
-    //알림장 수업 끝나기 10분전에 알랴주기
+    //알림장 수업 끝나기 5분전에 알려주기
     private void addNotebookNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
-        LocalDateTime targetDateTime = currentDateTime.plusMinutes(10).withSecond(0).withNano(0);
+        LocalDateTime targetDateTime = currentDateTime.plusMinutes(5).withSecond(0).withNano(0);
         LocalDate targetDate = targetDateTime.toLocalDate();
         LocalTime targetTime = targetDateTime.toLocalTime();
 
@@ -113,8 +147,9 @@ public class FcmServiceImpl implements FcmService{
             //최신알림장 가져오기, 없으면 -1
             Long targetId = getLatestNotebookId(schedule);
 
+            log.info("알림 켜져 있는지 확인");
             if (isNotificationEnabled(teacher.getId(), "TEACHER", "NOTEBOOK")) {
-                fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher.getFcmToken(), student.getName(), "NOTEBOOK", schedule.getSession(), targetId));
+                fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "NOTEBOOK", schedule.getSession(), targetId));
             }
         }
     }
@@ -135,7 +170,8 @@ public class FcmServiceImpl implements FcmService{
         LocalDate homeworkDate = currentDateTime.toLocalDate().plusDays(1);
         Timestamp hwTargetDate = Timestamp.from(homeworkDate.atTime(currentDateTime.toLocalTime()).toInstant(ZoneOffset.UTC));
 
-        List<Notebook> notebookList = notebookRepository.serachNoteBookByDate(hwTargetDate);
+
+        List<Notebook> notebookList = notebookRepository.searchNotebooksByDate(hwTargetDate);
 
         for (Notebook notebook : notebookList) {
             if (hasPendingHomework(notebook)) {
@@ -144,7 +180,7 @@ public class FcmServiceImpl implements FcmService{
                 Student student = schedule.getStudyRoom().getStudent();
 
                 if (isNotificationEnabled(teacher.getId(), "TEACHER", "HOMEWORK")) {
-                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher.getFcmToken(), student.getName(), "HOMEWORK", schedule.getSession(), 0L));
+                    fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "HOMEWORK", schedule.getSession(), 0L));
                 }
             }
         }
@@ -160,7 +196,7 @@ public class FcmServiceImpl implements FcmService{
 
     //시간별 푸시 알림
     //리포트 작성 - 끝날 때
-   // 알림장 작성 - 수업 끝나기 10분전
+   // 알림장 작성 - 수업 끝나기 5분전
     //숙제- 하루전
     private Message makeMessage(FcmSendDto fcmSendDto) {
         Notification notification = Notification.builder()
