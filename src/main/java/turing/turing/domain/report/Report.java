@@ -55,58 +55,23 @@ public class Report extends BaseEntity {
     @Column(name = "closing", length = 800)
     private String closing;
 
-    public Report updateField(int paragraphNum, String content) {
+    public void updateField(int paragraphNum, String content) {
         switch (paragraphNum) {
             case 1:
-                return Report.builder()
-                        .id(this.id)
-                        .opening(content)
-                        .studyProgress(this.studyProgress)
-                        .feedback(this.feedback)
-                        .money(this.money)
-                        .closing(this.closing)
-                        .schedule(this.schedule)
-                        .build();
+                this.opening = content;
+                break;
             case 2:
-                return Report.builder()
-                        .id(this.id)
-                        .opening(this.opening)
-                        .studyProgress(content)
-                        .feedback(this.feedback)
-                        .money(this.money)
-                        .closing(this.closing)
-                        .schedule(this.schedule)
-                        .build();
+                this.studyProgress = content;
+                break;
             case 3:
-                return Report.builder()
-                        .id(this.id)
-                        .opening(this.opening)
-                        .studyProgress(this.studyProgress)
-                        .feedback(content)
-                        .money(this.money)
-                        .closing(this.closing)
-                        .schedule(this.schedule)
-                        .build();
+                this.feedback = content;
+                break;
             case 4:
-                return Report.builder()
-                        .id(this.id)
-                        .opening(this.opening)
-                        .studyProgress(this.studyProgress)
-                        .feedback(this.feedback)
-                        .money(content)
-                        .closing(this.closing)
-                        .schedule(this.schedule)
-                        .build();
+                this.money = content;
+                break;
             case 5:
-                return Report.builder()
-                        .id(this.id)
-                        .opening(this.opening)
-                        .studyProgress(this.studyProgress)
-                        .feedback(this.feedback)
-                        .money(this.money)
-                        .closing(content)
-                        .schedule(this.schedule)
-                        .build();
+                this.closing = content;
+                break;
             default:
                 //유효하지 않음
                 throw new IllegalArgumentException("Invalid paragraph number: " + paragraphNum);

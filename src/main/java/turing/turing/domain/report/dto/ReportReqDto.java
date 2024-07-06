@@ -2,16 +2,16 @@ package turing.turing.domain.report.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @Setter
 @Builder
 public class ReportReqDto {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     public static class CreateDto {
         private Long studyRoomId;
@@ -32,7 +32,6 @@ public class ReportReqDto {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     public static class UpdateDto{
         private Long reportId;
@@ -41,7 +40,11 @@ public class ReportReqDto {
         private String content;
     }
 
+    @Getter
+    @AllArgsConstructor
+    @Builder
     public static class PayDto{
-        
+        int wage;
+        LocalDate dueDate;
     }
 }

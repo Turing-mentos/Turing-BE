@@ -2,6 +2,7 @@ package turing.turing.domain.report;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.gpt.dto.GPTResponse;
 import turing.turing.domain.gpt.GptService;
 import turing.turing.domain.gpt.PromptGenerator;
@@ -10,6 +11,8 @@ import turing.turing.domain.report.dto.ReportReqDto;
 import turing.turing.domain.report.dto.ReportResDto;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
+import turing.turing.domain.studyDatetime.StudyDateTimeRepository;
+import turing.turing.domain.studyDatetime.StudyDatetime;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
@@ -17,12 +20,18 @@ import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReportService {
 
     private final GptService gptService;
@@ -30,47 +39,111 @@ public class ReportService {
     private final StudyRoomRepository studyRoomRepository;
     private final TeacherRepository teacherRepository;
     private final ScheduleRepository scheduleRepository;
+    private final StudyDateTimeRepository studyDateTimeRepository;
 //    private final
     public ReportResDto.CreateDto createReport(ReportReqDto.CreateDto reportReq) {
 
-        //StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
-          //      .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-        //해당 스터디룸에서 가장 날짜가 가까운 회차의 리포트로 넣어줌
-
+        //회차를 얻기 위해
         Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(reportReq.getStudyRoomId());
 
-        //과외비와 날짜는 추후 반영, 아직 ui가 제대로 안나옴
-        String prompt1 = PromptGenerator.generatePrompt1(reportReq);
-        String prompt2 = PromptGenerator.generatePrompt2(reportReq);
+        if (reportReq.isPay()) {
+            ReportReqDto.PayDto payDto = generatePayDto(reportReq);
+            return processPaymentReport(reportReq, schedule, payDto);
+        } else {
+            return processNonPaymentReport(reportReq, schedule);
+        }
+    }
 
-        try {
+    // 과외비 있는 경우 처리
+    private ReportResDto.CreateDto processPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule, ReportReqDto.PayDto payDto) {
+        String prompt1 = PromptGenerator.generatePrompt1(reportReq);
+        String prompt2 = PromptGenerator.generatePrompt2(reportReq, payDto);
+        return processReportCreation(reportReq, schedule, prompt1, prompt2, null);
+    }
+    // 과외비 없는 경우 처리
+    private ReportResDto.CreateDto processNonPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule) {
+        String prompt1 = PromptGenerator.generatePrompt1(reportReq);
+        String prompt3 = PromptGenerator.generatePrompt3(reportReq);
+        return processReportCreation(reportReq, schedule, prompt1, null, prompt3);
+    }
+
+    private ReportResDto.CreateDto processReportCreation(ReportReqDto.CreateDto reportReq, Schedule schedule, String prompt1, String prompt2, String prompt3) {
+        try{
             GPTResponse gptResponse1 = gptService.getGptResponse(prompt1);
-            GPTResponse gptResponse2 = gptService.getGptResponse(prompt2);
+            GPTResponse gptResponse2 = prompt2 != null ? gptService.getGptResponse(prompt2) : null;
+            GPTResponse gptResponse3 = prompt3 != null ? gptService.getGptResponse(prompt3) : null;
 
             String opening = gptService.parseData(gptResponse1, "[인사말]");
             String studyProgress = gptService.parseData(gptResponse1, "[지난 수업 진행 방식]");
-            String feedback = gptService.parseData(gptResponse2, "[학생 피드백]");
+            String feedback = null;
             String money = null;
-            if(reportReq.isPay()) {
+            String closing = null;
 
-                money = gptService.parseData(gptResponse2, "[과외비]");
+            if(prompt2== null){
+                feedback = gptService.parseData(gptResponse3, "[학생 피드백]") ;
+                money = gptService.parseData(gptResponse3, "[과외비]") ;
+                closing = gptService.parseData(gptResponse3, "[마무리 멘트]") ;
             }
-            String closing = gptService.parseData(gptResponse2, "[마무리 멘트]");
-
-            log.info("인사말"+ opening);
-            log.info("지난 수업 진행 방식"+ studyProgress);
-            log.info("학생 피드백"+ feedback);
-            log.info("과외비"+ money);
-            log.info("마무리 멘트"+ closing);
+            else if(prompt3 == null){
+                feedback = gptService.parseData(gptResponse2, "[학생 피드백]") ;
+                 money = gptService.parseData(gptResponse2, "[과외비]") ;
+                closing = gptService.parseData(gptResponse2, "[마무리 멘트]") ;
+            }
 
             Report report = ReportConverter.toEntity(opening, studyProgress, feedback, money, closing, schedule);
-            Report savedReport= reportRepository.save(report);
-             return ReportConverter.toCreateDto(savedReport);
-        } catch (Exception e) {
+            Report savedReport = reportRepository.save(report);
+
+            return ReportConverter.toCreateDto(savedReport);
+
+        }catch (Exception e) {
             log.error("Error creating report: " + e.getMessage(), e);
+            return null;
         }
-        return null;
     }
+
+
+    // payDto 생성, 과외비를 위한
+    private ReportReqDto.PayDto generatePayDto(ReportReqDto.CreateDto reportReq) {
+        StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        //마감 기한을 위한 디비 접근
+        //오늘날짜 이후에 baseSession만큼 schduleList 가져오기
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesAfterToday(studyRoom.getBaseSession());
+
+        //요일별 시간과 임금 계산
+        int wage = calculatePay(scheduleList, studyRoom.getWage());
+
+        ReportReqDto.PayDto payDto = ReportReqDto.PayDto
+                .builder()
+                .dueDate(scheduleList.get(0).getDate())
+                .wage(wage)
+                .build();
+        return payDto;
+    }
+
+    private int calculatePay(List<Schedule> scheduleList, int wage) {
+        int pay = 0;
+
+        for (Schedule schedule : scheduleList) {
+            LocalTime startTime = schedule.getStartTime();
+            LocalTime endTime = schedule.getEndTime();
+
+            // 시간 차이를 분 단위로 계산
+            long startMinutes = startTime.toSecondOfDay() / 60;
+            long endMinutes = endTime.toSecondOfDay() / 60;
+
+            // 시간 차이 계산
+            long timeDifference = endMinutes - startMinutes;
+
+            // 시급을 분 단위 시간으로 곱하여 과외비 계산
+            pay += wage * timeDifference;
+        }
+
+        return pay;
+    }
+
+
 
     public ReportResDto.ReadDto readReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
@@ -82,28 +155,36 @@ public class ReportService {
     }
 
 
+    @Transactional
     public void updateReport(ReportReqDto.UpdateDto updateDto) {
         Report report = reportRepository.findById(updateDto.getReportId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-        Report updatedReport = report.updateField(updateDto.getParagraphNum(), updateDto.getContent());
-        reportRepository.save(updatedReport);
 
+        // log.info(report.getClosing());
+        report.updateField(updateDto.getParagraphNum(), updateDto.getContent());
     }
 
     public List<ReportResDto.ReadListDto> readAllReport(Long memberId, String memberRole) {
         //Role에 따라 다르게 보여줘야 되는지는 학생 ui 나오면 결정
 
-        Teacher teacher = teacherRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-        List<StudyRoom> studyRoom = studyRoomRepository.findAllByTeacher(teacher);
+//        Teacher teacher = teacherRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+//        List<StudyRoom> studyRoom = studyRoomRepository.findAllByTeacher(teacher);
+//        List<ReportResDto.ReadListDto> readListDtoList = new ArrayList<>();
 
-        List<Report> reportList = new ArrayList<>();
+//        for(StudyRoom s : studyRoom){
+      //      List<Report> reports = reportRepository.findAllByStudyRoom(studyRoomRepository.findById(s.getId())
+      //              .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND)));
+      //      reportList.addAll(reports);
 
-        for(StudyRoom s : studyRoom){
-            List<Report> reports = reportRepository.findAllByStudyRoom(studyRoomRepository.findById(s.getId())
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND)));
-            reportList.addAll(reports);
-        }
+ //           List<Schedule> scheduleList = scheduleRepository.findAllByStudyRoom(s);
+//            for(Schedule sc : scheduleList){
+//                List<Report> report = reportRepository.findAllBySchedule(sc);
+//                ReportResDto.ReadListDto readListDto = ReportConverter.toDtoList(report, s);
+//                readListDtoList.add()
+//            }
+//        }
 
-        return  ReportConverter.toDtoList(reportList);
+        return  null;
+        ///ReportConverter.toDtoList(reportList);
     }
 }

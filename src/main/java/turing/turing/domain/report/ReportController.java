@@ -42,8 +42,7 @@ public class ReportController {
 
 
     @Operation(summary = " 리포트 단락 수정 API")
-    //requestBody만 사용해도 되지만 path variable 사용: delete와 일관성을 위해
-    @PatchMapping("{reportId}/{paragraphNum}")
+    @PatchMapping("")
     public ResponseEntity<ReportResDto> updateReport(@RequestBody ReportReqDto.UpdateDto updateDto){
         reportService.updateReport(updateDto);
         return ResponseEntity.ok(null);
