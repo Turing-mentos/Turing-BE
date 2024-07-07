@@ -47,4 +47,15 @@ public class ReportController {
         reportService.updateReport(updateDto);
         return ResponseEntity.ok(null);
     }
+
+    @Operation(summary = "리포트 최초 진입 시 과외 정보 여부 확인 API ")
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkConditionForReport(){
+
+        Long memberId =1L;
+        String memberRole ="TEACHER";
+        return ResponseEntity.ok(reportService.checkConditionForReport(memberId, memberRole));
+
+    }
+
 }

@@ -156,4 +156,8 @@ public class ReportService {
         //Role에 따라 다르게 보여줘야 되는지는 학생 ui 나오면 결정
         return reportRepository.findAllReportsByTeacherId(memberId);
     }
+
+    public Boolean checkConditionForReport(Long memberId, String memberRole) {
+        return  studyRoomRepository.existsByTeacherId(memberId);
+    }
 }
