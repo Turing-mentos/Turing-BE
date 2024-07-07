@@ -97,16 +97,14 @@ public class ReportService {
         StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
-        //마감 기한을 위한 디비 접근
         //오늘날짜 이후에 baseSession만큼 schduleList 가져오기
-        List<Schedule> scheduleList = scheduleRepository.findSchedulesAfterToday(studyRoom.getBaseSession());
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesInRange(studyRoom.getBaseSession());
 
         //요일별 시간과 임금 계산
         int wage = calculatePay(scheduleList, studyRoom.getWage());
 
         ReportReqDto.PayDto payDto = ReportReqDto.PayDto
                 .builder()
-                .dueDate(scheduleList.get(0).getDate())
                 .wage(wage)
                 .build();
         return payDto;
@@ -116,6 +114,8 @@ public class ReportService {
         int pay = 0;
 
         for (Schedule schedule : scheduleList) {
+
+            log.info(String.valueOf(schedule.getId()));
             LocalTime startTime = schedule.getStartTime();
             LocalTime endTime = schedule.getEndTime();
 

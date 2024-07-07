@@ -45,6 +45,5 @@ public class ReportReqDto {
     @Builder
     public static class PayDto{
         int wage;
-        LocalDate dueDate;
     }
 }
