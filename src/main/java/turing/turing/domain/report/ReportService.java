@@ -32,12 +32,16 @@ public class ReportService {
     private final ScheduleRepository scheduleRepository;
 //    private final
     public ReportResDto.CreateDto createReport(ReportReqDto.CreateDto reportReq) {
+        //과외 공간 찾기
+        Long teacherId = 1L; //예시임, Authen~~ 을 통해 사용자 정보 받을거임
+        log.info(String.valueOf(reportReq.getStudentId()));
 
+        StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(teacherId, reportReq.getStudentId());
         //회차를 얻기 위해
-        Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(reportReq.getStudyRoomId());
+        Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(studyRoom.getId());
 
         if (reportReq.isPay()) {
-            ReportReqDto.PayDto payDto = generatePayDto(reportReq);
+            ReportReqDto.PayDto payDto = generatePayDto(reportReq, studyRoom);
             return processPaymentReport(reportReq, schedule, payDto);
         } else {
             return processNonPaymentReport(reportReq, schedule);
@@ -48,16 +52,16 @@ public class ReportService {
     private ReportResDto.CreateDto processPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule, ReportReqDto.PayDto payDto) {
         String prompt1 = PromptGenerator.generatePrompt1(reportReq);
         String prompt2 = PromptGenerator.generatePrompt2(reportReq, payDto);
-        return processReportCreation(reportReq, schedule, prompt1, prompt2, null);
+        return processReportCreation(schedule, prompt1, prompt2, null);
     }
     // 과외비 없는 경우 처리
     private ReportResDto.CreateDto processNonPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule) {
         String prompt1 = PromptGenerator.generatePrompt1(reportReq);
         String prompt3 = PromptGenerator.generatePrompt3(reportReq);
-        return processReportCreation(reportReq, schedule, prompt1, null, prompt3);
+        return processReportCreation(schedule, prompt1, null, prompt3);
     }
 
-    private ReportResDto.CreateDto processReportCreation(ReportReqDto.CreateDto reportReq, Schedule schedule, String prompt1, String prompt2, String prompt3) {
+    private ReportResDto.CreateDto processReportCreation( Schedule schedule, String prompt1, String prompt2, String prompt3) {
         try{
             GPTResponse gptResponse1 = gptService.getGptResponse(prompt1);
             GPTResponse gptResponse2 = prompt2 != null ? gptService.getGptResponse(prompt2) : null;
@@ -69,15 +73,15 @@ public class ReportService {
             String money = null;
             String closing = null;
 
-            if(prompt2== null){
-                feedback = gptService.parseData(gptResponse3, "[학생 피드백]") ;
-                money = gptService.parseData(gptResponse3, "[과외비]") ;
-                closing = gptService.parseData(gptResponse3, "[마무리 멘트]") ;
-            }
-            else if(prompt3 == null){
+            if(prompt2 != null){
                 feedback = gptService.parseData(gptResponse2, "[학생 피드백]") ;
-                 money = gptService.parseData(gptResponse2, "[과외비]") ;
+                money = gptService.parseData(gptResponse2, "[과외비]") ;
+                log.info("-------"+money);
                 closing = gptService.parseData(gptResponse2, "[마무리 멘트]") ;
+            }
+            else if(prompt3 != null){
+                feedback = gptService.parseData(gptResponse3, "[학생 피드백]") ;
+                closing = gptService.parseData(gptResponse3, "[마무리 멘트]") ;
             }
 
             Report report = ReportConverter.toEntity(opening, studyProgress, feedback, money, closing, schedule);
@@ -93,16 +97,14 @@ public class ReportService {
 
 
     // payDto 생성, 과외비를 위한
-    private ReportReqDto.PayDto generatePayDto(ReportReqDto.CreateDto reportReq) {
-        StudyRoom studyRoom = studyRoomRepository.findById(reportReq.getStudyRoomId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+    private ReportReqDto.PayDto generatePayDto(ReportReqDto.CreateDto reportReq, StudyRoom studyRoom) {
 
         //오늘날짜 이후에 baseSession만큼 schduleList 가져오기
         List<Schedule> scheduleList = scheduleRepository.findSchedulesInRange(studyRoom.getBaseSession());
 
         //요일별 시간과 임금 계산
         int wage = calculatePay(scheduleList, studyRoom.getWage());
-
+        log.info(wage+"원");
         ReportReqDto.PayDto payDto = ReportReqDto.PayDto
                 .builder()
                 .wage(wage)

@@ -14,7 +14,7 @@ public class ReportReqDto {
     @AllArgsConstructor
     @Builder
     public static class CreateDto {
-        private Long studyRoomId;
+        private Long studentId;
 
         private String name;
 
