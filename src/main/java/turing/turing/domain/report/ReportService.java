@@ -7,26 +7,18 @@ import turing.turing.domain.gpt.dto.GPTResponse;
 import turing.turing.domain.gpt.GptService;
 import turing.turing.domain.gpt.PromptGenerator;
 import turing.turing.domain.report.converter.ReportConverter;
+import turing.turing.domain.report.dto.ReportReadAllDto;
 import turing.turing.domain.report.dto.ReportReqDto;
 import turing.turing.domain.report.dto.ReportResDto;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
-import turing.turing.domain.studyDatetime.StudyDateTimeRepository;
-import turing.turing.domain.studyDatetime.StudyDatetime;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
-import turing.turing.domain.teacher.Teacher;
-import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -37,9 +29,7 @@ public class ReportService {
     private final GptService gptService;
     private final ReportRepository reportRepository;
     private final StudyRoomRepository studyRoomRepository;
-    private final TeacherRepository teacherRepository;
     private final ScheduleRepository scheduleRepository;
-    private final StudyDateTimeRepository studyDateTimeRepository;
 //    private final
     public ReportResDto.CreateDto createReport(ReportReqDto.CreateDto reportReq) {
 
@@ -139,7 +129,6 @@ public class ReportService {
             // 시급을 분 단위 시간으로 곱하여 과외비 계산
             pay += wage * timeDifference;
         }
-
         return pay;
     }
 
@@ -160,31 +149,11 @@ public class ReportService {
         Report report = reportRepository.findById(updateDto.getReportId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
-        // log.info(report.getClosing());
         report.updateField(updateDto.getParagraphNum(), updateDto.getContent());
     }
 
-    public List<ReportResDto.ReadListDto> readAllReport(Long memberId, String memberRole) {
+    public List<ReportReadAllDto> readAllReport(Long memberId, String memberRole) {
         //Role에 따라 다르게 보여줘야 되는지는 학생 ui 나오면 결정
-
-//        Teacher teacher = teacherRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-//        List<StudyRoom> studyRoom = studyRoomRepository.findAllByTeacher(teacher);
-//        List<ReportResDto.ReadListDto> readListDtoList = new ArrayList<>();
-
-//        for(StudyRoom s : studyRoom){
-      //      List<Report> reports = reportRepository.findAllByStudyRoom(studyRoomRepository.findById(s.getId())
-      //              .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND)));
-      //      reportList.addAll(reports);
-
- //           List<Schedule> scheduleList = scheduleRepository.findAllByStudyRoom(s);
-//            for(Schedule sc : scheduleList){
-//                List<Report> report = reportRepository.findAllBySchedule(sc);
-//                ReportResDto.ReadListDto readListDto = ReportConverter.toDtoList(report, s);
-//                readListDtoList.add()
-//            }
-//        }
-
-        return  null;
-        ///ReportConverter.toDtoList(reportList);
+        return reportRepository.findAllReportsByTeacherId(memberId);
     }
 }

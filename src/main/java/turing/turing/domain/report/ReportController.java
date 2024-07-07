@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import turing.turing.domain.report.dto.ReportReadAllDto;
 import turing.turing.domain.report.dto.ReportReqDto;
 import turing.turing.domain.report.dto.ReportResDto;
 
@@ -30,14 +31,13 @@ public class ReportController {
     }
 
     @Operation(summary = " 리포트 전체 조회 API")
-    @GetMapping("all/{studyRoomId}")
-    public ResponseEntity<List<ReportResDto.ReadListDto>> readAllReport(){
+    @GetMapping("all")
+    public ResponseEntity<List<ReportReadAllDto>> readAllReport(){
         //memberId와 role만 필요 -> Authen~~ 에서 얻어오기 (jwt)
         //이건 예제
         Long member = 1L;
         String memberRole = "TEACHER";
-        List<ReportResDto.ReadListDto> reportResDto = reportService.readAllReport(member,memberRole);
-        return ResponseEntity.ok(reportResDto);
+        return ResponseEntity.ok(reportService.readAllReport(member,memberRole));
     }
 
 

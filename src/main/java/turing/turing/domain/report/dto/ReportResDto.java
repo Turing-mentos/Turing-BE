@@ -1,8 +1,14 @@
 package turing.turing.domain.report.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import org.springframework.stereotype.Service;
+import turing.turing.domain.report.Report;
+import turing.turing.domain.schedule.Schedule;
+import turing.turing.domain.teacher.Teacher;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -22,6 +28,9 @@ public class ReportResDto {
 
         private String money;
         private String closing;
+
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Builder
@@ -31,16 +40,6 @@ public class ReportResDto {
         private Long reportId;
 
     }
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    public static class ReadListDto {
-        private Long reportId;
 
-        private String name;
 
-        private String subject;
-
-        private Integer session;
-    }
 }
