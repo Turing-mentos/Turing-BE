@@ -15,6 +15,7 @@ public record StudyRoomCreateReqDto(
         String studentYear,
         String subject,
         Integer baseSession,
+        Integer wage,
         List<StudyTimeReqDto> studyTimes,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate startDate
@@ -24,7 +25,7 @@ public record StudyRoomCreateReqDto(
         }
 
         public StudyRoom toStudyRoom(Teacher teacher, Student student) {
-                return new StudyRoom(subject, baseSession, teacher, student);
+                return new StudyRoom(subject, baseSession, wage, teacher, student);
         }
 
 }
