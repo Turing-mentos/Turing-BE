@@ -55,9 +55,6 @@ public class Teacher extends Member {
         this.name = name;
         this.provider = provider;
     }
-    @Size(max = 300)
-    @Column(name = "fcm_token", nullable = false, length = 300)
-    private String fcmToken;
 
     @Size(max = 300)
     @Column(name = "fcm_token", nullable = false, length = 300)
