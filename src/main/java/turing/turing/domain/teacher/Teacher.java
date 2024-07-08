@@ -7,13 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Teacher extends BaseEntity {
 
     @Id
@@ -41,16 +42,16 @@ public class Teacher extends BaseEntity {
     @Column(name = "main_subject", nullable = false, length = 10)
     private String mainSubject;
 
-    @Size(max = 255)
+    @Size(max = 100)
     @Column(name = "department")
     private String department;
 
-    @Size(max = 255)
+    @Size(max = 100)
     @Column(name = "student_number")
     private String studentNumber;
 
-    @Size(max = 255)
-    @Column(name = "nickname")
-    private String nickname;
+    @Size(max = 300)
+    @Column(name = "fcm_token", nullable = false, length = 300)
+    private String fcmToken;
 
 }
