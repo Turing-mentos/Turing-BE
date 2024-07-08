@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.teacher.dto.ProfileDto;
 
 @Getter
 @Entity
@@ -53,4 +54,10 @@ public class Teacher extends BaseEntity {
     @Column(name = "fcm_token", nullable = false, length = 300)
     private String fcmToken;
 
+    public void updateProfile(ProfileDto profileDto) {
+        this.name = profileDto.getName();
+        this.university = profileDto.getUniversity();
+        this.department = profileDto.getDepartment();
+        this.studentNumber = profileDto.getStudentNumber();
+    }
 }
