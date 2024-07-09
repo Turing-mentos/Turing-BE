@@ -7,21 +7,20 @@ import turing.turing.domain.teacher.dto.ProfileDto;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/profile")
+@RequestMapping("/api")
 public class TeacherController {
 
     private final TeacherService teacherService;
     
-    @GetMapping("")
+    @GetMapping("/teacher/profile")
     public ResponseEntity<ProfileDto> readProfile(){
-        //추후 학생 마이페이지와 분리 필요
         //@Authen~~로 얻어오기, 밑에는 예시
         Long teacherId = 1L;
         
         return ResponseEntity.ok(teacherService.readProfile(teacherId));
     }
 
-    @PatchMapping("")
+    @PatchMapping("/teacher/profile")
     public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto){
         //추후 학생 마이페이지와 분리 필요
         //@Authen~~로 얻어오기, 밑에는 예시
