@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.student.dto.ProfileDto;
 
 @Getter
 @Entity
@@ -57,5 +58,9 @@ public class Student extends BaseEntity {
         this.year = year;
         this.phone = phone;
         this.parentPhone = parentPhone;
+    }
+
+    public void updateProfile(ProfileDto profileDto) {
+        this.name = profileDto.getName();
     }
 }
