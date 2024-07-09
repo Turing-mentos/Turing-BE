@@ -31,11 +31,6 @@ public class AlternativeSchedule extends BaseEntity {
     @Column(name = "schedule_date", nullable = false)
     private LocalDate scheduleDate;
 
-    @Size(max = 1)
-    @NotNull
-    @Column(name = "day", nullable = false, length = 1)
-    private String day;
-
     @NotNull
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
