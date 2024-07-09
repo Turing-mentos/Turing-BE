@@ -7,7 +7,7 @@ import turing.turing.domain.student.dto.ProfileDto;
 
 @RestController
 @AllArgsConstructor
-
+@RequestMapping("/api")
 public class StudentController {
 
     private final StudentService studentService;
@@ -20,17 +20,18 @@ public class StudentController {
 //        return ResponseEntity.ok(null);
 //    }
 
-//    @PatchMapping("api/profile/student")
-//    public ResponseEntity<String> updateProfile(@RequestBody ProfileDto profileDto) {
-//        //예시 spring context에서 멤버 정도 얻어옴
-//        Long memberId = 1L;
-//        studentService.readProfile(memberId);
-//        return ResponseEntity.ok(null);
-//    }
-    @GetMapping("api/profile/student")
+    @GetMapping("/student/profile")
     public ResponseEntity<ProfileDto> readProfile(){
         //예시 spring context에서 멤버 정도 얻어옴
         Long memberId = 1L;
         return ResponseEntity.ok(studentService.readProfile(memberId));
+    }
+
+    @PatchMapping("/student/profile")
+    public ResponseEntity<String> updateProfile(@RequestBody ProfileDto profileDto){
+        //예시 spring context에서 멤버 정도 얻어옴
+        Long memberId = 1L;
+        studentService.updateProfile(profileDto, memberId);
+        return ResponseEntity.ok(null);
     }
 }

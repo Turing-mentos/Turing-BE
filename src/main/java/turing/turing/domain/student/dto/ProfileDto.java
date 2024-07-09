@@ -1,12 +1,12 @@
 package turing.turing.domain.student.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Builder
+@AllArgsConstructor
 public class ProfileDto {
     private String name;
 }

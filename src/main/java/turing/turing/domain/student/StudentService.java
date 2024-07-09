@@ -3,6 +3,7 @@ package turing.turing.domain.student;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.student.dto.ProfileDto;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
@@ -15,8 +16,11 @@ public class StudentService {
     private final StudentRepository studentRepository;
 
 
+    @Transactional
     public void updateProfile(ProfileDto profileDto, Long memberId) {
         Student s = studentRepository.findById(memberId).orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND));
+        log.info("ttttt");
+
         s.updateProfile(profileDto);
     }
 
