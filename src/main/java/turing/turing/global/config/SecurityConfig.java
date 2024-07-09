@@ -18,6 +18,15 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+
+    @Bean
+    @Order(0)
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return web -> web.ignoring()
+                .requestMatchers("/swagger-ui/**", "/swagger/**", "/swagger-resources/**", "/swagger-ui.html", "/test",
+                        "/configuration/ui",  "/v3/api-docs/**");
+      
+    }
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtTokenProvider);
