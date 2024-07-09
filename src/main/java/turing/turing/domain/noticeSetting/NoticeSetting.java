@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
@@ -15,6 +17,8 @@ import turing.turing.domain.notice.Notice;
 @Getter
 @Entity
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class NoticeSetting extends BaseEntity {
 
     @Id

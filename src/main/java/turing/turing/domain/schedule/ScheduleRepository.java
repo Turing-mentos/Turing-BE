@@ -34,4 +34,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     boolean existsLatestScheduleAfterDate(@Param("targetDate") LocalDate targetDate,
                                           @Param("studyRoomId") Long studyRoomId);
 
+    List<Schedule> findAllByStudyRoomOrderByDate(StudyRoom studyRoom);
 }

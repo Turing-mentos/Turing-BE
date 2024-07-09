@@ -2,6 +2,8 @@ package turing.turing.domain.notice.fcm.dto;
 
 import lombok.Builder;
 
+import java.time.LocalDate;
+
 @Builder
 public class TestDto {
     Long senderId;
@@ -10,6 +12,11 @@ public class TestDto {
 
     String receiverRole;
 
-    Long commentId;
+    Long questionId;
 
+    String category;
+
+    LocalDate scheduleDate;
+
+    LocalDate alternativeDate;
 }

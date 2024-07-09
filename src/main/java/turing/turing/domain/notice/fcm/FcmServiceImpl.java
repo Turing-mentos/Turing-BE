@@ -199,15 +199,20 @@ public class FcmServiceImpl implements FcmService{
         return message;
     }
 
-    public TestDto createComment() {
-        TestDto f = TestDto.builder()
-                .commentId(1L)
-                .receiverRole("TEACHER")
-                .receiverId(1L)
-                .senderId(1L)
-                .senderRole("STUDENT")
-                .build();
-        return f;
-    }
+    //테스트용
+//    public TestDto methodName7() {
+//        log.info("여기");
+//        TestDto f = TestDto.builder()
+//                .category("문풀")
+//                .questionId(10L)
+//                .receiverRole("STUDENT")
+//                .receiverId(1L)
+//                .senderId(1L)
+//                .senderRole("TEACHER")
+//                .scheduleDate(LocalDate.now())
+//                .alternativeDate(LocalDate.now())
+//                .build();
+//        return f;
+//    }
 
 }

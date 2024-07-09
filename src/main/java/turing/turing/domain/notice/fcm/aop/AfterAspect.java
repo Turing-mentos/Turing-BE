@@ -7,6 +7,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 import turing.turing.domain.comment.CommentRepository;
 import turing.turing.domain.notice.Notice;
@@ -20,6 +21,8 @@ import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.question.QuestionRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
+import turing.turing.domain.studyRoom.StudyRoom;
+import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
@@ -27,6 +30,9 @@ import turing.turing.global.exception.errorCode.CommonErrorCode;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Component
 @Aspect
@@ -41,8 +47,10 @@ public class AfterAspect {
     private final QuestionRepository questionRepository;
     private final NoticeRepository noticeRepository;
     private final CommentRepository commentRepository;
+    private final StudyRoomRepository studyRoomRepository;
 
-    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..))")
+
+    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* methodName7(..)))")
     public void pointcut() {}
 
     @AfterReturning(pointcut = "pointcut()", returning = "result")
@@ -51,8 +59,8 @@ public class AfterAspect {
 
         NotificationDetails notificationDetails = extractNotificationDetails(result);
         String fcmToken = getFcmToken(notificationDetails.getReceiverRole(), notificationDetails.getReceiverId());
-        String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId());
-        NotificationContent content = buildNotificationContent(joinPoint.getSignature().getName(), senderName, result);
+        String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId(), notificationDetails.getReceiverId());
+        NotificationContent content = buildNotificationContent(joinPoint.getSignature().getName(), senderName, notificationDetails.getSenderRole(), result);
 
         NoticeSetting noticeSetting = noticeSettingRepository.findByMemberIdAndRoleAndCategory(notificationDetails.getReceiverId(), notificationDetails.getReceiverRole(), content.getCategory());
 
@@ -100,11 +108,12 @@ public class AfterAspect {
         }
     }
 
-    private String getSenderName(String senderRole, Long senderId) {
+    private String getSenderName(String senderRole, Long senderId, Long receiverId) {
         if ("TEACHER".equals(senderRole)) {
-            return teacherRepository.findById(senderId)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
-                    .getName();
+            Teacher teacher = teacherRepository.findById(senderId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+            StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(senderId, receiverId);
+            return studyRoom.getSubject()+" "+teacher.getName()+"T";
+
         } else if ("STUDENT".equals(senderRole)) {
             return studentRepository.findById(senderId)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
@@ -113,52 +122,69 @@ public class AfterAspect {
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
     }
-    private NotificationContent buildNotificationContent(String methodName, String senderName, Object result) throws NoSuchFieldException, IllegalAccessException {
+    private NotificationContent buildNotificationContent(String methodName, String senderName,String senderRole, Object result) throws NoSuchFieldException, IllegalAccessException {
         String targetAlarm = null;
         String title = null;
         String body = null;
         Long targetId = 0L;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d(E)").withLocale(Locale.forLanguageTag("ko-KR"));
 
         switch (methodName) {
             case "createComment":
                 targetAlarm = "COMMENT";
-                title = "새로운 댓글";
-                body = senderName + " 학생이 새로운 댓글을 남겼어요.";
-                Long commentId = getFieldValue(result, "commentId");
-                //commentId로 question id 찾아서 반환해주기
-                targetId = commentRepository.findById(commentId).get().getQuestion().getId();
+                if(senderRole.equals("TEACHER")){
+                    title = "질문 답변";
+                    body = "작성한 질문에 "+senderName + "가 댓글을 달았어요.";
+                }
+                else{
+                    title = "새로운 댓글";
+                    body = senderName + " 학생이 새로운 댓글을 남겼어요.";
+                }
+                targetId = (Long) getFieldValue(result, "questionId");
                 break;
             case "createQuestion":
                 targetAlarm = "QUESTION";
                 title = "새로운 질문";
-                Long questionId = getFieldValue(result, "questionId");
-                //질문 카테고리 가져오기 위한 디비 접근
-                String category = questionRepository.findById(questionId)
-                        .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
-                        .getContent();
+                String category = (String) getFieldValue(result, "category");
                 body = senderName + " 학생이 [" + category + "] 질문을 남겼어요";
                 break;
             case "methodName3":
-                //이부분은 아직 메소드 구현 전
                 targetAlarm = "SCHEDULE_CHANGE";
                 title = "수업 일정 변경 요청";
-                body = senderName + " 학생이 수업을 옮기고 싶어해요.";
+                LocalDate scheduleDate = (LocalDate) getFieldValue(result, "scheduleDate");
+                body = senderName + " 학생이 ["+scheduleDate.format(formatter)+ "] 수업을 옮기고 싶어해요.";
                 break;
             case "methodName4":
                 targetAlarm = "NEW_SCHEDULE";
                 title = "학생의 새로운 시험 일정";
                 body = senderName + " 학생이 시험 일정을 등록했어요.";
                 break;
+            case "methodName5":
+                targetAlarm = "NOTEBOOK";
+                title = "알림장 업데이트";
+                body = senderName + " 수업의 알림장이 도착했어요.";
+                break;
+            case "methodName6":
+                targetAlarm = "HOMEWORK";
+                title = "숙제 콕 찌르기";
+                body = senderName + "가 지켜보고 있어요!\n 수업 전까지 "+senderName.split(" ")[0]+" 숙제를 모두 완료해주세요.";
+                break;
+            case "methodName7":
+                targetAlarm = "COMMENT";
+                LocalDate scheduleDate1 = (LocalDate) getFieldValue(result, "scheduleDate");
+                LocalDate alternativeDate1 = (LocalDate) getFieldValue(result, "alternativeDate");
+                title = "일정 변동 확정";
+                body = senderName+" ["+scheduleDate1.format(formatter)+"] 수업이 ["+alternativeDate1.format(formatter)+"]로 변경되었어요.";
+                break;
         }
 
         return new NotificationContent(targetAlarm, title, body, targetId);
     }
 
-    private Long getFieldValue(Object result, String fieldName) throws NoSuchFieldException, IllegalAccessException {
-
+    private Object getFieldValue(Object result, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Field field = result.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
-        Long fieldValue = (Long) field.get(result);
+        Object fieldValue = field.get(result);
         field.setAccessible(false);
         return fieldValue;
     }
