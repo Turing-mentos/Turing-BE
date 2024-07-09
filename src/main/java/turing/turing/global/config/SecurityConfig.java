@@ -14,6 +14,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.global.security.JwtAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.core.annotation.Order;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class SecurityConfig {
         return new JwtAuthenticationFilter(jwtTokenProvider);
     }
 
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -41,6 +43,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(0)
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/api/auth/**", "/teacher/signup/**", "/swagger-ui/**", "/api/**");
