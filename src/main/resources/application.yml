@@ -27,5 +27,8 @@ springdoc:
 server:
   port: 8080
 #JWT
-
+jwt:
+  secret: ${SECRET_KEY}
+  access-expiration: ${ACCESS_EXPIRATION}
+  refresh-expiration: ${REFRESH_EXPIRATION}
 #S3
