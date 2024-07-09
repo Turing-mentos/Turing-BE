@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.global.security.JwtAuthenticationFilter;
+import org.springframework.core.annotation.Order;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
