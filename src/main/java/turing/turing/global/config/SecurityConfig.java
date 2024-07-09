@@ -43,9 +43,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/api/auth/**"))
-                .requestMatchers(new AntPathRequestMatcher("/teacher/signup/**"))
-                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
-                .requestMatchers(new AntPathRequestMatcher("/api/**"));
+                .requestMatchers("/api/auth/**", "/teacher/signup/**", "/swagger-ui/**", "/api/**");
     }
 }
