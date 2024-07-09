@@ -10,7 +10,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.global.security.JwtAuthenticationFilter;
-import org.springframework.core.annotation.Order;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -19,15 +18,6 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-
-    @Bean
-    @Order(0)
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> web.ignoring()
-                .requestMatchers("/swagger-ui/**", "/swagger/**", "/swagger-resources/**", "/swagger-ui.html", "/test",
-                        "/configuration/ui",  "/v3/api-docs/**");
-      
-    }
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtTokenProvider);
