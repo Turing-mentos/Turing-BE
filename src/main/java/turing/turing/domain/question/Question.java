@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
@@ -57,6 +58,16 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
+
+    @Builder
+    public Question(String title, String category, String content, String questionImage, StudyRoom studyRoom) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.content = content;
+        this.questionImage = questionImage;
+        this.studyRoom = studyRoom;
+    }
 
     public void switchPinStatus(){
         this.pinStatus = !this.pinStatus;
