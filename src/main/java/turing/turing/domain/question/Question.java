@@ -43,8 +43,8 @@ public class Question extends BaseEntity {
     private String content;
 
     @Size(max = 200)
-    @Column(name = "question_image", length = 200)
-    private String questionImage;
+    @Column(name = "image_url", length = 200)
+    private String imageUrl;
 
     @NotNull
     @Column(name = "solve_status", nullable = false)
@@ -60,12 +60,12 @@ public class Question extends BaseEntity {
     private StudyRoom studyRoom;
 
     @Builder
-    public Question(String title, String category, String content, String questionImage, StudyRoom studyRoom) {
+    public Question(String title, String category, String content, String imageUrl, StudyRoom studyRoom) {
         super();
         this.title = title;
         this.category = category;
         this.content = content;
-        this.questionImage = questionImage;
+        this.imageUrl = imageUrl;
         this.studyRoom = studyRoom;
     }
 

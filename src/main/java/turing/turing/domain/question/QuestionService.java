@@ -61,7 +61,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionCreateResDto createQuestion(Long studyRoomId, MultipartFile file, QuestionReqDto questionReqDto){
+    public QuestionCreateResDto createQuestion(Long studyRoomId, QuestionReqDto questionReqDto, MultipartFile file){
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
@@ -73,7 +73,7 @@ public class QuestionService {
                 .title(questionReqDto.title())
                 .category(questionReqDto.category())
                 .content(questionReqDto.content())
-                .questionImage(fileUrl)
+                .imageUrl(fileUrl)
                 .studyRoom(studyRoom)
                 .build();
 
@@ -94,8 +94,8 @@ public class QuestionService {
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
         // 이미지가 존재한다면 해당 이미지를 S3에서 삭제 후 질문 삭제
-        if(question.getQuestionImage() != null && !question.getQuestionImage().isEmpty()){
-            s3Service.deleteFile(question.getQuestionImage());
+        if(question.getImageUrl() != null && !question.getImageUrl().isEmpty()){
+            s3Service.deleteFile(question.getImageUrl());
         }
         questionRepository.delete(question);
     }

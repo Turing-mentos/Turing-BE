@@ -41,7 +41,7 @@ public class QuestionController {
             @RequestPart(value = "question") QuestionReqDto questionReqDto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
-        QuestionCreateResDto questionCreateResDto = questionService.createQuestion(studyRoomId, file, questionReqDto);
+        QuestionCreateResDto questionCreateResDto = questionService.createQuestion(studyRoomId, questionReqDto, file);
         Long questionId = questionCreateResDto.questionId();
         URI location = URI.create("/api/questions/" + questionId);
 

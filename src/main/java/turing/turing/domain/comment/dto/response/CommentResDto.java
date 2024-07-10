@@ -1,16 +1,16 @@
-package turing.turing.domain.comment.dto;
+package turing.turing.domain.comment.dto.response;
 
 import turing.turing.domain.comment.Comment;
 
 public record CommentResDto(
         Long id,
-        String commentImage,
+        String imageUrl,
         String content
 ) {
     public static CommentResDto of(Comment comment) {
         return new CommentResDto(
                 comment.getId(),
-                comment.getCommentImage(),
+                comment.getImageUrl(),
                 comment.getContent()
         );
     }
