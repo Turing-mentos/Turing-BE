@@ -3,6 +3,7 @@ package turing.turing.domain.schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import turing.turing.domain.studyRoom.StudyRoom;
 
 import java.util.List;
 
@@ -25,5 +26,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             ") " +
             "ORDER BY date ASC", nativeQuery = true)
     List<Schedule> findSchedulesInRange(@Param("baseSession") int baseSession);
+
+    List<Schedule> findAllByStudyRoomOrderByDate(StudyRoom studyRoom);
 
 }
