@@ -11,12 +11,8 @@ import java.sql.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import turing.turing.domain.Role;
-import turing.turing.domain.auth.CustomUserDetailService;
 
 @Component
 @RequiredArgsConstructor
@@ -28,8 +24,6 @@ public class JwtTokenProvider {
     private static long EXPIRATION_TIME;
     @Value("${jwt.refresh-expiration}")
     private static long REFRESH_EXPIRATION_TIME;
-
-    private final CustomUserDetailService userDetailService;
 
     public String createAccessToken(String email, Role role) {
         Claims claims = Jwts.claims()
@@ -92,14 +86,6 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             return false;
         }
-    }
-
-    public Authentication getAuthentication(String token) {
-        String email = getEmailFromToken(token);
-        UserDetails userDetails = userDetailService.loadUserByUsername(email);
-
-        return new UsernamePasswordAuthenticationToken(userDetails, "",
-                userDetails.getAuthorities());
     }
 
     private SecretKey getSigningKey() {

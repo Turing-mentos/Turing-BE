@@ -27,7 +27,7 @@ public class CustomUserDetailService implements UserDetailsService {
         return new CustomUserDetails(email);
     }
 
-    public Object findByEmail(String email) {
+    private Object findByEmail(String email) {
         Object member = teacherRepository.findByEmail(email);
         return Objects.requireNonNullElseGet(member, () -> studentRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND)));
