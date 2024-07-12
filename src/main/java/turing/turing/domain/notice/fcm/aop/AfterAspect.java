@@ -50,7 +50,7 @@ public class AfterAspect {
     private final StudyRoomRepository studyRoomRepository;
 
 
-    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* methodName7(..)))")
+    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* methodName7(..))) || execution(* remindNoteBook(..)))")
     public void pointcut() {}
 
     @AfterReturning(pointcut = "pointcut()", returning = "result")
@@ -164,7 +164,7 @@ public class AfterAspect {
                 title = "알림장 업데이트";
                 body = senderName + " 수업의 알림장이 도착했어요.";
                 break;
-            case "methodName6":
+            case "remindNoteBook":
                 targetAlarm = "HOMEWORK";
                 title = "숙제 콕 찌르기";
                 body = senderName + "가 지켜보고 있어요!\n 수업 전까지 "+senderName.split(" ")[0]+" 숙제를 모두 완료해주세요.";

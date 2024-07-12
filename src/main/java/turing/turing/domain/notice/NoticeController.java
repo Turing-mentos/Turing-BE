@@ -11,6 +11,7 @@ import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.FcmServiceImpl;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
 import turing.turing.domain.notice.fcm.dto.TestDto;
+import turing.turing.domain.teacher.Teacher;
 
 import java.util.List;
 
@@ -52,4 +53,11 @@ public class NoticeController {
 //        return fcmService.methodName7();
 //    }
 
+    @Operation(summary = "리마인드 콕찌르기")
+    @GetMapping()
+    public void remindNoteBook(NoticeDto.RemindNoteBookDto remindNoteBookDto){
+        //@Authen~~로 받아오기
+        Teacher teacher = null;
+        noticeService.remindNoteBook(remindNoteBookDto, teacher);
+    }
 }
