@@ -3,6 +3,7 @@ package turing.turing.domain.studyRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import turing.turing.domain.studyRoom.dto.BaseTemplateDto;
 import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomCreateReqDto;
 import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
@@ -67,5 +68,11 @@ public class StudyRoomController {
     public ResponseEntity<DetailedStudyRoomResDto> getDetailedStudyRooms(@PathVariable Long studyRoomId){
         DetailedStudyRoomResDto detailedStudyRoomResDto = studyRoomService.getDetailedStudyRooms(studyRoomId);
         return ResponseEntity.ok(detailedStudyRoomResDto);
+    }
+
+    @GetMapping("/{studyRoomId}/template")
+    public ResponseEntity<BaseTemplateDto> getLastTemplate(@PathVariable("studyRoomId") Long studyRoomId) {
+
+        return ResponseEntity.ok(studyRoomService.getBaseTemplate(studyRoomId));
     }
 }
