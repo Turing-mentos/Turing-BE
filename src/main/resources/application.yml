@@ -8,7 +8,7 @@ spring:
     password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         #show_sql: true
@@ -29,5 +29,8 @@ springdoc:
 server:
   port: 8080
 #JWT
-
+jwt:
+  secret: ${SECRET_KEY}
+  access-expiration: ${ACCESS_EXPIRATION}
+  refresh-expiration: ${REFRESH_EXPIRATION}
 #S3

@@ -18,6 +18,7 @@ public record DetailedStudyRoomResDto(
         Integer baseSession,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate firstSchedule,
+        Integer wage,
         Integer curSession,
         Integer curBaseSession,
         Integer totalSession,
@@ -51,6 +52,7 @@ public record DetailedStudyRoomResDto(
                 studyRoom.getStudyTimes().stream().map(StudyTimeResDto::of).toList(),
                 studyRoom.getBaseSession(),
                 firstSchedule,
+                studyRoom.getWage(),
                 curSession,
                 curBaseSession,
                 totalSession,

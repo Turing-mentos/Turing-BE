@@ -54,7 +54,7 @@ public class StudyRoom extends BaseEntity {
     @NotNull
     @Column(name = "wage", nullable = false)
     private Integer wage;
-  
+
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
     private List<StudyTime> studyTimes = new ArrayList<>();
 
@@ -71,9 +71,10 @@ public class StudyRoom extends BaseEntity {
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
     private List<Question> questions = new ArrayList<>();
 
-    public StudyRoom(String subject, Integer baseSession, Teacher teacher, Student student) {
+    public StudyRoom(String subject, Integer baseSession, Integer wage, Teacher teacher, Student student) {
         this.subject = subject;
         this.baseSession = baseSession;
+        this.wage = wage;
         this.teacher = teacher;
         this.student = student;
     }
