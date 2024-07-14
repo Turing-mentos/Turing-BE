@@ -50,7 +50,7 @@ public class StudyRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
-
+  
     @NotNull
     @Column(name = "wage", nullable = false)
     private Integer wage;
