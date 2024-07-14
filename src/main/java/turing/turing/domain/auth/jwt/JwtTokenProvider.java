@@ -25,8 +25,9 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-expiration}")
     private static long REFRESH_EXPIRATION_TIME;
 
-    public String createAccessToken(String email, Role role) {
+    public String createAccessToken(String email, Long memberId, Role role) {
         Claims claims = Jwts.claims()
+                .add("memberId", memberId)
                 .add("role", role)
                 .build();
 
@@ -68,6 +69,21 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
 
             return claims.getPayload().get("role", Role.class);
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Expired token");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid token");
+        }
+    }
+
+    public Long getMemberIdFromToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+
+            return claims.getPayload().get("memberId", Long.class);
         } catch (ExpiredJwtException e) {
             throw new JwtException("Expired token");
         } catch (JwtException e) {

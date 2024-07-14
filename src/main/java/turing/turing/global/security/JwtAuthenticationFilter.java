@@ -10,10 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import turing.turing.domain.Role;
 import turing.turing.domain.auth.CustomUserDetailService;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 
 @RequiredArgsConstructor
@@ -56,7 +57,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Authentication getAuthentication(String token) {
         String email = jwtTokenProvider.getEmailFromToken(token);
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(email);
+        Role role = jwtTokenProvider.getRoleFromToken(token);
+        Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
+        CustomUserDetails userDetails = customUserDetailService.loadUserByUsername(email)
+                .role(role)
+                .memberId(memberId);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());

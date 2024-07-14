@@ -28,7 +28,7 @@ public class TeacherService {
         Teacher teacher = new Teacher(email, request.getName(), request.getProvider());
         Teacher savedTeacher = teacherRepository.save(teacher);
 
-        String accessToken = jwtTokenProvider.createAccessToken(email, Role.TEACHER);
+        String accessToken = jwtTokenProvider.createAccessToken(email, teacher.getId(), Role.TEACHER);
         String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
         return SignUpResponse.builder()
