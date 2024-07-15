@@ -25,4 +25,5 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
             "join fetch sr.student s " +
             "where sr.id = :studyRoomId")
     Optional<StudyRoom> findWithAllStudyTimeAndStudentById(@Param(value = "studyRoomId") Long studyRoomId);
+  
 }
