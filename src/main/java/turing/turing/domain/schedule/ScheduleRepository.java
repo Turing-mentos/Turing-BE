@@ -2,6 +2,7 @@ package turing.turing.domain.schedule;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + "(select s2.studyRoom.id from Schedule s2 where s2.id=:scheduleId) "
             + "and s.date > (select s3.date from Schedule s3 where s3.id=:scheduleId) "
             + "order by s.date asc")
-    LocalDate findNextDateById(@Param("scheduleId") Long scheduleId, Pageable pageable);
+    List<LocalDate> findNextDateById(@Param("scheduleId") Long scheduleId, Pageable pageable);
 
 }

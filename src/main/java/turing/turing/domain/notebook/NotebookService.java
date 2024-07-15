@@ -62,8 +62,8 @@ public class NotebookService {
         if (b) {
             //TODO 등록되지 않은 회차 예측
             LocalDateTime nextSchedule = scheduleRepository.findNextDateById(schedule.getId(),
-                    PageRequest.of(0, 1))
-                    .atStartOfDay();
+                    PageRequest.of(0, 1)).get(0).atStartOfDay();
+
             notebookInfo.updateDeadline(Timestamp.valueOf(nextSchedule));
         }
         return notebookInfo;
