@@ -1,13 +1,6 @@
 package turing.turing.domain.question;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -15,7 +8,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.comment.Comment;
 import turing.turing.domain.studyRoom.StudyRoom;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -58,6 +55,9 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
+  
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Question(String title, String category, String content, String imageUrl, StudyRoom studyRoom) {
@@ -76,4 +76,5 @@ public class Question extends BaseEntity {
     public void switchSolveStatus(){
         this.solveStatus= !this.solveStatus;
     }
+
 }
