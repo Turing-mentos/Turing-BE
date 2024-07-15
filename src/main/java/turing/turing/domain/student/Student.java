@@ -7,14 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.BaseEntity;
+import turing.turing.domain.Member;
 
 @Getter
 @Entity
-@NoArgsConstructor
-public class Student extends BaseEntity {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Student extends Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +39,23 @@ public class Student extends BaseEntity {
     private String year;
 
     @Size(max = 30)
-    @NotNull
-    @Column(name = "phone", nullable = false, length = 30)
+    @Column(name = "phone", length = 30)
     private String phone;
 
     @Size(max = 30)
     @Column(name = "parent_phone", length = 30)
     private String parentPhone;
 
+    @Size(max = 300)
+    @Column(name = "fcm_token", length = 300)
+    private String fcmToken;
+
+    @Builder
+    public Student(String name, String school, String year, String phone, String parentPhone) {
+        this.name = name;
+        this.school = school;
+        this.year = year;
+        this.phone = phone;
+        this.parentPhone = parentPhone;
+    }
 }
