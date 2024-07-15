@@ -13,9 +13,12 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.schedule.dto.ModifyScheduleRequest;
+import turing.turing.domain.schedule.dto.UpdateScheduleDto;
 import turing.turing.domain.studyRoom.StudyRoom;
 
 @Getter
@@ -59,4 +62,32 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
+    @Builder
+    public Schedule(LocalDate date, LocalTime startTime, LocalTime endTime, String studentName,
+            String subject, Integer session, StudyRoom studyRoom) {
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.studentName = studentName;
+        this.subject = subject;
+        this.session = session;
+        this.studyRoom = studyRoom;
+    }
+
+    public Long update(ModifyScheduleRequest request) {
+        this.date = request.getDate();
+        this.startTime = request.getStartTime();
+        this.endTime = request.getEndTime();
+
+        return this.id;
+    }
+
+    public Long updateWithSession(UpdateScheduleDto request) {
+        this.date = request.getDate();
+        this.startTime = request.getStartTime();
+        this.endTime = request.getEndTime();
+        this.session = request.getSession();
+
+        return this.id;
+    }
 }
