@@ -1,6 +1,9 @@
 package turing.turing.domain.homework;
 
 import java.net.URI;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
 
+@Tag(name = "Homework", description = "숙제")
 @RestController
 @RequestMapping("/api/homework")
 @RequiredArgsConstructor
@@ -22,12 +26,14 @@ public class HomeworkController {
 
     private final HomeworkService homeworkService;
 
+    @Operation(summary = "숙제 상세 조회")
     @GetMapping("/{homeworkId}")
     public ResponseEntity<DetailedHomeworkDto> getHomework(@PathVariable Long homeworkId) {
 
         return ResponseEntity.ok(homeworkService.getHomework(homeworkId));
     }
 
+    @Operation(summary = "숙제 생성")
     @PostMapping("")
     public ResponseEntity<Long> createHomework(@RequestBody DetailedHomeworkDto request) {
         Long savedId = homeworkService.createHomework(request);
@@ -40,6 +46,7 @@ public class HomeworkController {
         return ResponseEntity.created(location).build();
     }
 
+    @Operation(summary = "숙제 삭제")
     @DeleteMapping("/{homeworkId}")
     public ResponseEntity<Void> deleteHomework(@PathVariable Long homeworkId) {
         homeworkService.deleteHomework(homeworkId);
@@ -47,11 +54,13 @@ public class HomeworkController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "숙제 수정")
     @PutMapping("")
     public ResponseEntity<Long> updateHomework(@RequestBody DetailedHomeworkDto request) {
         return ResponseEntity.ok(homeworkService.updateHomework(request));
     }
 
+    @Operation(summary = "숙제 완료")
     @PatchMapping("")
     public ResponseEntity<Long> updateDone(@RequestBody Long homeworkId) {
 

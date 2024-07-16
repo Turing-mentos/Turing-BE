@@ -31,15 +31,14 @@ public class NoticeSettingController {
     }
 
 
-    //이부분은 테스트용으로 만든거, 회원가입할 때 service 에 있는 createSetting 호출하기
-//    @Operation(summary = "설정 생성")
-//    @GetMapping("/creatTest")
-//    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> createSetting(){
-//        Long memberId = 1L;
-//        String memberRole = "STUDENT";
-//        noticeSettingService.createSetting(memberId,memberRole,true);
-//
-//        return ResponseEntity.ok(null);
-//
-//    }
+    @Operation(summary = "설정 생성")
+    @PostMapping("/init")
+    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> createSetting(@RequestParam(defaultValue = "true") boolean enabled) {
+        Long memberId = 1L;
+        String memberRole = "STUDENT";
+        noticeSettingService.createSetting(memberId, memberRole, enabled);
+
+        return ResponseEntity.ok(null);
+    }
+
 }

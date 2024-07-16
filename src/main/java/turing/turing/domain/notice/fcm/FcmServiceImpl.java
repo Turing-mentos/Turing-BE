@@ -61,7 +61,7 @@ public class FcmServiceImpl implements FcmService{
         List<FcmSendDeviceDto> fcmSendDeviceDtos = new ArrayList<>();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        log.info("알림장 수업 끝나기 10분전에 알랴주기-------");
+        log.info("알림장 수업 끝나기 10분전에 알려주기-------");
         addNotebookNotifications(fcmSendDeviceDtos, currentDateTime);
         log.info("하루전 숙제 안했으면 알려주기-------");
         addHomeworkNotifications(fcmSendDeviceDtos, currentDateTime);

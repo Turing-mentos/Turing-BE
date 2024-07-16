@@ -11,12 +11,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.BaseEntity;
+import turing.turing.domain.Member;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Student extends BaseEntity {
+public class Student extends Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

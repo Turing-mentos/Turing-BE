@@ -8,12 +8,15 @@ spring:
     password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         #show_sql: true
         #format_sql: true
         default_batch_fetch_size: 1000
+  jackson:
+    time-zone: Asia/Seoul
+
 #Swagger
 springdoc:
   default-consumes-media-type: application/json
@@ -26,6 +29,23 @@ springdoc:
     tags-sorter: alpha
 server:
   port: 8080
+
 #JWT
+jwt:
+  secret: ${SECRET_KEY}
+  access-expiration: ${ACCESS_EXPIRATION}
+  refresh-expiration: ${REFRESH_EXPIRATION}
 
 #S3
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_PRIVATE_KEY}
+    s3:
+      bucket: turingbucket7
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false  # CloudFormation 구성 비활성화
