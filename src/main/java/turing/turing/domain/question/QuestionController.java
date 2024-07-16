@@ -48,8 +48,19 @@ public class QuestionController {
         return ResponseEntity.created(location).body(questionId);
     }
 
+    @PutMapping("/questions/{questionId}")
+    public ResponseEntity<Void> updateQuestion(
+            @PathVariable Long questionId,
+            @RequestPart(value = "question") QuestionReqDto questionReqDto,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        questionService.updateQuestion(questionId, questionReqDto, file);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/questions/{questionId}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable(name = "questionId") Long questionId){
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId){
 
         questionService.deleteQuestion(questionId);
 
@@ -57,7 +68,7 @@ public class QuestionController {
     }
 
     @PatchMapping("/questions/{questionId}/pin")
-    public ResponseEntity<Void> pin(@PathVariable(name = "questionId") Long questionId) {
+    public ResponseEntity<Void> pin(@PathVariable Long questionId) {
 
         questionService.pin(questionId);
 
@@ -65,7 +76,7 @@ public class QuestionController {
     }
 
     @PatchMapping("/questions/{questionId}/solve")
-    public ResponseEntity<Void> solve(@PathVariable(name = "questionId") Long questionId) {
+    public ResponseEntity<Void> solve(@PathVariable Long questionId) {
 
         questionService.solve(questionId);
 

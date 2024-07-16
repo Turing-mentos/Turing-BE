@@ -1,7 +1,5 @@
 package turing.turing.domain.question;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +12,6 @@ import turing.turing.domain.question.dto.request.QuestionReqDto;
 import turing.turing.domain.question.dto.response.QuestionCreateResDto;
 import turing.turing.domain.question.dto.response.QuestionPreviewResDto;
 import turing.turing.domain.question.dto.response.QuestionWithCommentsResDto;
-import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
@@ -87,6 +84,36 @@ public class QuestionService {
                 .receiverId(studyRoom.getTeacher().getId())
                 .receiverRole("TEACHER")  // 추후 Role로 변경
                 .build();
+    }
+
+    @Transactional
+    public void updateQuestion(Long questionId, QuestionReqDto questionReqDto, MultipartFile file) {
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        // 파일이 존재할 경우 S3에 업로드 후 URL 저장
+        // (파일을 S3에서 ObjectMetadata로 직접 가져와 비교하여, 같은 이미지라면 업로드를 생략하도록 하는 것이 더 나은 방법일까?)
+        String fileUrl = null;
+        if(file != null && !file.isEmpty())
+            fileUrl = s3Service.uploadFile(file);
+
+        // 기존에 이미지가 존재했다면 해당 이미지를 S3에서 삭제
+        if(question.getImageUrl() != null && !question.getImageUrl().isEmpty()){
+            s3Service.deleteFile(question.getImageUrl());
+        }
+
+        // 질문 업데이트
+        question.updateQuestion(
+                questionReqDto.title(),
+                questionReqDto.category(),
+                questionReqDto.content(),
+                questionReqDto.importance(),
+                fileUrl
+        );
+
+        questionRepository.save(question);
+
     }
 
     @Transactional

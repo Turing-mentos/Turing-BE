@@ -66,13 +66,20 @@ public class Question extends BaseEntity {
 
     @Builder
     public Question(String title, String category, String content, String importance, String imageUrl, StudyRoom studyRoom) {
-        super();
         this.title = title;
         this.category = category;
         this.content = content;
         this.importance = importance;
         this.imageUrl = imageUrl;
         this.studyRoom = studyRoom;
+    }
+
+    public void updateQuestion(String title, String category, String content, String importance, String imageUrl){
+        this.title = title;
+        this.category = category;
+        this.content = content;
+        this.importance = importance;
+        this.imageUrl = imageUrl;
     }
 
     public void switchPinStatus(){
