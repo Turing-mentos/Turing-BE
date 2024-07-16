@@ -3,6 +3,7 @@ package turing.turing.domain.teacher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.Provider;
 import turing.turing.domain.Role;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.domain.teacher.dto.SignUpResponse;
@@ -20,8 +21,9 @@ public class TeacherService {
     @Transactional
     public SignUpResponse signUp(TeacherSignUpRequest request) {
         String email = request.getEmail();
+        Provider provider = request.getProvider();
 
-        if (teacherRepository.findByEmail(email).isPresent()) {
+        if (teacherRepository.findByEmailAndProvider(email, provider).isPresent()) {
             throw new RestApiException(CommonErrorCode.BAD_REQUEST);
         }
 
