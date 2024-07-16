@@ -73,6 +73,7 @@ public class QuestionService {
                 .title(questionReqDto.title())
                 .category(questionReqDto.category())
                 .content(questionReqDto.content())
+                .importance(questionReqDto.importance())
                 .imageUrl(fileUrl)
                 .studyRoom(studyRoom)
                 .build();
