@@ -1,5 +1,6 @@
 package turing.turing.domain.auth;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import turing.turing.domain.auth.dto.LoginResponse;
 import turing.turing.domain.auth.dto.TokenReIssueRequest;
 import turing.turing.domain.auth.jwt.TokenResponse;
 
+@Tag(name = "Auth", description = "인증")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")

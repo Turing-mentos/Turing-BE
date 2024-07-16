@@ -39,6 +39,11 @@ public class Question extends BaseEntity {
     @Column(name = "content", nullable = false, length = 300)
     private String content;
 
+    @NotNull
+    @Size(max = 100)
+    @Column(name = "importance", nullable = false, length = 100)
+    private String importance;
+
     @Size(max = 200)
     @Column(name = "image_url", length = 200)
     private String imageUrl;
@@ -60,13 +65,21 @@ public class Question extends BaseEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Question(String title, String category, String content, String imageUrl, StudyRoom studyRoom) {
-        super();
+    public Question(String title, String category, String content, String importance, String imageUrl, StudyRoom studyRoom) {
         this.title = title;
         this.category = category;
         this.content = content;
+        this.importance = importance;
         this.imageUrl = imageUrl;
         this.studyRoom = studyRoom;
+    }
+
+    public void updateQuestion(String title, String category, String content, String importance, String imageUrl){
+        this.title = title;
+        this.category = category;
+        this.content = content;
+        this.importance = importance;
+        this.imageUrl = imageUrl;
     }
 
     public void switchPinStatus(){
