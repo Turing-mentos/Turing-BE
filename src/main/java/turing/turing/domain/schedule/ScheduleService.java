@@ -33,7 +33,8 @@ public class ScheduleService {
 
     public ScheduleDto getSchedule(Long scheduleId) {
 
-        return scheduleRepository.findByScheduleId(scheduleId);
+        return scheduleRepository.findByScheduleId(scheduleId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
     }
 
     @Transactional
