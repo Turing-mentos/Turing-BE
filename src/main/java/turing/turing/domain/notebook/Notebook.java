@@ -34,4 +34,16 @@ public class Notebook extends BaseEntity {
     @NotNull
     @Column(name = "deadline", nullable = false)
     private Timestamp deadline;
+
+    public Notebook(Schedule schedule, Timestamp deadline) {
+        super();
+        this.schedule = schedule;
+        this.deadline = deadline;
+    }
+
+    public Long modifyDeadline(Timestamp deadline) {
+        this.deadline = deadline;
+
+        return this.id;
+    }
 }
