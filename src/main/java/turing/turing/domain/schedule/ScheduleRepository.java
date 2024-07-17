@@ -1,6 +1,7 @@
 package turing.turing.domain.schedule;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +26,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("select new turing.turing.domain.schedule.dto.ScheduleDto(s.id, s.date, s.studentName, s.subject, s.session, s.startTime, s.endTime, sr.id, sr.baseSession) from Schedule s "
             + "join fetch StudyRoom sr "
             + "where s.id=:scheduleId")
-    ScheduleDto findByScheduleId(@Param("scheduleId") Long scheduleId);
+    Optional<ScheduleDto> findByScheduleId(@Param("scheduleId") Long scheduleId);
 
 
     @Query("select distinct s from Schedule s "

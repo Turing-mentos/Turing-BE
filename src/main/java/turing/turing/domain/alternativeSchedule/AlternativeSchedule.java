@@ -9,9 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
@@ -44,4 +44,12 @@ public class AlternativeSchedule extends BaseEntity {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
+    @Builder
+    public AlternativeSchedule(LocalDate scheduleDate, LocalTime startTime, LocalTime endTime,
+            Schedule schedule) {
+        this.scheduleDate = scheduleDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.schedule = schedule;
+    }
 }

@@ -37,6 +37,7 @@ public class ScheduleService {
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
     }
 
+    //TODO saveAll -> bulkInsert 개선 필요
     @Transactional
     public Long createSchedules(CreateScheduleRequest request) {
         StudyRoom studyRoom = studyRoomRepository.findById(request.getStudyRoomId())
