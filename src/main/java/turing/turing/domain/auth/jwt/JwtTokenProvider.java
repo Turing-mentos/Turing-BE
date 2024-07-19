@@ -12,18 +12,30 @@ import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
     private static String SECRET_KEY;
-    @Value("${jwt.access-expiration}")
     private static long EXPIRATION_TIME;
-    @Value("${jwt.refresh-expiration}")
     private static long REFRESH_EXPIRATION_TIME;
+
+    @Value("${jwt.secret}")
+    public void setSecretKey(String secretKey) {
+        this.SECRET_KEY = secretKey;
+    }
+
+    @Value("${jwt.access-expiration}")
+    public void setExpirationTime(long expirationTime) {
+        this.EXPIRATION_TIME = expirationTime;
+    }
+
+    @Value("${jwt.refresh-expiration}")
+    public void setRefreshExpirationTime(long refreshExpirationTime) {
+        this.REFRESH_EXPIRATION_TIME = refreshExpirationTime;
+    }
 
     public String createAccessToken(String email, Long memberId, Role role) {
         Claims claims = Jwts.claims()
