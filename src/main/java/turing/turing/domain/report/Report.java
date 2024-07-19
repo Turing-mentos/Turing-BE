@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
@@ -19,6 +21,8 @@ import turing.turing.domain.studyRoom.StudyRoom;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Report extends BaseEntity {
 
     @Id
@@ -51,4 +55,26 @@ public class Report extends BaseEntity {
     @Column(name = "closing", length = 800)
     private String closing;
 
+    public void updateField(int paragraphNum, String content) {
+        switch (paragraphNum) {
+            case 1:
+                this.opening = content;
+                break;
+            case 2:
+                this.studyProgress = content;
+                break;
+            case 3:
+                this.feedback = content;
+                break;
+            case 4:
+                this.money = content;
+                break;
+            case 5:
+                this.closing = content;
+                break;
+            default:
+                //유효하지 않음
+                throw new IllegalArgumentException("Invalid paragraph number: " + paragraphNum);
+        }
+    }
 }
