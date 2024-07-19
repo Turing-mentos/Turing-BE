@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.notebook.dto.CreateNotebookDto;
+import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
 import turing.turing.domain.notebook.dto.NotebookInfo;
 
@@ -79,5 +80,13 @@ public class NotebookController {
 
 
         return ResponseEntity.ok(notebookService.modifyDeadline(request));
+    }
+
+    @Operation(summary = "숙제 온도 조회")
+    @GetMapping("/completion-percent")
+    public ResponseEntity<List<HomeworkPercentAllDto>> readPercent() {
+        String role="STUDENT";
+        Long id = 1l;
+        return ResponseEntity.ok(notebookService.readPercent(role,id));
     }
 }
