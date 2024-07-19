@@ -12,6 +12,8 @@ import turing.turing.domain.auth.dto.LoginRequest;
 import turing.turing.domain.auth.dto.LoginResponse;
 import turing.turing.domain.auth.dto.TokenReIssueRequest;
 import turing.turing.domain.auth.jwt.TokenResponse;
+import turing.turing.domain.auth.kakao.VerifyKakaoRequest;
+import turing.turing.domain.member.Provider;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,14 @@ public class AuthController {
     public ResponseEntity<TokenResponse> verifyAppleEmail(@RequestBody @Valid VerifyAppleRequest request) {
         String email = authService.verifyWithApple(request);
 
-        return ResponseEntity.ok(authService.confirmAssign(email));
+        return ResponseEntity.ok(authService.confirmAssign(email, Provider.APPLE));
+    }
+
+    @PostMapping("/verify/kakao")
+    public ResponseEntity<TokenResponse> verifyKakaoEmail(@RequestBody @Valid VerifyKakaoRequest request) {
+        String email = request.getEmail();
+
+        return ResponseEntity.ok(authService.confirmAssign(email, Provider.KAKAO));
     }
 
     @PostMapping("/login")

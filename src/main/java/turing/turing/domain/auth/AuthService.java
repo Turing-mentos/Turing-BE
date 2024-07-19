@@ -7,6 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.apple.AppleClient;
 import turing.turing.domain.auth.apple.ApplePublicKeyGenerator;
@@ -47,9 +48,9 @@ public class AuthService {
         return claims.get("email", String.class);
     }
 
-    public TokenResponse confirmAssign(String email) {
-        Optional<Teacher> teacher = teacherRepository.findByEmail(email);
-        Optional<Student> student = studentRepository.findByEmail(email);
+    public TokenResponse confirmAssign(String email, Provider provider) {
+        Optional<Teacher> teacher = teacherRepository.findByEmailAndProvider(email, provider);
+        Optional<Student> student = studentRepository.findByEmailAndProvider(email, provider);
 
         String accessToken = null;
         String refreshToken = null;
