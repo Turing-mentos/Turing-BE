@@ -11,28 +11,35 @@ import java.sql.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import turing.turing.domain.Role;
-import turing.turing.domain.auth.CustomUserDetailService;
+import turing.turing.domain.member.Role;
 
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
     private static String SECRET_KEY;
-    @Value("${jwt.access-expiration}")
     private static long EXPIRATION_TIME;
-    @Value("${jwt.refresh-expiration}")
     private static long REFRESH_EXPIRATION_TIME;
 
-    private final CustomUserDetailService userDetailService;
+    @Value("${jwt.secret}")
+    public void setSecretKey(String secretKey) {
+        this.SECRET_KEY = secretKey;
+    }
 
-    public String createAccessToken(String email, Role role) {
+    @Value("${jwt.access-expiration}")
+    public void setExpirationTime(long expirationTime) {
+        this.EXPIRATION_TIME = expirationTime;
+    }
+
+    @Value("${jwt.refresh-expiration}")
+    public void setRefreshExpirationTime(long refreshExpirationTime) {
+        this.REFRESH_EXPIRATION_TIME = refreshExpirationTime;
+    }
+
+    public String createAccessToken(String email, Long memberId, Role role) {
         Claims claims = Jwts.claims()
+                .add("memberId", memberId)
                 .add("role", role)
                 .build();
 
@@ -81,6 +88,21 @@ public class JwtTokenProvider {
         }
     }
 
+    public Long getMemberIdFromToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+
+            return claims.getPayload().get("memberId", Long.class);
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Expired token");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid token");
+        }
+    }
+
     public boolean validationToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
@@ -92,14 +114,6 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             return false;
         }
-    }
-
-    public Authentication getAuthentication(String token) {
-        String email = getEmailFromToken(token);
-        UserDetails userDetails = userDetailService.loadUserByUsername(email);
-
-        return new UsernamePasswordAuthenticationToken(userDetails, "",
-                userDetails.getAuthorities());
     }
 
     private SecretKey getSigningKey() {

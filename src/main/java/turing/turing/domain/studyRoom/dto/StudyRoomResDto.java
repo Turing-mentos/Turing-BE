@@ -4,14 +4,16 @@ import turing.turing.domain.studyRoom.StudyRoom;
 
 public record StudyRoomResDto(
         Long id,
-        String studentName,
+        String studentFirstName,
+        String studentLastName,
         String subject,
         Boolean linkStatus
 ) {
     public static StudyRoomResDto of(StudyRoom studyRoom) {
         return new StudyRoomResDto(
                 studyRoom.getId(),
-                studyRoom.getStudent().getName(),
+                studyRoom.getStudent().getFirstName(),
+                studyRoom.getStudent().getLastName(),
                 studyRoom.getSubject(),
                 studyRoom.getLinkStatus()
         );

@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record DetailedStudyRoomResDto(
-        String studentName,
+        String studentFirstName,
+        String studentLastName,
         String subject,
         String studentSchool,
         String studentYear,
@@ -45,7 +46,8 @@ public record DetailedStudyRoomResDto(
         Integer totalBaseSession = (schedule == null ? 0: schedules.size());
 
         return new DetailedStudyRoomResDto(
-                studyRoom.getStudent().getName(),
+                studyRoom.getStudent().getFirstName(),
+                studyRoom.getStudent().getLastName(),
                 studyRoom.getSubject(),
                 studyRoom.getStudent().getSchool(),
                 studyRoom.getStudent().getYear(),

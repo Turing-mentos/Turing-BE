@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
     
-    @Query("SELECT r.id as reportId, s.studentName as name, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
+    @Query("SELECT r.id as reportId, s.studentFirstName as firstName, s.studentLastName as lastName, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
             "FROM Report r " +
             "JOIN r.schedule s " +
             "JOIN s.studyRoom sr " +

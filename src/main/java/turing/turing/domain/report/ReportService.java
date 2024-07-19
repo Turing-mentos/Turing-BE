@@ -34,12 +34,14 @@ public class ReportService {
     public ReportResDto.CreateDto createReport(ReportReqDto.CreateDto reportReq) {
         //과외 공간 찾기
         Long teacherId = 1L; //예시임, Authen~~ 을 통해 사용자 정보 받을거임
-        log.info(String.valueOf(reportReq.getStudentId()));
 
         StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(teacherId, reportReq.getStudentId());
         //회차를 얻기 위해
         Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(studyRoom.getId());
 
+        if(schedule == null){
+            throw new RestApiException(CommonErrorCode.NO_SCHEDULE);
+        }
         if (reportReq.isPay()) {
             ReportReqDto.PayDto payDto = generatePayDto(reportReq, studyRoom);
             return processPaymentReport(reportReq, schedule, payDto);
@@ -76,7 +78,6 @@ public class ReportService {
             if(prompt2 != null){
                 feedback = gptService.parseData(gptResponse2, "[학생 피드백]") ;
                 money = gptService.parseData(gptResponse2, "[과외비]") ;
-                log.info("-------"+money);
                 closing = gptService.parseData(gptResponse2, "[마무리 멘트]") ;
             }
             else if(prompt3 != null){
@@ -104,7 +105,6 @@ public class ReportService {
 
         //요일별 시간과 임금 계산
         int wage = calculatePay(scheduleList, studyRoom.getWage());
-        log.info(wage+"원");
         ReportReqDto.PayDto payDto = ReportReqDto.PayDto
                 .builder()
                 .wage(wage)
@@ -116,8 +116,6 @@ public class ReportService {
         int pay = 0;
 
         for (Schedule schedule : scheduleList) {
-
-            log.info(String.valueOf(schedule.getId()));
             LocalTime startTime = schedule.getStartTime();
             LocalTime endTime = schedule.getEndTime();
 

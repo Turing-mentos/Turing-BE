@@ -10,8 +10,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.Member;
-import turing.turing.domain.Provider;
+import turing.turing.domain.member.Member;
+import turing.turing.domain.member.Provider;
+import turing.turing.domain.member.Role;
 
 @Getter
 @Entity
@@ -25,16 +26,19 @@ public class Teacher extends Member {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
 
     @Size(max = 100)
     @NotNull
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+
+    @Size(max = 100)
     @Column(name = "university", length = 100)
     private String university;
 
     @Size(max = 30)
-    @NotNull
     @Column(name = "phone", length = 30)
     private String phone;
 
@@ -50,15 +54,9 @@ public class Teacher extends Member {
     @Column(name = "student_number")
     private String studentNumber;
 
-
-    public Teacher(String email, String name, Provider provider) {
-        this.email=email;
-        this.name = name;
-        this.provider = provider;
+    public Teacher(String email, Role role, Provider provider, String firstName, String lastName) {
+        super(role, email, provider, null);  //TODO fcmToken!!!
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
-
-    @Size(max = 300)
-    @Column(name = "fcm_token", nullable = false, length = 300)
-    private String fcmToken;
-
 }
