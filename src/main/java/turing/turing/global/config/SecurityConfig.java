@@ -21,8 +21,7 @@ public class SecurityConfig {
             "/teacher/signup",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/test/exception/param",
-            "/api/**"
+            "/test/exception/param"
     };
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {

@@ -53,7 +53,8 @@ public class NotebookService {
 
         NotebookInfo notebookInfo = NotebookInfo.builder()
                 .notebookId(notebookId)
-                .studentName(schedule.getStudentName())
+                .studentFirstName(schedule.getStudentFirstName())
+                .studentLastName(schedule.getStudentLastName())
                 .subject(schedule.getSubject())
                 .deadline(notebook.getDeadline())
                 .isDone(isDone)
@@ -162,7 +163,8 @@ public class NotebookService {
 
             NotebookInfo notebookInfo = NotebookInfo.builder()
                     .notebookId(notebook.getId())
-                    .studentName(notebook.getSchedule().getStudentName())
+                    .studentFirstName(notebook.getSchedule().getStudentFirstName())
+                    .studentLastName(notebook.getSchedule().getStudentLastName())
                     .subject(notebook.getSchedule().getSubject())
                     .deadline(notebook.getDeadline())
                     .isDone(isDone)

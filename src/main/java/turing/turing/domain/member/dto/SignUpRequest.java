@@ -9,6 +9,7 @@ public class SignUpRequest {
 
     private String email;
     private Role role;
-    private String name;
+    private String firstName;
+    private String lastName;
     private Provider provider;
 }

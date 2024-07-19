@@ -28,7 +28,8 @@ public class MemberService {
         String email = request.getEmail();
         Role role = request.getRole();
         Provider provider = request.getProvider();
-        String name = request.getName();
+        String firstName = request.getFirstName();
+        String lastName = request.getLastName();
 
         Long memberId;
 
@@ -36,7 +37,7 @@ public class MemberService {
             teacherRepository.findByEmailAndProvider(email, provider)
                     .ifPresent((teacher) -> { throw new RestApiException(CommonErrorCode.BAD_REQUEST); });
 
-            Teacher teacher = new Teacher(email, role, provider, name);
+            Teacher teacher = new Teacher(email, role, provider, firstName, lastName);
             teacherRepository.save(teacher);
 
             memberId = teacher.getId();
@@ -44,7 +45,7 @@ public class MemberService {
             studentRepository.findByEmailAndProvider(email, provider)
                     .ifPresent((student) -> { throw new RestApiException(CommonErrorCode.BAD_REQUEST); });
 
-            Student student = new Student(email, role, provider, name);
+            Student student = new Student(email, role, provider, firstName, lastName);
             studentRepository.save(student);
 
             memberId = student.getId();

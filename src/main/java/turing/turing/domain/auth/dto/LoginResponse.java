@@ -10,7 +10,8 @@ public class LoginResponse {
 
     private Role role;
     private Long memberId;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String university;
     private String department;
     private String studentNumber;
