@@ -9,6 +9,9 @@ import turing.turing.domain.member.Role;
 public class LoginResponse {
 
     private Role role;
-    private Long id;
+    private Long memberId;
     private String name;
+    private String university;
+    private String department;
+    private String studentNumber;
 }
