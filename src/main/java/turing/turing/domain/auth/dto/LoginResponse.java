@@ -2,7 +2,7 @@ package turing.turing.domain.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 
 @Getter
 @AllArgsConstructor
