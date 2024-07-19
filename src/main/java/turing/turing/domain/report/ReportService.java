@@ -39,6 +39,9 @@ public class ReportService {
         //회차를 얻기 위해
         Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(studyRoom.getId());
 
+        if(schedule == null){
+            throw new RestApiException(CommonErrorCode.NO_SCHEDULE);
+        }
         if (reportReq.isPay()) {
             ReportReqDto.PayDto payDto = generatePayDto(reportReq, studyRoom);
             return processPaymentReport(reportReq, schedule, payDto);
