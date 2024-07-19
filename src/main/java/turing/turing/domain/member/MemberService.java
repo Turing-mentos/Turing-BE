@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
+import turing.turing.domain.member.dto.SignUpRequest;
+import turing.turing.domain.member.dto.SignUpResponse;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
-import turing.turing.domain.teacher.dto.SignUpRequest;
-import turing.turing.domain.teacher.dto.SignUpResponse;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 

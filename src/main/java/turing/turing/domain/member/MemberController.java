@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import turing.turing.domain.teacher.dto.SignUpRequest;
-import turing.turing.domain.teacher.dto.SignUpResponse;
+import turing.turing.domain.member.dto.SignUpRequest;
+import turing.turing.domain.member.dto.SignUpResponse;
 
 @Tag(name = "Member", description = "회원")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberService memberService;
