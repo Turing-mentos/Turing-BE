@@ -77,11 +77,11 @@ public class AuthService {
         if (role.equals(Role.TEACHER)) {
             Teacher teacher = teacherRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, teacher.getId(), teacher.getName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
+            return new LoginResponse(role, teacher.getId(), teacher.getFirstName(), teacher.getLastName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
         } else {
             Student student = studentRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, student.getId(), student.getName(), null, null, null);
+            return new LoginResponse(role, student.getId(), student.getFirstName(), student.getLastName(), null, null, null);
         }
     }
 

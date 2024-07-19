@@ -26,8 +26,13 @@ public class Teacher extends Member {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
 
     @Size(max = 100)
     @Column(name = "university", length = 100)
@@ -49,8 +54,9 @@ public class Teacher extends Member {
     @Column(name = "student_number")
     private String studentNumber;
 
-    public Teacher(String email, Role role, Provider provider, String name) {
+    public Teacher(String email, Role role, Provider provider, String firstName, String lastName) {
         super(role, email, provider, null);  //TODO fcmToken!!!
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 }

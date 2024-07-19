@@ -27,8 +27,13 @@ public class Student extends Member {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
 
     @Size(max = 100)
     @Column(name = "school", length = 100)
@@ -52,16 +57,18 @@ public class Student extends Member {
 
     // 학생 가입용
     @Builder
-    public Student(String email, Role role, Provider provider, String name) {
+    public Student(String email, Role role, Provider provider, String firstName, String lastName) {
         super(role, email, provider, null);  //TODO fcmToken!!!
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     // 선생님 학생 등록용
     @Builder
-    public Student(String name, String school, String year, String phone, String parentPhone) {
+    public Student(String firstName, String lastName, String school, String year, String phone, String parentPhone) {
         super(Role.STUDENT, null, null, null);
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.school = school;
         this.year = year;
         this.phone = phone;

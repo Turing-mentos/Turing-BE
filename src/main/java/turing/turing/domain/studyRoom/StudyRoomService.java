@@ -130,7 +130,8 @@ public class StudyRoomService {
 
         // 기존 학생의 정보를 통해 nonSignedUpStudent 생성
         Student nonSignUpStudent = new Student(
-                studyRoom.getStudent().getName(),
+                studyRoom.getStudent().getFirstName(),
+                studyRoom.getStudent().getLastName(),
                 studyRoom.getStudent().getSchool(),
                 studyRoom.getStudent().getYear(),
                 studyRoom.getStudent().getPhone(),
