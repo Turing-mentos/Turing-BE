@@ -7,7 +7,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Provider;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.apple.AppleClient;
 import turing.turing.domain.auth.apple.ApplePublicKeyGenerator;
 import turing.turing.domain.auth.apple.ApplePublicKeys;
@@ -47,17 +48,17 @@ public class AuthService {
         return claims.get("email", String.class);
     }
 
-    public TokenResponse confirmAssign(String email) {
-        Optional<Teacher> teacher = teacherRepository.findByEmail(email);
-        Optional<Student> student = studentRepository.findByEmail(email);
+    public TokenResponse confirmAssign(String email, Provider provider) {
+        Optional<Teacher> teacher = teacherRepository.findByEmailAndProvider(email, provider);
+        Optional<Student> student = studentRepository.findByEmailAndProvider(email, provider);
 
         String accessToken = null;
         String refreshToken = null;
         if (teacher.isPresent()) {
-            accessToken = jwtTokenProvider.createAccessToken(email, Role.TEACHER);
+            accessToken = jwtTokenProvider.createAccessToken(email, teacher.get().getId(), Role.TEACHER);
             refreshToken = jwtTokenProvider.createRefreshToken(email);
         } else if (student.isPresent()) {
-            accessToken = jwtTokenProvider.createAccessToken(email, Role.STUDENT);
+            accessToken = jwtTokenProvider.createAccessToken(email, student.get().getId(), Role.STUDENT);
             refreshToken = jwtTokenProvider.createRefreshToken(email);
         }
 
@@ -76,11 +77,11 @@ public class AuthService {
         if (role.equals(Role.TEACHER)) {
             Teacher teacher = teacherRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, teacher.getId());
+            return new LoginResponse(role, teacher.getId(), teacher.getName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
         } else {
             Student student = studentRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, student.getId());
+            return new LoginResponse(role, student.getId(), student.getName(), null, null, null);
         }
     }
 
@@ -90,7 +91,9 @@ public class AuthService {
         if (jwtTokenProvider.validationToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
             Role role = jwtTokenProvider.getRoleFromToken(token);
-            String accessToken = jwtTokenProvider.createAccessToken(email, role);
+            Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
+
+            String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
             String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
             return new TokenResponse(email, accessToken, refreshToken);

@@ -14,9 +14,8 @@ import turing.turing.global.exception.errorCode.UserErrorCode;
 public class TestController {
 
     @GetMapping("")
-    public ResponseEntity<Homework> test() {
-        Homework homework = new Homework();
-        return ResponseEntity.ok(homework);
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test Success");
     }
 
     @GetMapping("/exception/server")

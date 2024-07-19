@@ -30,5 +30,4 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
 
     @Query("SELECT s FROM StudyRoom s WHERE s.teacher.id = :teacherId AND s.student.id = :studentId")
     StudyRoom findByTeacherIdAndStudentId(@Param("teacherId") Long teacherId, @Param("studentId") Long studentId);
-
 }

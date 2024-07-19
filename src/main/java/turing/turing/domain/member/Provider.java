@@ -1,4 +1,4 @@
-package turing.turing.domain;
+package turing.turing.domain.member;
 
 public enum Provider {
     APPLE, KAKAO
