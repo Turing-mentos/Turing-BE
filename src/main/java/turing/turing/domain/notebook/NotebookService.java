@@ -17,6 +17,7 @@ import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.homework.converter.HomeworkConverter;
 import turing.turing.domain.homework.dto.HomeworkDto;
 import turing.turing.domain.notebook.dto.CreateNotebookDto;
+import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
 import turing.turing.domain.notebook.dto.NotebookInfo;
 import turing.turing.domain.schedule.Schedule;
@@ -172,5 +173,16 @@ public class NotebookService {
         }
 
         return result;
+    }
+
+    public List<HomeworkPercentAllDto> readPercent(String role, Long id) {
+
+        if(role.equals("TEACHER")){
+            return notebookRepository.getPercentByTeacherId(id);
+        }
+        else if(role.equals("STUDENT")){
+            return notebookRepository.getPercentByStudentId(id);
+        }
+        throw new RestApiException(CommonErrorCode.NOT_FOUND);
     }
 }
