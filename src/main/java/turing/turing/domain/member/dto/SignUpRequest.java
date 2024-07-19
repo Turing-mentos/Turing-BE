@@ -1,12 +1,10 @@
-package turing.turing.domain.teacher.dto;
+package turing.turing.domain.member.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 
 @Getter
-@AllArgsConstructor
 public class SignUpRequest {
 
     private String email;

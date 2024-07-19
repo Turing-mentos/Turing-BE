@@ -1,4 +1,4 @@
-package turing.turing.domain.teacher.dto;
+package turing.turing.domain.member.dto;
 
 import lombok.Builder;
 import lombok.Getter;
