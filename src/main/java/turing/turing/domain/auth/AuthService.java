@@ -7,7 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.apple.AppleClient;
 import turing.turing.domain.auth.apple.ApplePublicKeyGenerator;
 import turing.turing.domain.auth.apple.ApplePublicKeys;

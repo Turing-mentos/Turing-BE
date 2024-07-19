@@ -1,10 +1,7 @@
 package turing.turing.domain.question;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,9 +33,6 @@ public class QuestionService {
     private final StudyRoomRepository studyRoomRepository;
     private final CommentRepository commentRepository;
     private final S3Service s3Service;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
 
     public List<QuestionPreviewResDto> getQuestionList(Long memberId){
         // 선생 학생 구분 필요 (쿼리 때문에 - teacherId? studentId?) -> Authentication을 통해 추후 구분하여 로직 작성
