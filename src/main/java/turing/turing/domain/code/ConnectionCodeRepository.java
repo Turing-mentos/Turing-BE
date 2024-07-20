@@ -19,5 +19,9 @@ public interface ConnectionCodeRepository extends JpaRepository<ConnectionCode, 
             "where c.code = :code")
     Optional<ConnectionCode> findWithStudyRoomAndStudentByCode(@Param(value = "code") Integer code);
 
-
+    @Query("select c from ConnectionCode c " +
+            "join fetch c.studyRoom sr " +
+            "join fetch sr.teacher t " +
+            "where c.code = :code")
+    Optional<ConnectionCode> findWithStudyRoomAndTeacherByCode(@Param(value = "code") Integer code);
 }
