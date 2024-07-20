@@ -64,7 +64,7 @@ public class StudyRoomService {
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
-        studyRoom.updateStudyRoom(studyRoomUpdateReqDto.subject(), studyRoomUpdateReqDto.baseSession());
+        studyRoom.updateStudyRoom(studyRoomUpdateReqDto.subject(), studyRoomUpdateReqDto.baseSession(), studyRoomUpdateReqDto.wage());
 
         // StudyTime의 경우, 요일이 추가/삭제될 수도 있기 때문에 변경 감지가 아닌 기존 StudyTime 삭제 후 다시 생성하도록 함
         studyTimeRepository.deleteByStudyRoomId(studyRoomId);  // 벌크 연산을 통해 삭제

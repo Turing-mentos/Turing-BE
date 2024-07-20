@@ -11,6 +11,6 @@ public record StudyRoomUpdateReqDto(
         List<StudyTimeReqDto> studyTimes,
         Integer baseSession,
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate startDate
+        Integer wage
 ) {
 }
