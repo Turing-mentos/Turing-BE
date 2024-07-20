@@ -92,4 +92,10 @@ public class StudyRoomController {
         DetailedStudyRoomResDto detailedStudyRoomResDto = studyRoomService.getDetailedStudyRooms(studyRoomId, role);
         return ResponseEntity.ok(detailedStudyRoomResDto);
     }
+
+    @GetMapping("/{studyRoomId}/template")
+    public ResponseEntity<BaseTemplateDto> getLastTemplate(@PathVariable("studyRoomId") Long studyRoomId) {
+
+        return ResponseEntity.ok(studyRoomService.getBaseTemplate(studyRoomId));
+    }
 }

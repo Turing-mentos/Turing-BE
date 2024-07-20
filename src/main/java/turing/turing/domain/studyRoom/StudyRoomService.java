@@ -1,5 +1,6 @@
 package turing.turing.domain.studyRoom;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import turing.turing.domain.code.ConnectionCodeRepository;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
+import turing.turing.domain.studyRoom.dto.BaseTemplateDto;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.dto.response.DetailedStudyRoomResDto;
@@ -17,6 +19,7 @@ import turing.turing.domain.studyRoom.dto.request.StudyRoomUpdateReqDto;
 import turing.turing.domain.studyRoom.dto.response.SubjectAndTeacherResDto;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.studyTime.StudyTimeRepository;
+import turing.turing.domain.studyTime.dto.StudyTimeResDto;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
@@ -200,5 +203,23 @@ public class StudyRoomService {
             if(!connectionCodeRepository.existsByCode(generatedCode))   // 중복되지 않는 코드인지 검증
                 return generatedCode;
         }
+    }
+
+    public BaseTemplateDto getBaseTemplate(Long studyRoomId) {
+
+        List<StudyTime> studyTimeList = studyTimeRepository.findByStudyRoomId(studyRoomId);
+        if (studyTimeList.isEmpty()) {
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+        }
+
+        List<StudyTimeResDto> studyTimeDtoList = new ArrayList<>();
+        for (StudyTime st : studyTimeList) {
+            studyTimeDtoList.add(StudyTimeResDto.of(st));
+        }
+
+        StudyRoom studyRoom = studyTimeList.get(0).getStudyRoom();
+
+        return new BaseTemplateDto(studyRoomId, studyTimeDtoList, studyRoom.getBaseSession(),
+                studyRoom.getWage());
     }
 }
