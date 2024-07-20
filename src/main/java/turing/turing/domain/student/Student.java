@@ -11,7 +11,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.domain.Member;
+import turing.turing.domain.member.Member;
+import turing.turing.domain.member.Provider;
+import turing.turing.domain.member.Role;
 
 @Getter
 @Entity
@@ -25,17 +27,20 @@ public class Student extends Member {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "school", nullable = false, length = 100)
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+
+    @Size(max = 100)
+    @Column(name = "school", length = 100)
     private String school;
 
     @Size(max = 10)
-    @NotNull
-    @Column(name = "year", nullable = false, length = 10)
+    @Column(name = "year", length = 10)
     private String year;
 
     @Size(max = 30)
@@ -50,9 +55,20 @@ public class Student extends Member {
     @Column(name = "fcm_token", length = 300)
     private String fcmToken;
 
+    // 학생 가입용
     @Builder
-    public Student(String name, String school, String year, String phone, String parentPhone) {
-        this.name = name;
+    public Student(String email, Role role, Provider provider, String firstName, String lastName) {
+        super(role, email, provider, null);  //TODO fcmToken!!!
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    // 선생님 학생 등록용
+    @Builder
+    public Student(String firstName, String lastName, String school, String year, String phone, String parentPhone) {
+        super(Role.STUDENT, null, null, null);
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.school = school;
         this.year = year;
         this.phone = phone;

@@ -7,7 +7,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Provider;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.apple.AppleClient;
 import turing.turing.domain.auth.apple.ApplePublicKeyGenerator;
 import turing.turing.domain.auth.apple.ApplePublicKeys;
@@ -47,9 +48,9 @@ public class AuthService {
         return claims.get("email", String.class);
     }
 
-    public TokenResponse confirmAssign(String email) {
-        Optional<Teacher> teacher = teacherRepository.findByEmail(email);
-        Optional<Student> student = studentRepository.findByEmail(email);
+    public TokenResponse confirmAssign(String email, Provider provider) {
+        Optional<Teacher> teacher = teacherRepository.findByEmailAndProvider(email, provider);
+        Optional<Student> student = studentRepository.findByEmailAndProvider(email, provider);
 
         String accessToken = null;
         String refreshToken = null;
@@ -76,11 +77,11 @@ public class AuthService {
         if (role.equals(Role.TEACHER)) {
             Teacher teacher = teacherRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, teacher.getId(), teacher.getName());
+            return new LoginResponse(role, teacher.getId(), teacher.getFirstName(), teacher.getLastName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
         } else {
             Student student = studentRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
-            return new LoginResponse(role, student.getId(), student.getName());
+            return new LoginResponse(role, student.getId(), student.getFirstName(), student.getLastName(), null, null, null);
         }
     }
 

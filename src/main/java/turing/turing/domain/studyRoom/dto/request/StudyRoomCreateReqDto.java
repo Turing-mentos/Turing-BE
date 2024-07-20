@@ -1,4 +1,4 @@
-package turing.turing.domain.studyRoom.dto;
+package turing.turing.domain.studyRoom.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import turing.turing.domain.student.Student;
@@ -10,7 +10,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record StudyRoomCreateReqDto(
-        String studentName,
+        String studentFirstName,
+        String studentLastName,
         String studentSchool,
         String studentYear,
         String subject,
@@ -21,7 +22,7 @@ public record StudyRoomCreateReqDto(
         LocalDate startDate
 ) {
         public Student toStudent(){
-                return new Student(studentName, studentSchool, studentYear, null, null);
+                return new Student(studentFirstName, studentLastName, studentSchool, studentYear, null, null);
         }
 
         public StudyRoom toStudyRoom(Teacher teacher, Student student) {

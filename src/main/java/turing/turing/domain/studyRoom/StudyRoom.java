@@ -92,8 +92,9 @@ public class StudyRoom extends BaseEntity {
         this.linkStatus = false;
     }
 
-    public void updateStudyRoom(String subject, Integer baseSession){
+    public void updateStudyRoom(String subject, Integer baseSession, Integer wage){
         this.subject = subject;
         this.baseSession = baseSession;
+        this.wage = wage;
     }
 }
