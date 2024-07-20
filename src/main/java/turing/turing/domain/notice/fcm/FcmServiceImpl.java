@@ -111,7 +111,7 @@ public class FcmServiceImpl implements FcmService{
     private FcmSendDeviceDto buildFcmSendDeviceDto(Teacher teacher, Student student, String category, int session, Long targetId) {
         return FcmSendDeviceDto.builder()
                 .dvcTkn(teacher.getFcmToken())
-                .senderName(student.getName())
+                .senderName(student.getLastName()+student.getFirstName())
                 .category(category)
                 .session(session)
                 .receiverId(teacher.getId())

@@ -11,7 +11,8 @@ import turing.turing.domain.homework.dto.HomeworkDto;
 public class NotebookInfo {
 
     private Long notebookId;
-    private String studentName;
+    private String studentFirstName;
+    private String studentLastName;
     private String subject;
     private Timestamp deadline;
     private Boolean isDone;

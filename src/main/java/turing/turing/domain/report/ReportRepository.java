@@ -1,0 +1,22 @@
+package turing.turing.domain.report;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import turing.turing.domain.report.dto.ReportReadAllDto;
+import turing.turing.domain.schedule.Schedule;
+
+import java.util.List;
+
+@Repository
+public interface ReportRepository extends JpaRepository<Report, Long> {
+    
+    @Query("SELECT r.id as reportId, s.studentFirstName as firstName, s.studentLastName as lastName, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
+            "FROM Report r " +
+            "JOIN r.schedule s " +
+            "JOIN s.studyRoom sr " +
+            "JOIN sr.teacher t " +
+            "WHERE t.id = :teacherId")
+    List<ReportReadAllDto> findAllReportsByTeacherId(@Param("teacherId") Long teacherId);
+}

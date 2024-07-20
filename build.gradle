@@ -42,6 +42,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	//GPT
+	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
 
 	//firebase
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
@@ -53,8 +55,8 @@ dependencies {
 
 	//aop
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
-}
 
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

@@ -17,6 +17,7 @@ import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.homework.converter.HomeworkConverter;
 import turing.turing.domain.homework.dto.HomeworkDto;
 import turing.turing.domain.notebook.dto.CreateNotebookDto;
+import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
 import turing.turing.domain.notebook.dto.NotebookInfo;
 import turing.turing.domain.schedule.Schedule;
@@ -52,7 +53,8 @@ public class NotebookService {
 
         NotebookInfo notebookInfo = NotebookInfo.builder()
                 .notebookId(notebookId)
-                .studentName(schedule.getStudentName())
+                .studentFirstName(schedule.getStudentFirstName())
+                .studentLastName(schedule.getStudentLastName())
                 .subject(schedule.getSubject())
                 .deadline(notebook.getDeadline())
                 .isDone(isDone)
@@ -161,7 +163,8 @@ public class NotebookService {
 
             NotebookInfo notebookInfo = NotebookInfo.builder()
                     .notebookId(notebook.getId())
-                    .studentName(notebook.getSchedule().getStudentName())
+                    .studentFirstName(notebook.getSchedule().getStudentFirstName())
+                    .studentLastName(notebook.getSchedule().getStudentLastName())
                     .subject(notebook.getSchedule().getSubject())
                     .deadline(notebook.getDeadline())
                     .isDone(isDone)
@@ -172,5 +175,16 @@ public class NotebookService {
         }
 
         return result;
+    }
+
+    public List<HomeworkPercentAllDto> readPercent(String role, Long id) {
+
+        if(role.equals("TEACHER")){
+            return notebookRepository.getPercentByTeacherId(id);
+        }
+        else if(role.equals("STUDENT")){
+            return notebookRepository.getPercentByStudentId(id);
+        }
+        throw new RestApiException(CommonErrorCode.NOT_FOUND);
     }
 }

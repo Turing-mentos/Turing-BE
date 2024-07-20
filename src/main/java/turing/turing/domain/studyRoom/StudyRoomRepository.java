@@ -25,5 +25,9 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
             "join fetch sr.student s " +
             "where sr.id = :studyRoomId")
     Optional<StudyRoom> findWithAllStudyTimeAndStudentById(@Param(value = "studyRoomId") Long studyRoomId);
-  
+
+    boolean existsByTeacherId(Long teacherId);
+
+    @Query("SELECT s FROM StudyRoom s WHERE s.teacher.id = :teacherId AND s.student.id = :studentId")
+    StudyRoom findByTeacherIdAndStudentId(@Param("teacherId") Long teacherId, @Param("studentId") Long studentId);
 }

@@ -42,6 +42,7 @@ public class Notice extends BaseEntity {
     private String receiverRole;
 
     @NotNull
+    @Builder.Default
     @Column(name = "read_status", nullable = false)
     private Boolean readStatus = false;
 
