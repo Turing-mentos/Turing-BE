@@ -1,4 +1,4 @@
-package turing.turing.domain.studyRoom.dto;
+package turing.turing.domain.studyRoom.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import turing.turing.domain.studyTime.dto.StudyTimeReqDto;

@@ -9,10 +9,11 @@ import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
-import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomCreateReqDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomUpdateReqDto;
+import turing.turing.domain.studyRoom.dto.response.DetailedStudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.request.StudyRoomCreateReqDto;
+import turing.turing.domain.studyRoom.dto.response.StudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.request.StudyRoomUpdateReqDto;
+import turing.turing.domain.studyRoom.dto.response.SubjectAndTeacherResDto;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.studyTime.StudyTimeRepository;
 import turing.turing.domain.teacher.Teacher;
@@ -98,6 +99,18 @@ public class StudyRoomService {
                     connectionCodeRepository.save(connectionCode);
                     return connectionCode.getCode();
                 });
+    }
+
+    public SubjectAndTeacherResDto getTeacherByCode(Integer code){
+
+        ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomAndTeacherByCode(code)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+
+        String subject = connectionCode.getStudyRoom().getSubject();
+        String firstName = connectionCode.getStudyRoom().getTeacher().getFirstName();
+        String lastName = connectionCode.getStudyRoom().getTeacher().getLastName();
+
+        return new SubjectAndTeacherResDto(subject, firstName, lastName);
     }
 
     @Transactional

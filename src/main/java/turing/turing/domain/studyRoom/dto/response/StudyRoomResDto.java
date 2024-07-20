@@ -1,4 +1,4 @@
-package turing.turing.domain.studyRoom.dto;
+package turing.turing.domain.studyRoom.dto.response;
 
 import turing.turing.domain.studyRoom.StudyRoom;
 

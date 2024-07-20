@@ -5,10 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import turing.turing.domain.studyRoom.dto.DetailedStudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomCreateReqDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomResDto;
-import turing.turing.domain.studyRoom.dto.StudyRoomUpdateReqDto;
+import turing.turing.domain.studyRoom.dto.response.DetailedStudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.request.StudyRoomCreateReqDto;
+import turing.turing.domain.studyRoom.dto.response.StudyRoomResDto;
+import turing.turing.domain.studyRoom.dto.request.StudyRoomUpdateReqDto;
+import turing.turing.domain.studyRoom.dto.response.SubjectAndTeacherResDto;
 
 import java.util.List;
 
@@ -42,15 +43,22 @@ public class StudyRoomController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "학생 연결 코드 조회 (코드 생성)")
+    @Operation(summary = "[선생님] 학생 연결 코드 조회 (코드 생성)")
     @GetMapping("/{studyRoomId}/codes")
     public ResponseEntity<Integer> getConnectionCode(@PathVariable Long studyRoomId){
         Integer code = studyRoomService.getConnectionCode(studyRoomId);
         return ResponseEntity.ok(code);
     }
 
+    @Operation(summary = "[학생] 연결 코드를 통한 선생님 조회 (연결할 선생님 조회)")
+    @GetMapping("/before-connect")
+    public ResponseEntity<SubjectAndTeacherResDto> getTeacherByCode(@RequestParam(required = true) Integer code){
+        SubjectAndTeacherResDto subjectAndTeacherResDto = studyRoomService.getTeacherByCode(code);
+        return ResponseEntity.ok(subjectAndTeacherResDto);
+    }
+
     // 학생 ID 필요
-    @Operation(summary = "선생님-학생 연결")
+    @Operation(summary = "[학생] 선생님-학생 연결")
     @PatchMapping("/connect")
     public ResponseEntity<Void> connectTeacherStudent(@RequestParam(required = true) Integer code){
         studyRoomService.connectTeacherStudent(4L, code);
