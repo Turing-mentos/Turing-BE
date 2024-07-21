@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.notebook.dto.CreateNotebookDto;
 import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
@@ -84,9 +86,7 @@ public class NotebookController {
 
     @Operation(summary = "숙제 온도 조회")
     @GetMapping("/completion-percent")
-    public ResponseEntity<List<HomeworkPercentAllDto>> readPercent() {
-        String role="STUDENT";
-        Long id = 1l;
-        return ResponseEntity.ok(notebookService.readPercent(role,id));
+    public ResponseEntity<List<HomeworkPercentAllDto>> readPercent(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(notebookService.readPercent(userDetails));
     }
 }
