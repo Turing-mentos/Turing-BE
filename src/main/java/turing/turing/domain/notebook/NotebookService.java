@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.Role;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.homework.converter.HomeworkConverter;
@@ -175,13 +177,13 @@ public class NotebookService {
         return result;
     }
 
-    public List<HomeworkPercentAllDto> readPercent(String role, Long id) {
+    public List<HomeworkPercentAllDto> readPercent(CustomUserDetails userDetails) {
 
-        if(role.equals("TEACHER")){
-            return notebookRepository.getPercentByTeacherId(id);
+        if(userDetails.getRole() == Role.TEACHER){
+            return notebookRepository.getPercentByTeacherId(userDetails.getMemberId());
         }
-        else if(role.equals("STUDENT")){
-            return notebookRepository.getPercentByStudentId(id);
+        else if(userDetails.getRole() == Role.STUDENT){
+            return notebookRepository.getPercentByStudentId(userDetails.getMemberId());
         }
         throw new RestApiException(CommonErrorCode.NOT_FOUND);
     }
