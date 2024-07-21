@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
 
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found"),
+    TEACHER_NOT_FOUND(HttpStatus.NOT_FOUND, "Teacher Not Found"),
+    STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Student Not Found"),
+    USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "User Already Exists"),
     INACTIVE_USER(HttpStatus.FORBIDDEN, "User Inactive"),
     ;
 

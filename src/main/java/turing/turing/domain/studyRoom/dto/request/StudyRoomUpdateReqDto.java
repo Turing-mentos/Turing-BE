@@ -1,4 +1,4 @@
-package turing.turing.domain.studyRoom.dto;
+package turing.turing.domain.studyRoom.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import turing.turing.domain.studyTime.dto.StudyTimeReqDto;
@@ -11,6 +11,6 @@ public record StudyRoomUpdateReqDto(
         List<StudyTimeReqDto> studyTimes,
         Integer baseSession,
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate startDate
+        Integer wage
 ) {
 }

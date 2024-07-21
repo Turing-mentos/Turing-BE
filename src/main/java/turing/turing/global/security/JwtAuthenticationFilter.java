@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.CustomUserDetailService;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;

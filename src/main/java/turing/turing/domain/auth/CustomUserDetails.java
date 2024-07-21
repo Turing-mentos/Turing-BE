@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 
 @Getter
 public class CustomUserDetails implements OAuth2User, UserDetails, OidcUser {

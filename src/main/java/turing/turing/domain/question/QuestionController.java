@@ -4,8 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import turing.turing.domain.auth.CustomUserDetails;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.question.dto.request.QuestionReqDto;
 import turing.turing.domain.question.dto.response.QuestionCreateResDto;
 import turing.turing.domain.question.dto.response.QuestionPreviewResDto;
@@ -24,9 +27,11 @@ public class QuestionController {
 
     @Operation(summary = "질문 전체 조회")
     @GetMapping("/questions")
-    public ResponseEntity<List<QuestionPreviewResDto>> getAllQuestions(){
+    public ResponseEntity<List<QuestionPreviewResDto>> getAllQuestions(@AuthenticationPrincipal CustomUserDetails user) {
 
-        List<QuestionPreviewResDto> questionList = questionService.getQuestionList(1L);  // 추후 Authentication 정보를 토대로 인자 전달 (role, id)
+        Role role = user.getRole();
+        Long memberId = user.getMemberId();
+        List<QuestionPreviewResDto> questionList = questionService.getQuestionList(role, memberId);
 
         return ResponseEntity.ok(questionList);
     }

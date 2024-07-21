@@ -1,8 +1,10 @@
 package turing.turing.domain.question.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import turing.turing.domain.question.Question;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public record QuestionPreviewResDto(
         Long id,
@@ -11,7 +13,9 @@ public record QuestionPreviewResDto(
         String content,
         Boolean solveStatus,
         Boolean pinStatus,
-        Timestamp createdAt
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate date,
+        Integer commentCount
 ) {
     public static QuestionPreviewResDto of(Question question){
         return new QuestionPreviewResDto(
@@ -21,7 +25,8 @@ public record QuestionPreviewResDto(
                 question.getContent(),
                 question.getSolveStatus(),
                 question.getPinStatus(),
-                question.getCreatedAt()
+                question.getCreatedAt().toLocalDateTime().toLocalDate(),
+                question.getCommentCount()
         );
     }
 }
