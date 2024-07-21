@@ -56,10 +56,10 @@ public class AuthService {
         String refreshToken = null;
         if (teacher.isPresent()) {
             accessToken = jwtTokenProvider.createAccessToken(email, teacher.get().getId(), Role.TEACHER);
-            refreshToken = jwtTokenProvider.createRefreshToken(email);
+            refreshToken = jwtTokenProvider.createRefreshToken(email, teacher.get().getId(), Role.TEACHER);
         } else if (student.isPresent()) {
             accessToken = jwtTokenProvider.createAccessToken(email, student.get().getId(), Role.STUDENT);
-            refreshToken = jwtTokenProvider.createRefreshToken(email);
+            refreshToken = jwtTokenProvider.createRefreshToken(email, student.get().getId(), Role.STUDENT);
         }
 
         return new TokenResponse(email, accessToken, refreshToken);
@@ -88,13 +88,13 @@ public class AuthService {
     public TokenResponse reissue(TokenReIssueRequest request) {
         String token = request.getRefreshToken();
 
-        if (jwtTokenProvider.validationToken(token)) {
+        if (jwtTokenProvider.validationToken(token) && jwtTokenProvider.validationRefreshToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
             Role role = jwtTokenProvider.getRoleFromToken(token);
             Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
 
             String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
-            String refreshToken = jwtTokenProvider.createRefreshToken(email);
+            String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role);
 
             return new TokenResponse(email, accessToken, refreshToken);
         } else {

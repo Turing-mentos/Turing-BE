@@ -16,6 +16,10 @@ spring:
         default_batch_fetch_size: 1000
   jackson:
     time-zone: Asia/Seoul
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 #Swagger
 springdoc:
@@ -49,3 +53,10 @@ cloud:
       auto: false
     stack:
       auto: false  # CloudFormation 구성 비활성화
+
+#GPT
+gpt:
+  model: ${GPT_MODEL}
+  api:
+    key: ${GPT_API_KEY}
+    url: ${GPT_URL}

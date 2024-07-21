@@ -1,6 +1,7 @@
-package turing.turing.domain.studyRoom.dto;
+package turing.turing.domain.studyRoom.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyTime.dto.StudyTimeResDto;
@@ -10,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record DetailedStudyRoomResDto(
-        String studentFirstName,
-        String studentLastName,
+        String oppositeFirstName,
+        String oppositeLastName,
         String subject,
         String studentSchool,
         String studentYear,
@@ -25,7 +26,7 @@ public record DetailedStudyRoomResDto(
         Integer totalSession,
         Integer totalBaseSession
 ) {
-    public static DetailedStudyRoomResDto of(StudyRoom studyRoom, List<Schedule> schedules) {
+    public static DetailedStudyRoomResDto of(StudyRoom studyRoom, List<Schedule> schedules, Role role) {
 
         // 수업 시작일
         LocalDate firstSchedule = schedules.isEmpty() ? null : schedules.get(0).getDate();
@@ -46,11 +47,11 @@ public record DetailedStudyRoomResDto(
         Integer totalBaseSession = (schedule == null ? 0: schedules.size());
 
         return new DetailedStudyRoomResDto(
-                studyRoom.getStudent().getFirstName(),
-                studyRoom.getStudent().getLastName(),
+                role == Role.TEACHER ? studyRoom.getStudent().getFirstName() : studyRoom.getTeacher().getFirstName(),
+                role == Role.TEACHER ? studyRoom.getStudent().getLastName() : studyRoom.getTeacher().getLastName(),
                 studyRoom.getSubject(),
-                studyRoom.getStudent().getSchool(),
-                studyRoom.getStudent().getYear(),
+                role == Role.TEACHER ? studyRoom.getStudent().getSchool() : null,
+                role == Role.TEACHER ? studyRoom.getStudent().getYear() : null,
                 studyRoom.getStudyTimes().stream().map(StudyTimeResDto::of).toList(),
                 studyRoom.getBaseSession(),
                 firstSchedule,
