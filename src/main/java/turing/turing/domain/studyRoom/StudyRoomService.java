@@ -9,6 +9,8 @@ import turing.turing.domain.code.ConnectionCodeRepository;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
+import turing.turing.domain.schedule.ScheduleService;
+import turing.turing.domain.schedule.dto.CreateScheduleRequest;
 import turing.turing.domain.studyRoom.dto.BaseTemplateDto;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
@@ -24,6 +26,8 @@ import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.StudyRoomErrorCode;
+import turing.turing.global.exception.errorCode.UserErrorCode;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,12 +43,13 @@ public class StudyRoomService {
     private final StudyTimeRepository studyTimeRepository;
     private final ConnectionCodeRepository connectionCodeRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
 
     @Transactional
     public Long createStudyRoom(Long teacherId, StudyRoomCreateReqDto studyRoomCreateReqDto) {
 
         Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UserErrorCode.TEACHER_NOT_FOUND));
 
         Student student = studyRoomCreateReqDto.toStudent();
         studentRepository.save(student);
@@ -55,9 +60,17 @@ public class StudyRoomService {
         List<StudyTime> studyTimes = studyRoomCreateReqDto.studyTimes().stream().map(studyTimeReqDto -> studyTimeReqDto.toEntity(studyRoom)).toList();
         studyTimeRepository.saveAll(studyTimes);
 
-        /*
-        기준 회차 (스케줄) 생성 필요!
-         */
+
+        // 기준회차 생성
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
+                studyRoom.getId(),
+                studyRoomCreateReqDto.studentLastName() + studyRoomCreateReqDto.studentFirstName(),
+                studyRoomCreateReqDto.subject(),
+                studyRoomCreateReqDto.studyTimes(),
+                studyRoomCreateReqDto.baseSession(),
+                studyRoomCreateReqDto.startDate()
+        );
+        scheduleService.createSchedules(createScheduleRequest);
 
         return studyRoom.getId();
     }
@@ -66,7 +79,7 @@ public class StudyRoomService {
     public void updateStudyRoom(Long studyRoomId, StudyRoomUpdateReqDto studyRoomUpdateReqDto) {
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         studyRoom.updateStudyRoom(studyRoomUpdateReqDto.subject(), studyRoomUpdateReqDto.baseSession(), studyRoomUpdateReqDto.wage());
 
@@ -80,7 +93,7 @@ public class StudyRoomService {
     public void deleteStudyRoom(Long studyRoomId){
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         studyRoomRepository.delete(studyRoom);
     }
@@ -89,11 +102,11 @@ public class StudyRoomService {
     public Integer getConnectionCode(Long studyRoomId){
 
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         // 이미 연결된 경우에는 코드를 생성하지 않음
         if(studyRoom.getLinkStatus())
-            throw new RestApiException(CommonErrorCode.BAD_REQUEST);
+            throw new RestApiException(StudyRoomErrorCode.ALREADY_CONNECTED_STUDY_ROOM);
 
         // 이미 연결 코드가 존재한다면 그대로 리턴, 존재하지 않는다면 중복되지 않는 연결 코드 생성하여 리턴
         return connectionCodeRepository.findByStudyRoom(studyRoom)
@@ -108,7 +121,7 @@ public class StudyRoomService {
     public SubjectAndTeacherResDto getTeacherByCode(Integer code){
 
         ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomAndTeacherByCode(code)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.CONNECTION_CODE_NOT_FOUND));
 
         String subject = connectionCode.getStudyRoom().getSubject();
         String firstName = connectionCode.getStudyRoom().getTeacher().getFirstName();
@@ -121,10 +134,10 @@ public class StudyRoomService {
     public void connectTeacherStudent(Long studentId, Integer code){
 
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(UserErrorCode.STUDENT_NOT_FOUND));
 
         ConnectionCode connectionCode = connectionCodeRepository.findWithStudyRoomAndStudentByCode(code)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.CONNECTION_CODE_NOT_FOUND));
 
         // 기존 학생 가져오기
         Student nonSignUpStudent = connectionCode.getStudyRoom().getStudent();
@@ -143,7 +156,7 @@ public class StudyRoomService {
     public void disconnectTeacherStudent(Long studyRoomId){
 
         StudyRoom studyRoom = studyRoomRepository.findWithStudentById(studyRoomId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         // 기존 학생의 정보를 통해 nonSignedUpStudent 생성
         Student nonSignUpStudent = new Student(
@@ -163,13 +176,13 @@ public class StudyRoomService {
         List<StudyRoom> studyRoomList;
         if(role == Role.TEACHER){
             Teacher teacher = teacherRepository.findById(memberId)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(UserErrorCode.TEACHER_NOT_FOUND));
 
             studyRoomList = studyRoomRepository.findAllWithStudentByTeacher(teacher);
 
         } else {
             Student student = studentRepository.findById(memberId)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(UserErrorCode.STUDENT_NOT_FOUND));
 
             studyRoomList = studyRoomRepository.findAllWithTeacherByStudent(student);
         }
@@ -185,10 +198,10 @@ public class StudyRoomService {
 
         if(role == Role.TEACHER) {
             studyRoom = studyRoomRepository.findWithAllStudyTimeAndStudentById(studyRoomId)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
         } else {
             studyRoom = studyRoomRepository.findWithAllStudyTimeAndTeacherById(studyRoomId)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
         }
 
         scheduleList = scheduleRepository.findAllByStudyRoomOrderByDate(studyRoom);
@@ -209,7 +222,7 @@ public class StudyRoomService {
 
         List<StudyTime> studyTimeList = studyTimeRepository.findByStudyRoomId(studyRoomId);
         if (studyTimeList.isEmpty()) {
-            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+            throw new RestApiException(StudyRoomErrorCode.STUDY_TIME_NOT_FOUND);
         }
 
         List<StudyTimeResDto> studyTimeDtoList = new ArrayList<>();

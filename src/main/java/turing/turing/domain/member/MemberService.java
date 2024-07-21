@@ -11,7 +11,7 @@ import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
-import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.UserErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class MemberService {
 
         if(role == Role.TEACHER) {
             teacherRepository.findByEmailAndProvider(email, provider)
-                    .ifPresent((teacher) -> { throw new RestApiException(CommonErrorCode.BAD_REQUEST); });
+                    .ifPresent((teacher) -> { throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS); });
 
             Teacher teacher = new Teacher(email, role, provider, firstName, lastName);
             teacherRepository.save(teacher);
@@ -43,7 +43,7 @@ public class MemberService {
             memberId = teacher.getId();
         } else {
             studentRepository.findByEmailAndProvider(email, provider)
-                    .ifPresent((student) -> { throw new RestApiException(CommonErrorCode.BAD_REQUEST); });
+                    .ifPresent((student) -> { throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS); });
 
             Student student = new Student(email, role, provider, firstName, lastName);
             studentRepository.save(student);

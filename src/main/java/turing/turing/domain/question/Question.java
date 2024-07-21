@@ -57,6 +57,10 @@ public class Question extends BaseEntity {
     private Boolean pinStatus = false;
 
     @NotNull
+    @Column(name = "comment_conut", nullable = false)
+    private Integer commentCount = 0;
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
@@ -88,6 +92,15 @@ public class Question extends BaseEntity {
 
     public void switchSolveStatus(){
         this.solveStatus= !this.solveStatus;
+    }
+
+    public void increaseCommentCount(){
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount(){
+        if(this.commentCount > 0)
+            this.commentCount--;
     }
 
 }

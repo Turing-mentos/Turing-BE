@@ -45,13 +45,8 @@ public class Schedule extends BaseEntity {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "student_first_name", nullable = false, length = 100)
-    private String studentFirstName;
-
-    @Size(max = 100)
-    @NotNull
-    @Column(name = "student_last_name", nullable = false, length = 100)
-    private String studentLastName;
+    @Column(name = "student_name", nullable = false, length = 100)
+    private String studentName;
 
     @Size(max = 50)
     @NotNull

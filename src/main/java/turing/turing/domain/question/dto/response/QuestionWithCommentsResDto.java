@@ -14,6 +14,7 @@ public record QuestionWithCommentsResDto(
         String imageUrl,
         Boolean solveStatus,
         Boolean pinStatus,
+        Integer commentCount,
         List<CommentResDto> commentList
 ) {
     public static QuestionWithCommentsResDto of(Question question, List<Comment> commentList){
@@ -25,6 +26,7 @@ public record QuestionWithCommentsResDto(
                 question.getImageUrl(),
                 question.getSolveStatus(),
                 question.getPinStatus(),
+                question.getCommentCount(),
                 commentList.stream().map(CommentResDto::of).toList()
         );
     }
