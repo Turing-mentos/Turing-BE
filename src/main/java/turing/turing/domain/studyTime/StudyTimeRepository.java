@@ -1,5 +1,6 @@
 package turing.turing.domain.studyTime;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,4 +12,10 @@ public interface StudyTimeRepository extends JpaRepository<StudyTime, Long> {
     @Modifying
     @Query("DELETE FROM StudyTime st WHERE st.studyRoom.id = :studyRoomId")
     void deleteByStudyRoomId(@Param("studyRoomId") Long studyRoomId);
+
+
+    @Query("select st from StudyTime st "
+            + "join fetch StudyRoom "
+            + "where st.studyRoom.id=:studyRoomId")
+    List<StudyTime> findByStudyRoomId(Long studyRoomId);
 }
