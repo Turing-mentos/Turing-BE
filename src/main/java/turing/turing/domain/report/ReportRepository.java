@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-
+  
     @Query("SELECT r " +
             "FROM Report r " +
             "JOIN r.schedule s " +
@@ -20,7 +20,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             "WHERE t.id = :teacherId " +
             "AND r.id = :reportId")
     Report findReportByTeacherIdAndId(@Param("teacherId") Long teacherId, @Param("reportId") Long reportId);
-
+   
     @Query("SELECT r.id as reportId, s.studentName as name, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
             "FROM Report r " +
             "JOIN r.schedule s " +
