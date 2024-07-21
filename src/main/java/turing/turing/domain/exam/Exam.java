@@ -11,14 +11,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
+import turing.turing.domain.exam.dto.ExamDto;
 import turing.turing.domain.studyRoom.StudyRoom;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Exam extends BaseEntity {
 
     @Id
@@ -29,7 +35,7 @@ public class Exam extends BaseEntity {
     @Size(max = 100)
     @NotNull
     @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    private String examName;
 
     @NotNull
     @Column(name = "start_date", nullable = false)
@@ -49,4 +55,12 @@ public class Exam extends BaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
+    public Long update(ExamDto examDto, StudyRoom studyRoom) {
+        this.examName = examDto.getExamName();
+        this.startDate = examDto.getStartDate();
+        this.endDate = examDto.getEndDate();
+        this.studyRoom = studyRoom;
+
+        return this.id;
+    }
 }
