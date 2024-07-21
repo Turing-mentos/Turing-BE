@@ -55,7 +55,7 @@ public class NoticeController {
 
     @Operation(summary = "리마인드 콕찌르기")
     @GetMapping()
-    public void remindNoteBook(NoticeDto.RemindNoteBookDto remindNoteBookDto){
+    public void remind(NoticeDto.RemindNoteBookDto remindNoteBookDto){
         //@Authen~~로 받아오기
         Teacher teacher = null;
         noticeService.remindNoteBook(remindNoteBookDto, teacher);

@@ -18,16 +18,14 @@ import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
+import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,9 +57,9 @@ public class FcmServiceImpl implements FcmService{
     //알림이 켜져있는지 확인해야함
     public List<FcmSendDeviceDto> selectFcmSendList() {
         List<FcmSendDeviceDto> fcmSendDeviceDtos = new ArrayList<>();
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
-        log.info("알림장 수업 끝나기 10분전에 알려주기-------");
+        log.info("알림장 수업 끝나기 5분전에 알려주기-------");
         addNotebookNotifications(fcmSendDeviceDtos, currentDateTime);
         log.info("하루전 숙제 안했으면 알려주기-------");
         addHomeworkNotifications(fcmSendDeviceDtos, currentDateTime);
@@ -131,7 +129,7 @@ public class FcmServiceImpl implements FcmService{
             Teacher teacher = schedule.getStudyRoom().getTeacher();
             Student student = schedule.getStudyRoom().getStudent();
             //최신알림장 가져오기, 없으면 -1
-            Long targetId = getLatestNotebookId(schedule);
+            Long targetId = getLatestNotebookId(schedule.getStudyRoom());
 
             log.info("알림 켜져 있는지 확인");
             if (isNotificationEnabled(teacher.getId(), "TEACHER", "NOTEBOOK")) {
@@ -141,20 +139,19 @@ public class FcmServiceImpl implements FcmService{
     }
     
     //최신 알림장 가져오기
-    private Long getLatestNotebookId(Schedule schedule) {
-        Schedule latestSchedule = scheduleRepository.searchByStudyRoomAndLatestDate(schedule.getStudyRoom());
-        if (latestSchedule != null) {
-            Notebook notebook = notebookRepository.findBySchedule(latestSchedule);
-            if (notebook != null) {
-                return notebook.getId();
-            }
+    private Long getLatestNotebookId(StudyRoom studyRoom) {
+        Notebook notebook = notebookRepository.findLatestNotebookByStudyRoomId(studyRoom.getId());
+        if (notebook != null) {
+            return notebook.getId();
         }
         return -1L;
     }
     //하루전 숙제 안한게 있으면
     private void addHomeworkNotifications(List<FcmSendDeviceDto> fcmSendDeviceDtos, LocalDateTime currentDateTime) {
         LocalDate homeworkDate = currentDateTime.toLocalDate().plusDays(1);
-        Timestamp hwTargetDate = Timestamp.from(homeworkDate.atTime(currentDateTime.toLocalTime()).toInstant(ZoneOffset.UTC));
+        LocalDateTime hwTargetDateTime = homeworkDate.atTime(currentDateTime.toLocalTime());
+        Timestamp hwTargetDate = Timestamp.valueOf(hwTargetDateTime);
+
 
 
         List<Notebook> notebookList = notebookRepository.searchNotebooksByDate(hwTargetDate);
@@ -199,7 +196,7 @@ public class FcmServiceImpl implements FcmService{
         return message;
     }
 
-    //테스트용
+//    //테스트용
 //    public TestDto methodName7() {
 //        log.info("여기");
 //        TestDto f = TestDto.builder()

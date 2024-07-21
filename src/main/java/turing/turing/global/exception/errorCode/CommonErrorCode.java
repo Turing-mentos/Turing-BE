@@ -12,8 +12,8 @@ public enum CommonErrorCode implements ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "Resource Not Exists"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     NO_CONTENT(HttpStatus.NO_CONTENT, "No Content"),
-    NO_SCHEDULE(HttpStatus.NOT_FOUND, "NO SCHEDULE")
-    ;
+    NO_SCHEDULE(HttpStatus.NOT_FOUND, "NO SCHEDULE"),
+    NOTIFICATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "No Notification Category");
 
     private final HttpStatus httpStatus;
     private final String message;

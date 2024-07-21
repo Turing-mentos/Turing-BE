@@ -50,9 +50,10 @@ public class NoticeService {
 
     public NoticeDto.ResponseForNotice remindNoteBook(NoticeDto.RemindNoteBookDto remindNoteBookDto, Teacher teacher) {
         Long teacherId = 1L;
-        return NoticeDto.ResponseForNotice.builder().
-            receiverId(remindNoteBookDto.getStudentId())
+        NoticeDto.ResponseForNotice notice = NoticeDto.ResponseForNotice.builder().
+                receiverId(remindNoteBookDto.getStudentId())
                 .senderId(teacherId)
                 .build();
+        return notice;
     }
 }

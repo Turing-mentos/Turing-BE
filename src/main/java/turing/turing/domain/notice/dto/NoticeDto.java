@@ -1,5 +1,6 @@
 package turing.turing.domain.notice.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class NoticeDto {
     @Builder
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class RemindNoteBookDto{
         private Long studentId;
     }

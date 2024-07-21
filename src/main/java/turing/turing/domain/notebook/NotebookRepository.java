@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import turing.turing.domain.schedule.Schedule;
 
 import java.sql.Timestamp;
 
@@ -23,7 +22,6 @@ public interface NotebookRepository extends JpaRepository<Notebook, Long> {
             "AND MINUTE(n.deadline) = MINUTE(:targetDate)")
     List<Notebook> searchNotebooksByDate(@Param("targetDate") Timestamp targetDate);
 
-    Notebook findBySchedule(Schedule schedule);
     @Override
     @NonNull
     @Query("select n from Notebook n "
@@ -74,4 +72,11 @@ public interface NotebookRepository extends JpaRepository<Notebook, Long> {
             "GROUP BY st.teacher_id, t.first_name, t.last_name, sc.subject",
             nativeQuery = true)
     List<HomeworkPercentAllDto> getPercentByStudentId(@Param("studentId")Long id);
+
+    @Query(value = "SELECT n.* FROM notebook n "
+            + "JOIN schedule s ON n.schedule_id = s.schedule_id "
+            + "WHERE s.study_room_id = :studyRoomId "
+            + "ORDER BY s.date DESC "
+            + "LIMIT 1", nativeQuery = true)
+    Notebook findLatestNotebookByStudyRoomId(@Param("studyRoomId") Long studyRoomId);
 }

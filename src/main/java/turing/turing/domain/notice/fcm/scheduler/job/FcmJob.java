@@ -11,6 +11,8 @@ import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
+import turing.turing.global.exception.RestApiException;
+import turing.turing.global.exception.errorCode.CommonErrorCode;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,7 +65,7 @@ public class FcmJob implements Job {
             case "SESSION":
                 return String.format("%s학생의 기준 회차를 모두 끝냈어요.\n새 수업 일정을 등록해보세요!.", senderName);
             default:
-                return "새로운 알림이 도착했습니다.";
+                throw new RestApiException(CommonErrorCode.NOTIFICATION_CATEGORY_NOT_FOUND);
         }
     }
     private FcmSendDto buildFcmSendDto(FcmSendDeviceDto fcmSendItem) {
@@ -86,8 +88,10 @@ public class FcmJob implements Job {
                 return "숙제 알리미";
             case "REPORT":
                 return "리포트 작성하기";
+            case "SESSION":
+                return "기준 회차 추가하기";
             default:
-                return "알림";
+                throw new RestApiException(CommonErrorCode.NOTIFICATION_CATEGORY_NOT_FOUND);
         }
     }
     private void saveNoticeToDatabase(FcmSendDeviceDto fcmSendItem, FcmSendDto fcmSendDto) {

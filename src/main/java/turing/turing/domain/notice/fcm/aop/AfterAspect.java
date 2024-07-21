@@ -47,8 +47,9 @@ public class AfterAspect {
     private final StudyRoomRepository studyRoomRepository;
 
 
-    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* methodName7(..))) || execution(* remindNoteBook(..)))")
+    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* remindNoteBook(..)) || execution(* methodName7(..))")
     public void pointcut() {}
+
 
     @AfterReturning(pointcut = "pointcut()", returning = "result")
     public void handleAfterReturning(JoinPoint joinPoint, Object result) throws NoSuchFieldException, IllegalAccessException, IOException, FirebaseMessagingException {
@@ -74,7 +75,7 @@ public class AfterAspect {
                 return  "COMMENT";
             case "createQuestion":
                 return  "QUESTION";
-            case "methodName3":
+            case "methodName7":
                 return  "SCHEDULE_CHANGE";
             case "methodName4":
                 return  "NEW_SCHEDULE";
