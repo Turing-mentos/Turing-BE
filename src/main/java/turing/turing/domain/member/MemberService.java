@@ -52,7 +52,7 @@ public class MemberService {
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role);
 
         return SignUpResponse.builder()
                 .id(memberId)
