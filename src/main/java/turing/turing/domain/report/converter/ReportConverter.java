@@ -3,6 +3,7 @@ package turing.turing.domain.report.converter;
 import turing.turing.domain.report.Report;
 import turing.turing.domain.report.dto.ReportResDto;
 import turing.turing.domain.schedule.Schedule;
+import turing.turing.domain.studyRoom.StudyRoom;
 
 public class ReportConverter {
 
@@ -33,5 +34,16 @@ public class ReportConverter {
     public static ReportResDto.CreateDto toCreateDto(Report report) {
         return ReportResDto.CreateDto.builder()
                 .reportId(report.getId()).build();
+    }
+
+    public static ReportResDto.StudentInfoDto toStudentInfoDto(StudyRoom s, Schedule sc, int totalSession) {
+        return ReportResDto.StudentInfoDto.builder()
+                .studentId(s.getStudent().getId())
+                .currentSession(sc.getSession())
+                .subject(s.getSubject())
+                .totalSession(totalSession)
+                .firstName(sc.getStudentFirstName())
+                .lastName(sc.getStudentLastName())
+                .build();
     }
 }

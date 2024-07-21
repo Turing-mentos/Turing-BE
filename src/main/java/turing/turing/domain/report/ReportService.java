@@ -17,6 +17,7 @@ import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
+import turing.turing.domain.studyRoom.StudyRoomService;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
@@ -42,6 +43,7 @@ public class ReportService {
         Long teacherId = userDetails.getMemberId();
 
         StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(teacherId, reportReq.getStudentId());
+
         //회차를 얻기 위해
         Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(studyRoom.getId());
 
@@ -186,5 +188,24 @@ public class ReportService {
         }
         Long teacherId = userDetails.getMemberId();
         return  studyRoomRepository.existsByTeacherId(teacherId);
+    }
+
+    public List<ReportResDto.StudentInfoDto> checkStudentInfoForReport(CustomUserDetails userDetails) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        Long teacherId = userDetails.getMemberId();
+
+        List<StudyRoom> studyRoomList= studyRoomRepository.findAllByTeacherId(teacherId);
+
+        List<ReportResDto.StudentInfoDto> list = new ArrayList<>();
+        for(StudyRoom s : studyRoomList){
+            //가장 최근회차
+            Schedule sc = scheduleRepository.searchByStudyRoomIdAndLatest(s.getId());
+            int totalSession = s.getBaseSession();    
+            //총 회차, 현재 회차
+            list.add(ReportConverter.toStudentInfoDto(s,sc,totalSession));
+        }
+        return list;
     }
 }

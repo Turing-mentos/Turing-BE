@@ -36,10 +36,6 @@ public class ReportController {
     @Operation(summary = " 리포트 전체 조회 API")
     @GetMapping("all")
     public ResponseEntity<List<ReportReadAllDto>> readAllReport(@AuthenticationPrincipal CustomUserDetails userDetails){
-        //memberId와 role만 필요 -> Authen~~ 에서 얻어오기 (jwt)
-        //이건 예제
-//        Long member = 1L;
-//        String memberRole = "TEACHER";
         return ResponseEntity.ok(reportService.readAllReport(userDetails));
     }
 
@@ -51,13 +47,10 @@ public class ReportController {
         return ResponseEntity.ok(null);
     }
 
-    @Operation(summary = "리포트 최초 진입 시 과외 정보 여부 확인 API ")
-    @GetMapping("/check")
-    public ResponseEntity<Boolean> checkConditionForReport(@AuthenticationPrincipal CustomUserDetails userDetails){
-
-//        Long memberId =1L;
-//        String memberRole ="TEACHER";
-        return ResponseEntity.ok(reportService.checkConditionForReport(userDetails));
+    @Operation(summary = "리포트 진입 시 과외 학생 정보")
+    @GetMapping("/init")
+    public ResponseEntity<List<ReportResDto.StudentInfoDto>> checkStudentInfoForReport(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return ResponseEntity.ok(reportService.checkStudentInfoForReport(userDetails));
 
     }
 

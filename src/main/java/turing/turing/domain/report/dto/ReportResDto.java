@@ -42,4 +42,15 @@ public class ReportResDto {
     }
 
 
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class StudentInfoDto {
+        private Long studentId;
+        private String subject;
+        private String firstName;
+        private String lastName;
+        private int currentSession;
+        private int totalSession;
+    }
 }
