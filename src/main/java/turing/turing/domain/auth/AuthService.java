@@ -24,7 +24,7 @@ import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
-import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.UserErrorCode;
 
 @RequiredArgsConstructor
 @Component
@@ -78,12 +78,12 @@ public class AuthService {
 
         if (role.equals(Role.TEACHER)) {
             Teacher teacher = teacherRepository.findByEmail(email)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
             teacher.updateFcmToken(fcmToken);
             return new LoginResponse(role, teacher.getId(), teacher.getFirstName(), teacher.getLastName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
         } else {
             Student student = studentRepository.findByEmail(email)
-                    .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
             student.updateFcmToken(fcmToken);
             return new LoginResponse(role, student.getId(), student.getFirstName(), student.getLastName(), null, null, null);
         }
