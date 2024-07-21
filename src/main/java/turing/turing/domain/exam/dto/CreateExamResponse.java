@@ -2,7 +2,7 @@ package turing.turing.domain.exam.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 
 @Getter
 @Builder
