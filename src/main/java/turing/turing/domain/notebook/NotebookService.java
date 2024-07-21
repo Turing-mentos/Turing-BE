@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import turing.turing.domain.Role;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
