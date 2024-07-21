@@ -71,7 +71,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<LocalDate> findNextDateById(@Param("scheduleId") Long scheduleId, Pageable pageable);
 
     //리포트생성 시 필요
-    @Query(value = "SELECT * FROM schedule WHERE study_room_id = :studyRoomId AND date < CURDATE() ORDER BY date DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM schedule WHERE study_room_id = :studyRoomId AND date <= CURDATE() AND end_time <= CURTIME() ORDER BY date DESC LIMIT 1", nativeQuery = true)
     Schedule searchByStudyRoomIdAndLatest(@Param("studyRoomId") Long studyRoomId);
 
     @Query(value = "SELECT * FROM schedule " +

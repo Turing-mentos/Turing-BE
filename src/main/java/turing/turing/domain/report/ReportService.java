@@ -1,11 +1,14 @@
 package turing.turing.domain.report;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.gpt.dto.GPTResponse;
 import turing.turing.domain.gpt.GptService;
 import turing.turing.domain.gpt.PromptGenerator;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.report.converter.ReportConverter;
 import turing.turing.domain.report.dto.ReportReadAllDto;
 import turing.turing.domain.report.dto.ReportReqDto;
@@ -14,6 +17,7 @@ import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
+import turing.turing.domain.studyRoom.StudyRoomService;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
@@ -31,11 +35,15 @@ public class ReportService {
     private final StudyRoomRepository studyRoomRepository;
     private final ScheduleRepository scheduleRepository;
 //    private final
-    public ReportResDto.CreateDto createReport(ReportReqDto.CreateDto reportReq) {
+    public ReportResDto.CreateDto createReport(CustomUserDetails userDetails, ReportReqDto.CreateDto reportReq) {
         //과외 공간 찾기
-        Long teacherId = 1L; //예시임, Authen~~ 을 통해 사용자 정보 받을거임
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        Long teacherId = userDetails.getMemberId();
 
         StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(teacherId, reportReq.getStudentId());
+
         //회차를 얻기 위해
         Schedule schedule = scheduleRepository.searchByStudyRoomIdAndLatest(studyRoom.getId());
 
@@ -134,9 +142,16 @@ public class ReportService {
 
 
 
-    public ReportResDto.ReadDto readReport(Long reportId) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(()->new RestApiException(CommonErrorCode.NOT_FOUND));
+    public ReportResDto.ReadDto readReport(CustomUserDetails userDetails, Long reportId) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        //사용자가 작성한 report 가져오기
+        Long teacherId = userDetails.getMemberId();
+        Report report = reportRepository.findReportByTeacherIdAndId(teacherId, reportId);
+        if(report ==null){
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+        }
 
         ReportResDto.ReadDto reportResDto = ReportConverter.toDto(report);
 
@@ -145,19 +160,52 @@ public class ReportService {
 
 
     @Transactional
-    public void updateReport(ReportReqDto.UpdateDto updateDto) {
-        Report report = reportRepository.findById(updateDto.getReportId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+    public void updateReport(CustomUserDetails userDetails, ReportReqDto.UpdateDto updateDto) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        //사용자가 작성한 report 가져오기
+        Long teacherId = userDetails.getMemberId();
+        Report report = reportRepository.findReportByTeacherIdAndId(teacherId, updateDto.getReportId());
+        if(report ==null){
+            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+        }
 
         report.updateField(updateDto.getParagraphNum(), updateDto.getContent());
     }
 
-    public List<ReportReadAllDto> readAllReport(Long memberId, String memberRole) {
-        //Role에 따라 다르게 보여줘야 되는지는 학생 ui 나오면 결정
-        return reportRepository.findAllReportsByTeacherId(memberId);
+    public List<ReportReadAllDto> readAllReport(CustomUserDetails userDetails) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        Long teacherId = userDetails.getMemberId();
+        return reportRepository.findAllReportsByTeacherId(teacherId);
     }
 
-    public Boolean checkConditionForReport(Long memberId, String memberRole) {
-        return  studyRoomRepository.existsByTeacherId(memberId);
+    public Boolean checkConditionForReport(CustomUserDetails userDetails) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        Long teacherId = userDetails.getMemberId();
+        return  studyRoomRepository.existsByTeacherId(teacherId);
+    }
+
+    public List<ReportResDto.StudentInfoDto> checkStudentInfoForReport(CustomUserDetails userDetails) {
+        if (userDetails.getRole() == Role.STUDENT){
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
+        Long teacherId = userDetails.getMemberId();
+
+        List<StudyRoom> studyRoomList= studyRoomRepository.findAllByTeacherId(teacherId);
+
+        List<ReportResDto.StudentInfoDto> list = new ArrayList<>();
+        for(StudyRoom s : studyRoomList){
+            //가장 최근회차
+            Schedule sc = scheduleRepository.searchByStudyRoomIdAndLatest(s.getId());
+            int totalSession = s.getBaseSession();    
+            //총 회차, 현재 회차
+            list.add(ReportConverter.toStudentInfoDto(s,sc,totalSession));
+        }
+        return list;
     }
 }
