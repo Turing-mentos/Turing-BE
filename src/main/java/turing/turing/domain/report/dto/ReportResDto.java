@@ -48,8 +48,7 @@ public class ReportResDto {
     public static class StudentInfoDto {
         private Long studentId;
         private String subject;
-        private String firstName;
-        private String lastName;
+        private String name;
         private int currentSession;
         private int totalSession;
     }
