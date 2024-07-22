@@ -1,16 +1,15 @@
 package turing.turing.domain.exam.dto;
 
-import lombok.Builder;
 import lombok.Getter;
-import turing.turing.domain.member.Role;
+import lombok.experimental.SuperBuilder;
+import turing.turing.domain.notice.dto.BaseNoticeInfo;
 
 @Getter
-@Builder
-public class CreateExamResponse {
-
+@SuperBuilder
+public class CreateExamResponse extends BaseNoticeInfo {
     private Long examId;
-    public Long senderId;
-    public Role senderRole;
-    public Long receiverId;
-    public Role receiverRole;
+
+    public void setExamId(Long examId) {
+        this.examId = examId;
+    }
 }
