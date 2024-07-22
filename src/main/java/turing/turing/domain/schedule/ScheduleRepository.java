@@ -15,9 +15,27 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import turing.turing.domain.studyRoom.StudyRoom;
 
+
+
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-  
+
+    @Query("SELECT s FROM Schedule s WHERE " +
+            "DATE(s.date) = :targetDate AND " +
+            "HOUR(s.endTime) = :targetHour AND " +
+            "MINUTE(s.endTime) = :targetMinute")
+    List<Schedule> searchScheduleByDateAndTime(
+            @Param("targetDate") LocalDate targetDate,
+            @Param("targetHour") int targetHour,
+            @Param("targetMinute") int targetMinute);
+
+    @Query("SELECT COUNT(s) > 0 " +
+            "FROM Schedule s " +
+            "WHERE s.date > :targetDate " +
+            "AND s.studyRoom.id = :studyRoomId")
+    boolean existsLatestScheduleAfterDate(@Param("targetDate") LocalDate targetDate,
+                                          @Param("studyRoomId") Long studyRoomId);
+
     List<Schedule> findAllByStudyRoomOrderByDate(StudyRoom studyRoom);
 
     @Query("select new turing.turing.domain.schedule.dto.ScheduleDto(s.id, s.date, s.studentName, s.subject, s.session, s.startTime, s.endTime, sr.id, sr.baseSession) from Schedule s "
