@@ -21,11 +21,12 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             "AND r.id = :reportId")
     Report findReportByTeacherIdAndId(@Param("teacherId") Long teacherId, @Param("reportId") Long reportId);
    
-    @Query("SELECT r.id as reportId, s.studentName as name, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
+    @Query("SELECT r.id as reportId, st.id as studentId, s.studentName as name, s.subject as subject, s.session as session, r.createdAt as createdAt, r.updatedAt as updatedAt " +
             "FROM Report r " +
             "JOIN r.schedule s " +
             "JOIN s.studyRoom sr " +
             "JOIN sr.teacher t " +
+            "JOIN sr.student st " +
             "WHERE t.id = :teacherId")
     List<ReportReadAllDto> findAllReportsByTeacherId(@Param("teacherId") Long teacherId);
 }
