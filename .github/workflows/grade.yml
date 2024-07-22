@@ -1,11 +1,9 @@
-# github repository Actions 페이지에 나타낼 이름
 name: CI/CD
 
 # event trigger
 on:
   push:
     branches: [ "dev" ]
-
 
 permissions:
   contents: read
@@ -32,22 +30,19 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Grant execute permission for gradlew
-        run:
-          chmod +x gradlew
+        run: chmod +x gradlew
+
+      ## create firebase-key.json
+      - name: Create Firebase Key
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo "${{ secrets.FIREBASE_KEY }}" > src/main/resources/firebase/turing-firebase.json
+        shell: bash
 
       - name: Build with Gradle
         run: ./gradlew build -x test
-        shell: bash
-
-        ## create firebase-key.json
-      - name: create firebase key
-        run: |
-          mkdir ./src/main/resources/firebase
-          cd ./src/main/resources/firebase
-          ls -a .
-          touch ./turing-firebase.json
-          echo "${{ secrets.FIREBASE_KEY }}" > ./turing-firebase.json
         shell: bash
 
       - name: Build With Gradle
@@ -61,7 +56,6 @@ jobs:
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }} .
           docker push ${{ secrets.DOCKER_REPO }}
-      
 
       ## deploy to production
       - name: Deploy to prod
