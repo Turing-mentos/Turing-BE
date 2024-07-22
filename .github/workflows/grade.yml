@@ -30,7 +30,7 @@ jobs:
           ls -a .
           touch ./turing-firebase.json
           echo "${{ secrets.FIREBASE_KEY }}" > ./firebase-service-key.json
-              shell: bash
+        shell: bash
       ## gradle caching
       - name: Gradle Caching
         uses: actions/cache@v3
