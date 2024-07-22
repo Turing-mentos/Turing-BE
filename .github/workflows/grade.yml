@@ -22,15 +22,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin' # https://github.com/actions/setup-java
 
-            ## create firebase-key.json
-      - name: create firebase key
-        run: |
-          mkdir ./src/main/resources/firebase
-          cd ./src/main/resources/firebase
-          ls -a .
-          touch ./turing-firebase.json
-          echo "${{ secrets.FIREBASE_KEY }}" > ./firebase-service-key.json
-        shell: bash
       ## gradle caching
       - name: Gradle Caching
         uses: actions/cache@v3
@@ -47,6 +38,16 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build -x test
+        shell: bash
+
+        ## create firebase-key.json
+      - name: create firebase key
+        run: |
+          mkdir ./src/main/resources/firebase
+          cd ./src/main/resources/firebase
+          ls -a .
+          touch ./turing-firebase.json
+          echo "${{ secrets.FIREBASE_KEY }}" > ./firebase-service-key.json
         shell: bash
 
       - name: Build With Gradle
