@@ -38,4 +38,8 @@ public abstract class Member extends BaseEntity {
         this.provider = provider;
         this.fcmToken = fcmToken;
     }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }

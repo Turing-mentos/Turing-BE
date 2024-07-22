@@ -59,6 +59,6 @@ public class SchdulerConfiguration implements WebMvcConfigurer {
         FcmJobListener fcmJobListener = new FcmJobListener();
         scheduler.getListenerManager().addJobListener(fcmJobListener);
         scheduler.scheduleJob(job, trigger);
-       scheduler.start();
+       //scheduler.start();
     }
 }

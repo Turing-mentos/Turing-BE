@@ -24,17 +24,17 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     public void setSecretKey(String secretKey) {
-        this.SECRET_KEY = secretKey;
+        SECRET_KEY = secretKey;
     }
 
     @Value("${jwt.access-expiration}")
     public void setExpirationTime(long expirationTime) {
-        this.EXPIRATION_TIME = expirationTime;
+        EXPIRATION_TIME = expirationTime;
     }
 
     @Value("${jwt.refresh-expiration}")
     public void setRefreshExpirationTime(long refreshExpirationTime) {
-        this.REFRESH_EXPIRATION_TIME = refreshExpirationTime;
+        REFRESH_EXPIRATION_TIME = refreshExpirationTime;
     }
 
     public String createAccessToken(String email, Long memberId, Role role) {
@@ -80,7 +80,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
 
-            return claims.getPayload().get("role", Role.class);
+            return Role.valueOf(claims.getPayload().get("role", String.class));
         } catch (ExpiredJwtException e) {
             throw new JwtException("Expired token");
         } catch (JwtException e) {

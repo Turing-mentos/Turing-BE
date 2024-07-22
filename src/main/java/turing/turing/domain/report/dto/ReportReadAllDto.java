@@ -6,8 +6,7 @@ import java.time.LocalDateTime;
 public interface ReportReadAllDto {
     Long getReportId();
 
-    String getFirstName();
-    String getLastName();
+    String getName();
 
     String getSubject();
 

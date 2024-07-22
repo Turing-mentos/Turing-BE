@@ -14,7 +14,7 @@ import java.io.IOException;
 public class FirebaseConfig {
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        FileInputStream serviceAccountFile = new FileInputStream("src/main/resources/firebase/turing-d594f-firebase-adminsdk-w4fyk-09103aab32.json");
+        FileInputStream serviceAccountFile = new FileInputStream("src/main/resources/firebase/turing-firebase.json");
         FirebaseOptions options = FirebaseOptions
                 .builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccountFile))

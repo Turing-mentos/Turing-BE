@@ -47,6 +47,7 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+        question.increaseCommentCount();
 
         // 이 부분 Role Enum 클래스 리턴하는 로직으로 변경 필요 !
         return CommentCreateResDto.builder()
@@ -68,6 +69,8 @@ public class CommentService {
         if(comment.getImageUrl() != null && !comment.getImageUrl().isEmpty())
             s3Service.deleteFile(comment.getImageUrl());
 
+        Question question = comment.getQuestion();
         commentRepository.delete(comment);
+        question.decreaseCommentCount();
     }
 }
