@@ -44,7 +44,7 @@ jobs:
       - name: create firebase key
         run: |
           cd ./src/main
-          mkdir ./resources
+          mkdir resources
           cd ./resources
           touch ./turing-firebase.json
           ls *
