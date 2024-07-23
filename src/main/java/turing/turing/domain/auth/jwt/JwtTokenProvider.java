@@ -64,7 +64,7 @@ public class JwtTokenProvider {
                 .add("provider", provider)
                 .build();
 
-        return Jwts.builder()
+        String refreshToken = Jwts.builder()
                 .subject(email)
                 .claims(claims)
                 .signWith(getSigningKey())
