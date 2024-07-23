@@ -54,14 +54,11 @@ public class ScheduleService {
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
         List<Schedule> result = new ArrayList<>();
-
-        LocalDate startDate = request.getStartDate();
-        int day = startDate.getDayOfWeek().getValue();
-        String studentName = request.getStudentName();
-        String subject = request.getSubject();
         int baseSession = request.getBaseSession();
 
         List<StudyTimeReqDto> studyTimeList = request.getStudyTimeList();
+        LocalDate startDate = findStartDate(request.getStartDate(), studyTimeList);
+        int day = startDate.getDayOfWeek().getValue();
 
         int count = 1;
         LocalDate currentDate = startDate;
@@ -69,6 +66,7 @@ public class ScheduleService {
         while (count <= baseSession) {
             for (StudyTimeReqDto reqDto : studyTimeList) {
                 // 희망요일: 월,수,금 \ 시작요일: 수 인 경우, 다음주 월요일부터 생성되는 것 방지
+                // 희망요일: 수, 금 \ 시작요일: 월 인 경우, 기존에 무한루프 발생하여 이를 해결하고자 line60에서 findStartDate 메서드 사용
                 if (count == 1 && day != reqDto.day()) {
                     continue;
                 }
@@ -81,8 +79,8 @@ public class ScheduleService {
                 Schedule schedule = Schedule.builder().date(currentDate)
                         .startTime(reqDto.startTime())
                         .endTime(reqDto.endTime())
-                        .studentName(studentName)
-                        .subject(subject)
+                        .studentName(request.getStudentName())
+                        .subject(request.getSubject())
                         .session(count++)
                         .studyRoom(studyRoom)
                         .build();
@@ -102,6 +100,17 @@ public class ScheduleService {
         int add = (day - startDate.getDayOfWeek().getValue() + 7) % 7;
 
         return startDate.plusDays(add);
+    }
+
+    private LocalDate findStartDate(LocalDate date, List<StudyTimeReqDto> studyTimeList) {
+        while (true) {
+            for (StudyTimeReqDto studyTimeReqDto : studyTimeList) {
+                if (date.getDayOfWeek().getValue() == studyTimeReqDto.day()) {
+                    return date;
+                }
+            }
+            date = date.plusDays(1);
+        }
     }
 
     @Transactional
