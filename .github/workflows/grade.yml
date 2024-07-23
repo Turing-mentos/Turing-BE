@@ -5,7 +5,8 @@ name: CI/CD
 on:
   push:
     branches: [ "dev" ]
-
+  pull_request:
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -39,6 +40,25 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
         shell: bash
+
+      - name: Create Firebase Key
+        run: |
+            mkdir -p src/main/resources
+            echo "${{ secrets.FIREBASE_KEY }}" > src/main/resources/turing-firebase.json
+        shell: bash
+
+      - name: Verify Firebase JSON File Exists
+        id: verify_firebase_json
+        run: |
+            ls -l src/main/resources/turing-firebase.json
+            if [ -f src/main/resources/turing-firebase.json ]; then
+              echo "Firebase JSON file exists."
+            else
+              echo "Firebase JSON file does not exist."
+              exit 1
+            fi
+        shell: bash
+
 
       - name: Build With Gradle
         if: contains(github.ref, 'dev')

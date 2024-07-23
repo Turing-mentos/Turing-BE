@@ -74,20 +74,16 @@ public class Schedule extends BaseEntity {
         this.studyRoom = studyRoom;
     }
 
-    public Long update(ModifyScheduleRequest request) {
+    public void update(ModifyScheduleRequest request) {
         this.date = request.getDate();
         this.startTime = request.getStartTime();
         this.endTime = request.getEndTime();
-
-        return this.id;
     }
 
-    public Long updateWithSession(UpdateScheduleDto request) {
+    public void updateWithSession(UpdateScheduleDto request) {
         this.date = request.getDate();
         this.startTime = request.getStartTime();
         this.endTime = request.getEndTime();
         this.session = request.getSession();
-
-        return this.id;
     }
 }

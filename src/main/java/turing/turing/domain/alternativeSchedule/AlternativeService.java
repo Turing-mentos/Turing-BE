@@ -12,7 +12,9 @@ import turing.turing.domain.alternativeSchedule.converter.AlterScheduleConverter
 import turing.turing.domain.alternativeSchedule.dto.AlterScheduleDto;
 import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleRequest;
 import turing.turing.domain.alternativeSchedule.dto.AllAlterSchedules;
+import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleResponse;
 import turing.turing.domain.alternativeSchedule.dto.TimePairDto;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.alternativeSchedule.dto.ToAlterScheduleDto;
@@ -75,9 +77,12 @@ public class AlternativeService {
 
     //TODO saveAll -> bulkInsert 개선 필요
     @Transactional
-    public Long createAlterSchedule(CreateAlterScheduleRequest request) {
+    public CreateAlterScheduleResponse createAlterSchedules(CreateAlterScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getTargetScheduleId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+        Long teacherId = schedule.getStudyRoom()
+                .getTeacher()
+                .getId();
 
         Map<LocalDate, List<TimePairDto>> alterScheduleList = request.getAlterScheduleList();
         Set<LocalDate> ketSet = alterScheduleList.keySet();
@@ -98,6 +103,13 @@ public class AlternativeService {
                 );
             }
         }
-        return alternativeScheduleRepository.saveAll(result).get(0).getId();
+        Long firstSavedId = alternativeScheduleRepository.saveAll(result).get(0).getId();
+
+        return CreateAlterScheduleResponse.builder()
+                .firstAlterScheduleId(firstSavedId)
+                .scheduleDate(schedule.getDate())
+                .receiverId(teacherId)
+                .receiverRole(Role.TEACHER)
+                .build();
     }
 }

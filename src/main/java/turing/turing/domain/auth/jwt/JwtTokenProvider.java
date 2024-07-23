@@ -8,9 +8,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.sql.Date;
+import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
@@ -18,6 +20,8 @@ import turing.turing.domain.member.Role;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     private static String SECRET_KEY;
     private static long EXPIRATION_TIME;
@@ -62,9 +66,15 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(email)
+                .claims(claims)
                 .signWith(getSigningKey())
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
                 .compact();
+
+        String redisId = createRedisId(memberId, role);
+        redisTemplate.opsForValue().set(redisId, refreshToken, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+
+        return refreshToken;
     }
 
     public String getEmailFromToken(String token) {
@@ -136,6 +146,32 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             return false;
         }
+    }
+
+    public boolean validationRefreshToken(String token) {
+        Jws<Claims> claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+
+        Long memberId = claims.getPayload().get("memberId", Long.class);
+        Role role = Role.valueOf(claims.getPayload().get("role", String.class));
+        String redisId = createRedisId(memberId, role);
+
+        String savedToken = redisTemplate.opsForValue().get(redisId);
+
+        return token.equals(savedToken);
+    }
+
+    public void deleteRefreshToken(String redisId) {
+        redisTemplate.delete(redisId);
+    }
+
+    public String createRedisId(Long memberId, Role role) {
+        if (role == Role.TEACHER) {
+            return "T_" + memberId;
+        }
+        return "S_" + memberId;
     }
 
     private SecretKey getSigningKey() {

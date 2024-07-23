@@ -107,7 +107,7 @@ public class AuthService {
     public TokenResponse reissue(TokenReIssueRequest request) {
         String token = request.getRefreshToken();
 
-        if (jwtTokenProvider.validationToken(token)) {
+        if (jwtTokenProvider.validationToken(token) && jwtTokenProvider.validationRefreshToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
             Role role = jwtTokenProvider.getRoleFromToken(token);
             Long memberId = jwtTokenProvider.getMemberIdFromToken(token);

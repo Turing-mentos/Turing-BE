@@ -10,7 +10,7 @@ import turing.turing.domain.notebook.Notebook;
 
 @Repository
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
-
+    List<Homework> findAllByNotebook(Notebook notebook);
     List<Homework> findAllByNotebookId(Long notebookId);
 
     @Query("select h from Homework h "
