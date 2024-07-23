@@ -3,7 +3,9 @@ package turing.turing.domain.noticeSetting;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.noticeSetting.dto.NoticeSettingDto;
 
 import java.util.List;
@@ -16,27 +18,24 @@ public class NoticeSettingController {
 
     @Operation(summary = "설정 변경")
     @PatchMapping("/{notificationSettingId}")
-    public void checkNotification(@PathVariable(name = "notificationSettingId") Long notificationSettingId){
-        noticeSettingService.changeSetting(notificationSettingId);
+    public ResponseEntity<Boolean> checkNotification(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "notificationSettingId") Long notificationSettingId){
+
+        return ResponseEntity.ok(noticeSettingService.changeSetting(userDetails, notificationSettingId));
     }
 
     @Operation(summary = "설정 조회")
     @GetMapping("")
-    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> readSetting(){
-        //추후 spring context에서 받아옴
-        Long memberId = 1L;
-        String memberRole = "TEACHER";
-        return ResponseEntity.ok(noticeSettingService.readSetting(memberId, memberRole));
+    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> readSetting(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return ResponseEntity.ok(noticeSettingService.readSetting(userDetails));
 
     }
 
 
     @Operation(summary = "설정 생성")
-    @PostMapping("/init")
-    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> createSetting(@RequestParam(defaultValue = "true") boolean enabled) {
-        Long memberId = 1L;
-        String memberRole = "STUDENT";
-        noticeSettingService.createSetting(memberId, memberRole, enabled);
+    @GetMapping("/init")
+    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> createSetting(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam(defaultValue = "true") boolean enabled) {
+
+        noticeSettingService.createSetting(userDetails, enabled);
 
         return ResponseEntity.ok(null);
     }

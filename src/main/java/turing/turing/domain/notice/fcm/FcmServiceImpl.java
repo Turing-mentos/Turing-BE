@@ -22,6 +22,7 @@ import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.NotificationError;
 
 
 import java.sql.Timestamp;
@@ -47,7 +48,7 @@ public class FcmServiceImpl implements FcmService{
             return 1;
         }catch (FirebaseMessagingException e) {
             //에러처리
-            throw new RestApiException(CommonErrorCode.NOT_FOUND);
+            throw new RestApiException(NotificationError.NOTIFICATION_FAILURE);
         }
 
     }
