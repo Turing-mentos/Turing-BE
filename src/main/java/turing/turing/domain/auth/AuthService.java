@@ -56,10 +56,10 @@ public class AuthService {
         String refreshToken = null;
         if (teacher.isPresent()) {
             accessToken = jwtTokenProvider.createAccessToken(email, teacher.get().getId(), Role.TEACHER, provider);
-            refreshToken = jwtTokenProvider.createRefreshToken(email);
+            refreshToken = jwtTokenProvider.createRefreshToken(email, teacher.get().getId(), Role.TEACHER, provider);
         } else if (student.isPresent()) {
             accessToken = jwtTokenProvider.createAccessToken(email, student.get().getId(), Role.STUDENT, provider);
-            refreshToken = jwtTokenProvider.createRefreshToken(email);
+            refreshToken = jwtTokenProvider.createRefreshToken(email, student.get().getId(), Role.STUDENT, provider);
         }
 
         return new TokenResponse(email, accessToken, refreshToken);
@@ -114,7 +114,7 @@ public class AuthService {
             Provider provider = jwtTokenProvider.getProviderFromToken(token);
 
             String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role, provider);
-            String refreshToken = jwtTokenProvider.createRefreshToken(email);
+            String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role, provider);
 
             return new TokenResponse(email, accessToken, refreshToken);
         } else {

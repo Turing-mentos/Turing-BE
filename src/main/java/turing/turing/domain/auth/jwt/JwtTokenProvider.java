@@ -53,7 +53,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String email, Long memberId, Role role, Provider provider) {
+        Claims claims = Jwts.claims()
+                .add("memberId", memberId)
+                .add("role", role)
+                .add("provider", provider)
+                .build();
+
         return Jwts.builder()
                 .subject(email)
                 .signWith(getSigningKey())
