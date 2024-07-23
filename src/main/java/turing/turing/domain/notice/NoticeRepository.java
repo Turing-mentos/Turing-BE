@@ -16,4 +16,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     List<Notice> findAllByReceiverIdAndReceiverRoleAndReadStatus(Long receiverId, String receiverRole, boolean readStatus);
     List<Notice> findAllByReceiverIdAndReceiverRoleAndCreatedAtAfter(Long receiverId, String receiverRole, LocalDateTime createdAt);
+
+    @Query("SELECT n FROM Notice n WHERE n.id = :noticeId AND n.receiverId = :memberId")
+    Notice findByIdAndReceiverId(@Param("noticeId") Long noticeId, @Param("memberId") Long memberId);
 }

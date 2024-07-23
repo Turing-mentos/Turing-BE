@@ -7,10 +7,14 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+
+@Getter
+@AllArgsConstructor
 public class NoticeDto {
     @Builder
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class ResponseDto{
         private Long id;
         private boolean readStatus;
@@ -25,18 +29,11 @@ public class NoticeDto {
 
         private Long targetId;
     }
+
     @Builder
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class RemindNoteBookDto{
-        private Long studentId;
-    }
-
-
-    @Builder
-    @Getter
-    @Setter
     public static class ResponseForNotice{
         private Long receiverId;
         private final String receiverRole = "STUDENT";
