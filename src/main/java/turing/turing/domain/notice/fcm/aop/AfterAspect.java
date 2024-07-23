@@ -47,7 +47,7 @@ public class AfterAspect {
     private final StudyRoomRepository studyRoomRepository;
 
 
-    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* remindNoteBook(..)) || execution(* methodName7(..))")
+    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* remindNoteBook(..)) || execution(* modifySchedules(..)) || execution(* getAllAlterSchedules(..)) || execution(* createExamSchedules(..)) || execution(* createNotebooks(..))")
     public void pointcut() {}
 
 
@@ -59,14 +59,14 @@ public class AfterAspect {
 
         //해당 알림 켜져있을 떄만 작동
         NoticeSetting noticeSetting = noticeSettingRepository.findByMemberIdAndRoleAndCategory(notificationDetails.getReceiverId(), notificationDetails.getReceiverRole(), notiCategory);
+
+        String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId(), notificationDetails.getReceiverId());
+        NotificationContent content = buildNotificationContent(notiCategory, senderName, notificationDetails.getSenderRole(), result);
         if (noticeSetting.getEnabled()) {
             String fcmToken = getFcmToken(notificationDetails.getReceiverRole(), notificationDetails.getReceiverId());
-            String senderName = getSenderName(notificationDetails.getSenderRole(), notificationDetails.getSenderId(), notificationDetails.getReceiverId());
-            NotificationContent content = buildNotificationContent(notiCategory, senderName, notificationDetails.getSenderRole(), result);
             sendFcmNotification(fcmToken, content, notiCategory);
-            saveNotice(notificationDetails, content, notiCategory);
         }
-
+        saveNotice(notificationDetails, content, notiCategory);
     }
 
     private String getCategory(String methodName) {
@@ -75,11 +75,11 @@ public class AfterAspect {
                 return  "COMMENT";
             case "createQuestion":
                 return  "QUESTION";
-            case "methodName7":
+            case "modifySchedules", "getAllAlterSchedules":
                 return  "SCHEDULE_CHANGE";
-            case "methodName4":
+            case "createExamSchedules":
                 return  "NEW_SCHEDULE";
-            case "methodName5":
+            case "createNotebooks":
                 return "NOTEBOOK";
             case "remindNoteBook":
                 return "HOMEWORK";

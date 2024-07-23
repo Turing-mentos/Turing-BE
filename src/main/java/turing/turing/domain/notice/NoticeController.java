@@ -56,7 +56,6 @@ public class NoticeController {
     @Operation(summary = "리마인드 콕찌르기")
     @GetMapping("/notebook/{studentId}")
     public ResponseEntity<String> remind(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable(name = "studentId") Long studentId){
-        log.info("------------");
         noticeService.remindNoteBook(userDetails, studentId);
         return ResponseEntity.ok(null);
     }

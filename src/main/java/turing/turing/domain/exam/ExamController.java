@@ -36,7 +36,7 @@ public class ExamController {
     public ResponseEntity<CreateExamResponse> createExamSchedule(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateExamRequest request) {
         CreateExamResponse response = examService.createExamSchedules(customUserDetails, request);
-
+      
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{examId}")
                 .buildAndExpand(response.getExamId())

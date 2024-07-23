@@ -61,7 +61,7 @@ public class StudyRoomService {
         studyTimeRepository.saveAll(studyTimes);
 
 
-        // 기준회차 생성
+        // 기준회차 생성g
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 studyRoom.getId(),
                 studyRoomCreateReqDto.studentLastName() + studyRoomCreateReqDto.studentFirstName(),
