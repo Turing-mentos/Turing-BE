@@ -2,6 +2,7 @@ package turing.turing.domain.auth;
 
 import java.util.Collection;
 import java.util.Map;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 
 @Getter
@@ -17,6 +19,7 @@ public class CustomUserDetails implements OAuth2User, UserDetails, OidcUser {
     private final String email;
     private Role role;
     private Long memberId;
+    private Provider provider;
 
     public CustomUserDetails(String email) {
         this.email = email;
@@ -29,6 +32,11 @@ public class CustomUserDetails implements OAuth2User, UserDetails, OidcUser {
 
     public CustomUserDetails memberId(Long memberId) {
         this.memberId = memberId;
+        return this;
+    }
+
+    public CustomUserDetails provider(Provider provider) {
+        this.provider = provider;
         return this;
     }
 

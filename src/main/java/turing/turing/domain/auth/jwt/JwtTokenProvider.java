@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 
 @Component
@@ -41,10 +42,11 @@ public class JwtTokenProvider {
         REFRESH_EXPIRATION_TIME = refreshExpirationTime;
     }
 
-    public String createAccessToken(String email, Long memberId, Role role) {
+    public String createAccessToken(String email, Long memberId, Role role, Provider provider) {
         Claims claims = Jwts.claims()
                 .add("memberId", memberId)
                 .add("role", role)
+                .add("provider", provider)
                 .build();
 
         return Jwts.builder()
@@ -55,13 +57,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String email, Long memberId, Role role) {
+    public String createRefreshToken(String email, Long memberId, Role role, Provider provider) {
         Claims claims = Jwts.claims()
                 .add("memberId", memberId)
                 .add("role", role)
+                .add("provider", provider)
                 .build();
 
-        String refreshToken = Jwts.builder()
+        return Jwts.builder()
                 .subject(email)
                 .claims(claims)
                 .signWith(getSigningKey())
@@ -110,6 +113,21 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
 
             return claims.getPayload().get("memberId", Long.class);
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Expired token");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid token");
+        }
+    }
+
+    public Provider getProviderFromToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+
+            return Provider.valueOf(claims.getPayload().get("provider", String.class));
         } catch (ExpiredJwtException e) {
             throw new JwtException("Expired token");
         } catch (JwtException e) {

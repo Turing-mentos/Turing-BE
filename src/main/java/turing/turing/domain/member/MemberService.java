@@ -52,8 +52,8 @@ public class MemberService {
             memberId = student.getId();
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role);
+        String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role, provider);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role, provider);
 
         return SignUpResponse.builder()
                 .id(memberId)
