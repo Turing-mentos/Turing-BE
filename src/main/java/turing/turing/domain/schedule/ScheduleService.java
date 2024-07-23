@@ -88,7 +88,6 @@ public class ScheduleService {
                         .build();
 
                 result.add(schedule);
-                count++;
 
                 //주 1회인 경우 날짜 갱신 용도
                 currentDate = currentDate.plusDays(1);
