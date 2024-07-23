@@ -3,7 +3,6 @@ package turing.turing.domain.member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Getter;
 import turing.turing.domain.BaseEntity;
 
@@ -12,7 +11,6 @@ import turing.turing.domain.BaseEntity;
 public abstract class Member extends BaseEntity {
 
     @Size(max = 100)
-    @NotNull
     @Column(name = "email", length = 100)
     protected String email;
 
