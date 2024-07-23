@@ -55,10 +55,10 @@ public class AuthService {
         String accessToken = null;
         String refreshToken = null;
         if (teacher.isPresent()) {
-            accessToken = jwtTokenProvider.createAccessToken(email, teacher.get().getId(), Role.TEACHER);
+            accessToken = jwtTokenProvider.createAccessToken(email, teacher.get().getId(), Role.TEACHER, provider);
             refreshToken = jwtTokenProvider.createRefreshToken(email);
         } else if (student.isPresent()) {
-            accessToken = jwtTokenProvider.createAccessToken(email, student.get().getId(), Role.STUDENT);
+            accessToken = jwtTokenProvider.createAccessToken(email, student.get().getId(), Role.STUDENT, provider);
             refreshToken = jwtTokenProvider.createRefreshToken(email);
         }
 
@@ -80,13 +80,28 @@ public class AuthService {
             Teacher teacher = teacherRepository.findByEmail(email)
                     .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
             teacher.updateFcmToken(fcmToken);
-            return new LoginResponse(role, teacher.getId(), teacher.getFirstName(), teacher.getLastName(), teacher.getUniversity(), teacher.getDepartment(), teacher.getStudentNumber());
-        } else {
-            Student student = studentRepository.findByEmail(email)
-                    .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
-            student.updateFcmToken(fcmToken);
-            return new LoginResponse(role, student.getId(), student.getFirstName(), student.getLastName(), null, null, null);
+
+            return LoginResponse.builder()
+                    .role(role)
+                    .memberId(teacher.getId())
+                    .firstName(teacher.getFirstName())
+                    .lastName(teacher.getLastName())
+                    .university(teacher.getUniversity())
+                    .department(teacher.getDepartment())
+                    .studentNumber(teacher.getStudentNumber())
+                    .build();
         }
+
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        student.updateFcmToken(fcmToken);
+
+        return LoginResponse.builder()
+                .role(role)
+                .memberId(student.getId())
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .build();
     }
 
     public TokenResponse reissue(TokenReIssueRequest request) {
@@ -96,8 +111,9 @@ public class AuthService {
             String email = jwtTokenProvider.getEmailFromToken(token);
             Role role = jwtTokenProvider.getRoleFromToken(token);
             Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
+            Provider provider = jwtTokenProvider.getProviderFromToken(token);
 
-            String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
+            String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role, provider);
             String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
             return new TokenResponse(email, accessToken, refreshToken);
