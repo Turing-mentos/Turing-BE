@@ -14,7 +14,6 @@ import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 
 @Getter
-@Builder
 public class CustomUserDetails implements OAuth2User, UserDetails, OidcUser {
 
     private final String email;
