@@ -95,7 +95,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public Long modifySchedule(ModifyScheduleRequest request) {
+    public Long modifySchedules(ModifyScheduleRequest request) {
         Long scheduleId = request.getScheduleId();
         LocalDate modifiedDate = request.getDate();
         List<Schedule> scheduleList = scheduleRepository.findAllByIdAndDate(scheduleId, modifiedDate);

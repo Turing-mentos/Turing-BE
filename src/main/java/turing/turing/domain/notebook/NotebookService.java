@@ -91,7 +91,7 @@ public class NotebookService {
     }
 
     @Transactional
-    public Long createNotebook(CreateNotebookDto request) {
+    public Long createNotebooks(CreateNotebookDto request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 

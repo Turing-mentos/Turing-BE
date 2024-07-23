@@ -57,7 +57,7 @@ public class NotebookController {
     @Operation(summary = "알림장 생성")
     @PostMapping("")
     public ResponseEntity<Long> createNotebook(@RequestBody CreateNotebookDto request) {
-        Long savedId = notebookService.createNotebook(request);
+        Long savedId = notebookService.createNotebooks(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{notebookId}")

@@ -27,7 +27,7 @@ public class ExamService {
         return ExamConverter.toDto(exam);
     }
 
-    public Long createExamSchedule(CreateExamRequest request) {
+    public Long createExamSchedules(CreateExamRequest request) {
         StudyRoom studyRoom = studyRoomRepository.findById(request.getStudyRoomId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 

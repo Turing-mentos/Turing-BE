@@ -53,7 +53,7 @@ public class ScheduleController {
     @PatchMapping("/")
     public ResponseEntity<Long> modifySchedule(@RequestBody ModifyScheduleRequest request) {
 
-        return ResponseEntity.ok(scheduleService.modifySchedule(request));
+        return ResponseEntity.ok(scheduleService.modifySchedules(request));
     }
 
 }

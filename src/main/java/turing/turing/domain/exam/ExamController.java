@@ -33,7 +33,7 @@ public class ExamController {
 
     @PostMapping("/")
     public ResponseEntity<Long> createExamSchedule(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateExamRequest request) {
-        Long savedId = examService.createExamSchedule(request);
+        Long savedId = examService.createExamSchedules(request);
 
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
