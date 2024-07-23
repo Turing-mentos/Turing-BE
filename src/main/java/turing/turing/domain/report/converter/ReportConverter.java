@@ -42,7 +42,8 @@ public class ReportConverter {
                 .currentSession(sc.getSession())
                 .subject(s.getSubject())
                 .totalSession(totalSession)
-                .name(sc.getStudentName())
+                .firstName(s.getStudent().getFirstName())
+                .lastName(s.getStudent().getLastName())
                 .build();
     }
 }
