@@ -13,8 +13,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import turing.turing.domain.studyRoom.StudyRoom;
-
 
 
 @Repository
@@ -42,7 +40,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + "join fetch StudyRoom sr on s.studyRoom.id in :studyRoomIds "
             + "where month(s.date)=:month and year(s.date)=:year "
             + "order by s.date")
-    List<ScheduleDto> findAllByDateAndStudyRoomIds(@Param("month") int month, @Param("year") int year, @Param("studyRoomIds") List<Long> studyRoomsIds);
+    List<ScheduleDto> findAllByMonthAndStudyRoomIds(@Param("month") int month, @Param("year") int year, @Param("studyRoomIds") List<Long> studyRoomsIds);
+
+    @Query("select new turing.turing.domain.schedule.dto.ScheduleDto(s.id, s.date, s.studentName, s.subject, s.session, s.startTime, s.endTime, sr.id, sr.baseSession) from Schedule s "
+            + "join fetch StudyRoom sr on s.studyRoom.id in :studyRoomIds "
+            + "where s.date between :startDate and :endDate "
+            + "order by s.date")
+    List<ScheduleDto> findAllByDateAndStudyRoomIds(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("studyRoomIds") List<Long> studyRoomsIds);
 
     @Query("select new turing.turing.domain.schedule.dto.ScheduleDto(s.id, s.date, s.studentName, s.subject, s.session, s.startTime, s.endTime, sr.id, sr.baseSession) from Schedule s "
             + "join fetch StudyRoom sr "

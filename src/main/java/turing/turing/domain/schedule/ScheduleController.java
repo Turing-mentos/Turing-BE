@@ -35,6 +35,12 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getMonthSchedules(date, studyRoomIds));
     }
 
+    @GetMapping("/weekly")
+    public ResponseEntity<List<ScheduleDto>> getWeeklySchedules(@RequestParam("date") LocalDate date, @RequestParam("studyRoomIds") List<Long> studyRoomIds) {
+
+        return ResponseEntity.ok(scheduleService.getWeeklySchedules(date, studyRoomIds));
+    }
+
     @GetMapping("{scheduleId}")
     public ResponseEntity<ScheduleDto> getSchedule(@PathVariable("scheduleId") Long scheduleId) {
 

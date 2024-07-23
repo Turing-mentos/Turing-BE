@@ -32,7 +32,13 @@ public class ScheduleService {
         int month = date.getMonthValue();
         int year = date.getYear();
 
-        return scheduleRepository.findAllByDateAndStudyRoomIds(month, year, studyRoomIds);
+        return scheduleRepository.findAllByMonthAndStudyRoomIds(month, year, studyRoomIds);
+    }
+
+    public List<ScheduleDto> getWeeklySchedules(LocalDate date, List<Long> studyRoomIds) {
+        LocalDate endDate = date.plusDays(10);
+
+        return scheduleRepository.findAllByDateAndStudyRoomIds(date, endDate, studyRoomIds);
     }
 
     public ScheduleDto getSchedule(Long scheduleId) {
