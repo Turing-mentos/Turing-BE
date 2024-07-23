@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.auth.CustomUserDetails;
-import turing.turing.domain.notebook.dto.CreateNotebookDto;
+import turing.turing.domain.member.Role;
+import turing.turing.domain.notebook.dto.CreateNotebookRequest;
+import turing.turing.domain.notebook.dto.CreateNotebookResponse;
 import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
 import turing.turing.domain.notebook.dto.NotebookInfo;
@@ -56,15 +58,18 @@ public class NotebookController {
 
     @Operation(summary = "알림장 생성")
     @PostMapping("")
-    public ResponseEntity<Long> createNotebook(@RequestBody CreateNotebookDto request) {
-        Long savedId = notebookService.createNotebooks(request);
+
+    public ResponseEntity<CreateNotebookResponse> createNotebook(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateNotebookRequest request) {
+        CreateNotebookResponse response = notebookService.createNotebook(request);
+        response.setSender(customUserDetails.getMemberId(), Role.TEACHER);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{notebookId}")
-                .buildAndExpand(savedId)
+                .buildAndExpand(response.getNotebookId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(response);
 
     }
 

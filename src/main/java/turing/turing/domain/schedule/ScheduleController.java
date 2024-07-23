@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import turing.turing.domain.auth.CustomUserDetails;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.dto.CreateScheduleRequest;
 import turing.turing.domain.schedule.dto.ModifyScheduleRequest;
+import turing.turing.domain.schedule.dto.ModifyScheduleResponse;
 import turing.turing.domain.schedule.dto.ScheduleDto;
 
 @RestController
@@ -51,9 +55,12 @@ public class ScheduleController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Long> modifySchedule(@RequestBody ModifyScheduleRequest request) {
+    public ResponseEntity<ModifyScheduleResponse> modifySchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ModifyScheduleRequest request) {
+        ModifyScheduleResponse response = scheduleService.modifySchedules(request);
+        response.setSender(customUserDetails.getMemberId(), Role.TEACHER);
 
-        return ResponseEntity.ok(scheduleService.modifySchedules(request));
+        return ResponseEntity.ok(response);
+
     }
 
 }

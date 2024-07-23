@@ -1,15 +1,20 @@
 package turing.turing.domain.notice.dto;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import turing.turing.domain.member.Role;
 
 @Getter
-@Builder
+@SuperBuilder
 public class BaseNoticeInfo {
 
-    public Long senderId;
-    public Role senderRole;
-    public Long receiverId;
-    public Role receiverRole;
+    protected Long senderId;
+    protected Role senderRole;
+    protected Long receiverId;
+    protected Role receiverRole;
+
+    public void setSender(Long senderId, Role senderRole) {
+        this.senderId = senderId;
+        this.senderRole = senderRole;
+    }
 }

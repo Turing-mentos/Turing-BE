@@ -3,6 +3,7 @@ package turing.turing.domain.member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
 import turing.turing.domain.member.dto.SignUpRequest;
 import turing.turing.domain.member.dto.SignUpResponse;
@@ -51,8 +52,8 @@ public class MemberService {
             memberId = student.getId();
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+        String accessToken = jwtTokenProvider.createAccessToken(email, memberId, role, provider);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email, memberId, role, provider);
 
         return SignUpResponse.builder()
                 .id(memberId)
@@ -62,4 +63,18 @@ public class MemberService {
                 .build();
     }
 
+    @Transactional
+    public void deleteMember(CustomUserDetails user) {
+        Long memberId = user.getMemberId();
+        Role role = user.getRole();
+
+        String redisId = jwtTokenProvider.createRedisId(memberId, role);
+        jwtTokenProvider.deleteRefreshToken(redisId);
+
+        if (role.equals(Role.TEACHER)) {
+            teacherRepository.deleteById(memberId);
+            return;
+        }
+        studentRepository.deleteById(memberId);
+    }
 }

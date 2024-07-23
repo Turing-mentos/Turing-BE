@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CreateNotebookDto {
+public class CreateNotebookRequest {
 
     private Long scheduleId;
 

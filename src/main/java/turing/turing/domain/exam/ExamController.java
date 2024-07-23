@@ -4,7 +4,6 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.exam.dto.CreateExamRequest;
+import turing.turing.domain.exam.dto.CreateExamResponse;
 import turing.turing.domain.exam.dto.ExamDto;
 
 @RestController
@@ -32,16 +33,16 @@ public class ExamController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Long> createExamSchedule(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateExamRequest request) {
-        Long savedId = examService.createExamSchedules(request);
-
-
+    public ResponseEntity<CreateExamResponse> createExamSchedule(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateExamRequest request) {
+        CreateExamResponse response = examService.createExamSchedules(customUserDetails, request);
+      
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{examId}")
-                .buildAndExpand(savedId)
+                .buildAndExpand(response.getExamId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(response);
     }
 
     @PatchMapping("/")

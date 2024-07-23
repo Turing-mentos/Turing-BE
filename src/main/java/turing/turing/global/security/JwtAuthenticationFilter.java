@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.auth.CustomUserDetailService;
 import turing.turing.domain.auth.CustomUserDetails;
@@ -59,9 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String email = jwtTokenProvider.getEmailFromToken(token);
         Role role = jwtTokenProvider.getRoleFromToken(token);
         Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
+        Provider provider = jwtTokenProvider.getProviderFromToken(token);
         CustomUserDetails userDetails = customUserDetailService.loadUserByUsername(email)
                 .role(role)
-                .memberId(memberId);
+                .memberId(memberId)
+                .provider(provider);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());
