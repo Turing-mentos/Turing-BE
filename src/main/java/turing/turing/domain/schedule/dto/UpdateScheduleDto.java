@@ -17,14 +17,4 @@ public class UpdateScheduleDto {
 
     private Integer session;
 
-    public static UpdateScheduleDto of(LocalDate date, LocalTime startTime, LocalTime endTime,
-            Integer session) {
-
-        return UpdateScheduleDto.builder()
-                .date(date)
-                .startTime(startTime)
-                .endTime(endTime)
-                .session(session)
-                .build();
-    }
 }

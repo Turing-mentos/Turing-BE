@@ -18,12 +18,14 @@ import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.homework.converter.HomeworkConverter;
 import turing.turing.domain.homework.dto.HomeworkDto;
-import turing.turing.domain.notebook.dto.CreateNotebookDto;
+import turing.turing.domain.notebook.dto.CreateNotebookRequest;
+import turing.turing.domain.notebook.dto.CreateNotebookResponse;
 import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
 import turing.turing.domain.notebook.dto.ModifyDeadlineDto;
 import turing.turing.domain.notebook.dto.NotebookInfo;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
+import turing.turing.domain.student.StudentRepository;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
@@ -34,6 +36,7 @@ public class NotebookService {
     private final HomeworkRepository homeworkRepository;
     private final NotebookRepository notebookRepository;
     private final ScheduleRepository scheduleRepository;
+    private final StudentRepository studentRepository;
 
     @Transactional(readOnly = true)
     public NotebookInfo getNotebook(Long notebookId, Boolean b) {
@@ -91,7 +94,7 @@ public class NotebookService {
     }
 
     @Transactional
-    public Long createNotebook(CreateNotebookDto request) {
+    public CreateNotebookResponse createNotebook(CreateNotebookRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
@@ -102,9 +105,14 @@ public class NotebookService {
         Timestamp timestamp = confirmDeadline(request.getDeadline(), deadlineTime);
 
         Notebook notebook = new Notebook(schedule, timestamp);
-        notebookRepository.save(notebook);
+        Long notebookId = notebookRepository.save(notebook).getId();
 
-        return notebook.getId();
+        Long studentId = studentRepository.findByScheduleId(schedule.getId());
+        return CreateNotebookResponse.builder()
+                .notebookId(notebookId)
+                .receiverId(studentId)
+                .receiverRole(Role.STUDENT)
+                .build();
     }
 
     @Transactional
