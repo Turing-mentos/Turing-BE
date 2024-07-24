@@ -74,4 +74,10 @@ public class Student extends Member {
         this.phone = phone;
         this.parentPhone = parentPhone;
     }
+
+    // 학생 연결 시 기존 정보를 동기화하기 위해 사용
+    public void updateSchoolAndYear(String school, String year) {
+        this.school = school;
+        this.year = year;
+    }
 }
