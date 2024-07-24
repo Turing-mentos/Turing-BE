@@ -16,7 +16,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/auth/**",
+            "/api/auth/verify/**",
+            "/api/auth/reissue",
             "/api/members/signup",
             "/swagger-ui/**",
             "/v3/api-docs/**",
