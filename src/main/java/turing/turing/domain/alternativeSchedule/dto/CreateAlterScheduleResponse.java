@@ -1,16 +1,14 @@
 package turing.turing.domain.alternativeSchedule.dto;
 
-import lombok.Builder;
+import java.time.LocalDate;
 import lombok.Getter;
-import turing.turing.domain.member.Role;
+import lombok.experimental.SuperBuilder;
+import turing.turing.domain.notice.dto.BaseNoticeInfo;
 
 @Getter
-@Builder
-public class CreateAlterScheduleResponse {
+@SuperBuilder
+public class CreateAlterScheduleResponse extends BaseNoticeInfo {
 
     private Long firstAlterScheduleId;
-    public Long senderId;
-    public Role senderRole;
-    public Long receiverId;
-    public Role receiverRole;
+    private LocalDate scheduleDate;
 }

@@ -6,10 +6,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.dto.CreateScheduleRequest;
 import turing.turing.domain.schedule.dto.ModifyScheduleRequest;
+import turing.turing.domain.schedule.dto.ModifyScheduleResponse;
 import turing.turing.domain.schedule.dto.ScheduleDto;
 import turing.turing.domain.schedule.dto.UpdateScheduleDto;
+import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.studyTime.dto.StudyTimeReqDto;
@@ -23,12 +26,19 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final StudyRoomRepository studyRoomRepository;
+    private final StudentRepository studentRepository;
 
     public List<ScheduleDto> getMonthSchedules(LocalDate date, List<Long> studyRoomIds) {
         int month = date.getMonthValue();
         int year = date.getYear();
 
-        return scheduleRepository.findAllByDateAndStudyRoomIds(month, year, studyRoomIds);
+        return scheduleRepository.findAllByMonthAndStudyRoomIds(month, year, studyRoomIds);
+    }
+
+    public List<ScheduleDto> getWeeklySchedules(LocalDate date, List<Long> studyRoomIds) {
+        LocalDate endDate = date.plusDays(10);
+
+        return scheduleRepository.findAllByDateAndStudyRoomIds(date, endDate, studyRoomIds);
     }
 
     public ScheduleDto getSchedule(Long scheduleId) {
@@ -78,7 +88,6 @@ public class ScheduleService {
                         .build();
 
                 result.add(schedule);
-                count++;
 
                 //주 1회인 경우 날짜 갱신 용도
                 currentDate = currentDate.plusDays(1);
@@ -95,7 +104,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public Long modifySchedule(ModifyScheduleRequest request) {
+    public ModifyScheduleResponse modifySchedules(ModifyScheduleRequest request) {
         Long scheduleId = request.getScheduleId();
         LocalDate modifiedDate = request.getDate();
         List<Schedule> scheduleList = scheduleRepository.findAllByIdAndDate(scheduleId, modifiedDate);
@@ -107,28 +116,50 @@ public class ScheduleService {
                 .map(Schedule::getId)
                 .toList();
 
+        LocalDate prevDate;
+        Schedule firstSchedule = scheduleList.get(0);
         //일정 변경이 다른 일정과 엇갈리지 않는 경우
         if (scheduleList.size() == 1) {
-            return scheduleList.get(0).update(request);
+            prevDate = firstSchedule.getDate();
+            firstSchedule.update(request);
         } //일정을 나중으로 미루는 경우
-        else if (scheduleList.get(0).getId().equals(request.getScheduleId())) {
+        else if (firstSchedule.getId().equals(request.getScheduleId())) {
+            prevDate = firstSchedule.getDate();
             scheduleRepository.moveUpSchedules(scheduleIds);
-            Schedule targetSchedule = scheduleList.get(0);
 
-            UpdateScheduleDto dto = UpdateScheduleDto.of(request.getDate(), request.getStartTime(), request.getEndTime(),
-                    scheduleList.get(scheduleList.size() - 1).getSession());
+            UpdateScheduleDto dto = UpdateScheduleDto.builder()
+                    .date(request.getDate())
+                    .startTime(request.getStartTime())
+                    .endTime(request.getEndTime())
+                    .session(scheduleList.get(scheduleList.size() - 1).getSession())
+                    .build();
 
-            return targetSchedule.updateWithSession(dto);
+            firstSchedule.updateWithSession(dto);
         } //일정을 앞으로 땡기는 경우
         else {
             scheduleRepository.postponeSchedules(scheduleIds);
             Schedule targetSchedule = scheduleList.get(scheduleList.size() - 1);
+            prevDate = targetSchedule.getDate();
 
-            UpdateScheduleDto dto = UpdateScheduleDto.of(request.getDate(), request.getStartTime(), request.getEndTime(),
-                    scheduleList.get(0).getSession());
+            UpdateScheduleDto dto = UpdateScheduleDto.builder()
+                    .date(request.getDate())
+                    .startTime(request.getStartTime())
+                    .endTime(request.getEndTime())
+                    .session(firstSchedule.getSession())
+                    .build();
 
-            return targetSchedule.updateWithSession(dto);
+            targetSchedule.updateWithSession(dto);
         }
+
+        Long studentId = studentRepository.findByScheduleId(scheduleId);
+
+        return ModifyScheduleResponse.builder()
+                .scheduleId(scheduleId)
+                .prevDate(prevDate)
+                .alterDate(modifiedDate)
+                .receiverId(studentId)
+                .receiverRole(Role.STUDENT)
+                .build();
     }
 
 }

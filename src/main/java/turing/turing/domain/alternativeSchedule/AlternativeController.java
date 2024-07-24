@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.alternativeSchedule.dto.AllAlterSchedules;
 import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleRequest;
+import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleResponse;
+import turing.turing.domain.auth.CustomUserDetails;
+import turing.turing.domain.member.Role;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,14 +32,15 @@ public class AlternativeController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<CreateAlterScheduleRequest> createAlterSchedule(@RequestBody CreateAlterScheduleRequest request) {
-        Long firstSavedId = alternativeService.createAlterSchedule(request);
+    public ResponseEntity<CreateAlterScheduleResponse> createAlterSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateAlterScheduleRequest request) {
+        CreateAlterScheduleResponse response = alternativeService.createAlterSchedules(request);
+        response.setSender(customUserDetails.getMemberId(), Role.STUDENT);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{alterScheduleId}")
-                .buildAndExpand(firstSavedId)
+                .buildAndExpand(response.getFirstAlterScheduleId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(response);
     }
 }
