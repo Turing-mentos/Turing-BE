@@ -8,6 +8,7 @@ import turing.turing.domain.member.Role;
 import turing.turing.domain.noticeSetting.dto.NoticeSettingDto;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.NotificationError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,16 @@ public class NoticeSettingService {
 
         final String[] teacherCategories = {"NOTEBOOK", "HOMEWORK", "COMMENT", "QUESTION", "SCHEDULE_CHANGE", "NEW_SCHEDULE", "REPORT", "SESSION"};
         final String[] studentCategories = {"NOTEBOOK", "HOMEWORK", "SCHEDULE_CHANGE", "COMMENT"};
+
+
+        List<NoticeSetting> checkSetting = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), String.valueOf(userDetails.getRole()));
+        if(checkSetting != null){
+            throw new RestApiException(NotificationError.NOTIFICATION_SETTING_FAILURE);
+        }
+
         if (userDetails.getRole() == Role.TEACHER) {
+
+
             List<NoticeSetting> teacherNoticeSettings = new ArrayList<>();
             for (String category : teacherCategories) {
                 NoticeSetting noticeSetting = NoticeSetting.builder()
