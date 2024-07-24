@@ -7,12 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.auth.CustomUserDetails;
+import turing.turing.domain.member.dto.Profile;
 import turing.turing.domain.member.dto.SignUpRequest;
 import turing.turing.domain.member.dto.SignUpResponse;
 
@@ -40,5 +37,12 @@ public class MemberController {
         memberService.deleteMember(user);
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    @Operation(summary = "회원 정보 수정(프로필 수정)")
+    @PatchMapping("/profile")
+    public ResponseEntity<Boolean> readMember(@AuthenticationPrincipal CustomUserDetails user, @RequestBody Profile profile) {
+        return ResponseEntity.ok(memberService.updateProfile(user, profile));
     }
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import turing.turing.domain.member.Member;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
+import turing.turing.domain.member.dto.Profile;
 
 @Getter
 @Entity
@@ -58,5 +59,13 @@ public class Teacher extends Member {
         super(role, email, provider, null);  //TODO fcmToken!!!
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public void updateProfile(Profile profile) {
+        this.firstName = profile.getFirstName();
+        this.lastName = profile.getLastName();
+        this.university = profile.getUniversity();
+        this.studentNumber = profile.getStudentNumber();
+        this.department = profile.getDepartment();
     }
 }

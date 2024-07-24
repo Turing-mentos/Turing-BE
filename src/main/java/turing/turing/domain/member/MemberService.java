@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.auth.jwt.JwtTokenProvider;
+import turing.turing.domain.member.dto.Profile;
 import turing.turing.domain.member.dto.SignUpRequest;
 import turing.turing.domain.member.dto.SignUpResponse;
 import turing.turing.domain.student.Student;
@@ -12,6 +13,7 @@ import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
+import turing.turing.global.exception.errorCode.CommonErrorCode;
 import turing.turing.global.exception.errorCode.UserErrorCode;
 
 @Service
@@ -76,5 +78,25 @@ public class MemberService {
             return;
         }
         studentRepository.deleteById(memberId);
+    }
+
+
+    @Transactional
+    public Boolean updateProfile(CustomUserDetails user, Profile profile) {
+        if(user.getRole() == Role.STUDENT){
+            Student student = studentRepository.findById(user.getMemberId())
+                    .orElseThrow(()->new RestApiException(CommonErrorCode.NOT_FOUND));
+            student.updateProfile(profile);
+            return true;
+        }
+        else if(user.getRole() == Role.TEACHER){
+            Teacher teacher  = teacherRepository.findById(user.getMemberId())
+                    .orElseThrow(()->new RestApiException(CommonErrorCode.NOT_FOUND));
+            teacher.updateProfile(profile);
+            return true;
+        }
+        else{
+            throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
+        }
     }
 }
