@@ -4,11 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.UnsupportedJwtException;
-import java.security.PublicKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +22,7 @@ public class AppleTokenParser {
     public Map<String, String> parseHeader(final String appleIdToken) {
         try {
             final String encodedHeader = appleIdToken.split(IDENTITY_TOKEN_VALUE_DELIMITER)[HEADER_INDEX];
-            final String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
+            final String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader), StandardCharsets.UTF_8);
             return objectMapper.readValue(decodedHeader, new TypeReference<>() {});
         } catch (JsonMappingException e) {
             throw new RuntimeException("올바르지 않은 appleToken");
@@ -35,19 +31,32 @@ public class AppleTokenParser {
         }
     }
 
-    public Claims extractClaims(final String appleIdToken, final PublicKey publicKey) {
+    public Map<String, String> extractClaims(final String appleIdToken) {
         try {
-            return Jwts.parser()
-                    .verifyWith(publicKey)
-                    .build()
-                    .parseSignedClaims(appleIdToken)
-                    .getPayload();
-        } catch (UnsupportedJwtException e) {
-            throw new UnsupportedJwtException("지원되지 않는 jwt 타입");
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("비어있는 jwt");
-        } catch (JwtException e) {
-            throw new JwtException("jwt 검증 오류");
+            final String encodedPayload = appleIdToken.split(IDENTITY_TOKEN_VALUE_DELIMITER)[1];
+            final String decodedPayload = new String(Base64.getUrlDecoder().decode(encodedPayload), StandardCharsets.UTF_8);
+            return objectMapper.readValue(decodedPayload, new TypeReference<>() {});
+        } catch (JsonMappingException e) {
+            throw new RuntimeException("올바르지 않은 appleToken");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("디코드된 헤더 Map 형태로 분류 실패");
         }
     }
+//    public Claims extractClaims(final String appleIdToken, final PublicKey publicKey) {
+//        try {
+//            return Jwts.parser()
+//                    .verifyWith(publicKey)
+//                    .build()
+//                    .parseSignedClaims(appleIdToken)
+//                    .getPayload();
+//        } catch (UnsupportedJwtException e) {
+//            throw new UnsupportedJwtException("지원되지 않는 jwt 타입");
+//        } catch (IllegalArgumentException e) {
+//            throw new IllegalArgumentException("비어있는 jwt");
+//        } catch (ExpiredJwtException e) {
+//            throw new JwtException("유효기간 만료");
+//        } catch (JwtException e) {
+//            throw new JwtException("jwt 검증 오류");
+//        }
+//    }
 }

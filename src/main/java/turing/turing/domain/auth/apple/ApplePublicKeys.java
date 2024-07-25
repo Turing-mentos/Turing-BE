@@ -17,7 +17,7 @@ public class ApplePublicKeys {
     public ApplePublicKey getMatchingKeyBy(final String alg, final String kid) {
         return keys.stream()
                 .filter(key -> key.isSameAlg(alg) && key.isSameKid(kid))
-                .findFirst()
+                .findAny()
                 .orElseThrow(() -> new RuntimeException("잘못된 토큰 형태입니다."));
     }
 }
