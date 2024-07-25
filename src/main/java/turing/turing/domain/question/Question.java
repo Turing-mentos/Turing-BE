@@ -64,8 +64,8 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
-  
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+
+    @OneToMany(mappedBy = "question")
     private List<Comment> comments = new ArrayList<>();
 
     @Builder

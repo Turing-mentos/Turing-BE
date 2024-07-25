@@ -7,10 +7,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
-import turing.turing.domain.code.ConnectionCode;
-import turing.turing.domain.exam.Exam;
-import turing.turing.domain.question.Question;
-import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.studyTime.StudyTime;
 import turing.turing.domain.teacher.Teacher;
@@ -55,21 +51,8 @@ public class StudyRoom extends BaseEntity {
     @Column(name = "wage", nullable = false)
     private Integer wage;
   
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "studyRoom")
     private List<StudyTime> studyTimes = new ArrayList<>();
-
-    @OneToOne(mappedBy = "studyRoom", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private ConnectionCode connectionCode;
-
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
-    private List<Schedule> schedules = new ArrayList<>();
-
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
-    private List<Exam> exams = new ArrayList<>();
-
-
-    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.REMOVE)
-    private List<Question> questions = new ArrayList<>();
 
     public StudyRoom(String subject, Integer baseSession, Integer wage, Teacher teacher, Student student) {
         this.subject = subject;
