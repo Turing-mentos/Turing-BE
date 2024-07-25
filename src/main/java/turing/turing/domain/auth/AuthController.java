@@ -44,8 +44,7 @@ public class AuthController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody @Valid LoginRequest request) {
 
-        LoginResponse response = authService.login(request);
-        response.setProvider(customUserDetails.getProvider());
+        LoginResponse response = authService.login(customUserDetails, request);
 
         return ResponseEntity.ok(response);
     }

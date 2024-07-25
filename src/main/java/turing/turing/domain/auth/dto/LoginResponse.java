@@ -18,7 +18,4 @@ public class LoginResponse {
     private String studentNumber;
     private Provider provider;
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
 }

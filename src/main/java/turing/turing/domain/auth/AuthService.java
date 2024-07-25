@@ -66,15 +66,12 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse login(LoginRequest request) {
-        String token = request.getAccessToken();
+    public LoginResponse login(CustomUserDetails customUserDetails, LoginRequest request) {
         String fcmToken = request.getFcmToken();
-        if (!jwtTokenProvider.validationToken(token)) {
-            throw new IllegalArgumentException("Invalid or expired token");
-        }
 
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        Role role = jwtTokenProvider.getRoleFromToken(token);
+        String email = customUserDetails.getEmail();
+        Role role = customUserDetails.getRole();
+        Provider provider = customUserDetails.getProvider();
 
         if (role.equals(Role.TEACHER)) {
             Teacher teacher = teacherRepository.findByEmail(email)
@@ -89,6 +86,7 @@ public class AuthService {
                     .university(teacher.getUniversity())
                     .department(teacher.getDepartment())
                     .studentNumber(teacher.getStudentNumber())
+                    .provider(provider)
                     .build();
         }
 
@@ -101,6 +99,7 @@ public class AuthService {
                 .memberId(student.getId())
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
+                .provider(provider)
                 .build();
     }
 
