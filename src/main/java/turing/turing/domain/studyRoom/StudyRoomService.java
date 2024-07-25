@@ -25,7 +25,6 @@ import turing.turing.domain.studyTime.dto.StudyTimeResDto;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
-import turing.turing.global.exception.errorCode.CommonErrorCode;
 import turing.turing.global.exception.errorCode.StudyRoomErrorCode;
 import turing.turing.global.exception.errorCode.UserErrorCode;
 
@@ -61,7 +60,7 @@ public class StudyRoomService {
         studyTimeRepository.saveAll(studyTimes);
 
 
-        // 기준회차 생성g
+        // 기준회차 생성
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 studyRoom.getId(),
                 studyRoomCreateReqDto.studentLastName() + studyRoomCreateReqDto.studentFirstName(),
@@ -142,7 +141,8 @@ public class StudyRoomService {
         // 기존 학생 가져오기
         Student nonSignUpStudent = connectionCode.getStudyRoom().getStudent();
 
-        // 실제로 가입한 학생과 연결 (참조를 변경)
+        // 학생 정보를 업데이트하고, 실제로 가입한 학생과 연결 (참조를 변경)
+        student.updateSchoolAndYear(nonSignUpStudent.getSchool(), nonSignUpStudent.getYear());
         connectionCode.getStudyRoom().connectStudent(student);
 
         // 기존 학생은 삭제

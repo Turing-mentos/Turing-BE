@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import turing.turing.domain.member.Member;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
+import turing.turing.domain.member.dto.Profile;
 
 @Getter
 @Entity
@@ -73,5 +74,16 @@ public class Student extends Member {
         this.year = year;
         this.phone = phone;
         this.parentPhone = parentPhone;
+    }
+
+    // 학생 연결 시 기존 정보를 동기화하기 위해 사용
+    public void updateSchoolAndYear(String school, String year) {
+        this.school = school;
+        this.year = year;
+    }
+
+    public void updateProfile(Profile profile) {
+        this.lastName = profile.getLastName();
+        this.firstName = profile.getFirstName();
     }
 }
