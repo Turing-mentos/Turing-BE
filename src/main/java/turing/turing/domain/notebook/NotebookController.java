@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.member.Role;
+import turing.turing.domain.notebook.dto.CheckLatestRequest;
+import turing.turing.domain.notebook.dto.CheckLatestResponse;
 import turing.turing.domain.notebook.dto.CreateNotebookRequest;
 import turing.turing.domain.notebook.dto.CreateNotebookResponse;
 import turing.turing.domain.notebook.dto.HomeworkPercentAllDto;
@@ -86,6 +88,13 @@ public class NotebookController {
 
 
         return ResponseEntity.ok(notebookService.modifyDeadline(request));
+    }
+
+    @Operation(summary = "가장 최근 일정에 대해 알림장이 존재하는지 여부 확인")
+    @GetMapping("/latest-notebook")
+    public ResponseEntity<CheckLatestResponse> checkLatestNotebook(@RequestBody CheckLatestRequest request) {
+
+        return ResponseEntity.ok(notebookService.isExistLatestNotebook(request));
     }
 
     @Operation(summary = "숙제 온도 조회")
