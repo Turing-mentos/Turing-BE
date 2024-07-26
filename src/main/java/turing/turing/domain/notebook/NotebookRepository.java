@@ -41,6 +41,8 @@ public interface NotebookRepository extends JpaRepository<Notebook, Long> {
             + "order by n.id asc")
     List<Notebook> findAllByStudyRoomIds(@Param("studyRoomIds") List<Long> studyRoomIds);
 
+    Boolean existsByScheduleId(Long scheduleId);
+
     @Query("select n from Notebook n "
             + "join fetch n.schedule s "
             + "where s.studyRoom.id=:studyRoomId "
