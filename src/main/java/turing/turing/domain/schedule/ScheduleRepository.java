@@ -111,4 +111,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "ORDER BY date ASC", nativeQuery = true)
     List<Schedule> findSchedulesInRange(@Param("baseSession") int baseSession);
 
+
+    List<Schedule> findAllByStudyRoom(StudyRoom studyRoom);
 }

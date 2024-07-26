@@ -36,10 +36,10 @@ public class ReportConverter {
                 .reportId(report.getId()).build();
     }
 
-    public static ReportResDto.StudentInfoDto toStudentInfoDto(StudyRoom s, Schedule sc, int totalSession) {
+    public static ReportResDto.StudentInfoDto toStudentInfoDto(StudyRoom s, int currentSession, int totalSession) {
         return ReportResDto.StudentInfoDto.builder()
                 .studentId(s.getStudent().getId())
-                .currentSession(sc.getSession())
+                .currentSession(currentSession)
                 .subject(s.getSubject())
                 .totalSession(totalSession)
                 .firstName(s.getStudent().getFirstName())

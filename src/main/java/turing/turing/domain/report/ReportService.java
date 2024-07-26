@@ -21,6 +21,7 @@ import turing.turing.domain.studyRoom.StudyRoomService;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -199,13 +200,29 @@ public class ReportService {
         List<StudyRoom> studyRoomList= studyRoomRepository.findAllByTeacherId(teacherId);
 
         List<ReportResDto.StudentInfoDto> list = new ArrayList<>();
-        for(StudyRoom s : studyRoomList){
-            //가장 최근회차
-            Schedule sc = scheduleRepository.searchByStudyRoomIdAndLatest(s.getId());
-            int totalSession = s.getBaseSession();    
-            //총 회차, 현재 회차
-            list.add(ReportConverter.toStudentInfoDto(s,sc,totalSession));
+        for (StudyRoom s : studyRoomList) {
+            List<Schedule> schedules = scheduleRepository.findAllByStudyRoom(s);
+
+            // Find the most recent schedule
+            Schedule mostRecentSchedule = null;
+            LocalDateTime now = LocalDateTime.now(); // Current date and time
+            for (Schedule schedule : schedules) {
+                if ((schedule.getDate().isBefore(now.toLocalDate()) ||
+                                (schedule.getDate().isEqual(now.toLocalDate()) && schedule.getEndTime().isBefore(now.toLocalTime())))) {
+                    mostRecentSchedule = schedule;
+                }
+            }
+
+            int totalSession = s.getBaseSession();
+            if (mostRecentSchedule != null) {
+                list.add(ReportConverter.toStudentInfoDto(s, mostRecentSchedule.getSession(), totalSession));
+            } else {
+                if (!schedules.isEmpty()) {
+                    list.add(ReportConverter.toStudentInfoDto(s, 0, totalSession));
+                }
+            }
         }
         return list;
+
     }
 }
