@@ -8,20 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
-import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
 import turing.turing.domain.notice.fcm.dto.FcmSendDto;
 import com.google.firebase.messaging.Notification;
-import turing.turing.domain.notice.fcm.dto.TestDto;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.student.Student;
-import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.global.exception.RestApiException;
-import turing.turing.global.exception.errorCode.CommonErrorCode;
 import turing.turing.global.exception.errorCode.NotificationError;
 
 
