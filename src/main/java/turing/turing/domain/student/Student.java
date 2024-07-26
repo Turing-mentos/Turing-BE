@@ -52,10 +52,6 @@ public class Student extends Member {
     @Column(name = "parent_phone", length = 30)
     private String parentPhone;
 
-    @Size(max = 300)
-    @Column(name = "fcm_token", length = 300)
-    private String fcmToken;
-
     // 학생 가입용
     @Builder
     public Student(String email, Role role, Provider provider, String firstName, String lastName) {
