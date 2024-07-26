@@ -58,7 +58,6 @@ public class NotebookController {
 
     @Operation(summary = "알림장 생성")
     @PostMapping("")
-
     public ResponseEntity<CreateNotebookResponse> createNotebook(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateNotebookRequest request) {
         CreateNotebookResponse response = notebookService.createNotebook(request);
