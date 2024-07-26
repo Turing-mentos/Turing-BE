@@ -1,5 +1,6 @@
 package turing.turing.domain.auth;
 
+import io.jsonwebtoken.Claims;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.Optional;
@@ -39,12 +40,12 @@ public class AuthService {
 
     public String verifyWithApple(final VerifyAppleRequest request) {
         String appleIdToken = request.getAppleIdToken();
-//        Map<String, String> appleTokenHeader = appleTokenParser.parseHeader(appleIdToken);
-//        ApplePublicKeys applePublicKeys = appleClient.getApplePublicKeys();
-//        PublicKey publicKey = applePublicKeyGenerator.generate(appleTokenHeader, applePublicKeys);
-        Map<String, String> appleTokenPayload = appleTokenParser.extractClaims(appleIdToken);
+        Map<String, String> appleTokenHeader = appleTokenParser.parseHeader(appleIdToken);
+        ApplePublicKeys applePublicKeys = appleClient.getApplePublicKeys();
+        PublicKey publicKey = applePublicKeyGenerator.generate(appleTokenHeader, applePublicKeys);
+        Claims claims = appleTokenParser.extractClaims(appleIdToken, publicKey);
 
-        return appleTokenPayload.get("email");
+        return claims.get("email", String.class);
     }
 
     public TokenResponse confirmAssign(String email, Provider provider) {
