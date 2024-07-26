@@ -1,6 +1,7 @@
 package turing.turing.domain.noticeSetting;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import turing.turing.domain.auth.CustomUserDetails;
@@ -43,8 +44,9 @@ public class NoticeSettingService {
 
 
         List<NoticeSetting> checkSetting = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), String.valueOf(userDetails.getRole()));
-        if(checkSetting != null){
+        if(!checkSetting.isEmpty()){
             throw new RestApiException(NotificationError.NOTIFICATION_SETTING_FAILURE);
+
         }
 
         if (userDetails.getRole() == Role.TEACHER) {
