@@ -102,6 +102,7 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
     public TokenResponse reissue(TokenReIssueRequest request) {
         String token = request.getRefreshToken();
 
