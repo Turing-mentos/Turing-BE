@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import turing.turing.domain.homework.dto.CreateHomeworkRequest;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
 
 @Tag(name = "Homework", description = "숙제")
@@ -35,7 +36,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 생성")
     @PostMapping("")
-    public ResponseEntity<Long> createHomework(@RequestBody DetailedHomeworkDto request) {
+    public ResponseEntity<Long> createHomework(@RequestBody CreateHomeworkRequest request) {
         Long savedId = homeworkService.createHomework(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()

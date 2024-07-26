@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.homework.converter.HomeworkConverter;
+import turing.turing.domain.homework.dto.CreateHomeworkRequest;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
@@ -26,7 +27,7 @@ public class HomeworkService {
         return HomeworkConverter.toDetailedDto(homework);
     }
 
-    public Long createHomework(DetailedHomeworkDto request) {
+    public Long createHomework(CreateHomeworkRequest request) {
         Notebook notebook = notebookRepository.findById(request.getNotebookId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 

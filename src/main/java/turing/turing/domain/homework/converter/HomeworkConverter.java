@@ -1,21 +1,22 @@
 package turing.turing.domain.homework.converter;
 
 import turing.turing.domain.homework.Homework;
+import turing.turing.domain.homework.dto.CreateHomeworkRequest;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
 import turing.turing.domain.homework.dto.HomeworkDto;
 import turing.turing.domain.notebook.Notebook;
 
 public class HomeworkConverter {
 
-    public static Homework toEntity (DetailedHomeworkDto dto, Notebook notebook) {
+    public static Homework toEntity (CreateHomeworkRequest request, Notebook notebook) {
         return Homework.builder()
-                .category(dto.getCategory())
-                .title(dto.getTitle())
-                .rangeType(dto.getRangeType())
-                .rangeStart(dto.getRangeStart())
-                .rangeEnd(dto.getRangeEnd())
-                .content(dto.getContent())
-                .memo(dto.getMemo())
+                .category(request.getCategory())
+                .title(request.getTitle())
+                .rangeType(request.getRangeType())
+                .rangeStart(request.getRangeStart())
+                .rangeEnd(request.getRangeEnd())
+                .content(request.getContent())
+                .memo(request.getMemo())
                 .notebook(notebook)
                 .build();
     }
