@@ -45,4 +45,7 @@ public interface StudyRoomRepository extends JpaRepository<StudyRoom, Long> {
 
     @Query("SELECT s FROM StudyRoom s WHERE s.teacher.id = :teacherId")
     List<StudyRoom> findAllByTeacherId(Long teacherId);
+
+    @Query("SELECT sr FROM StudyRoom sr join fetch sr.student s WHERE s.id = :studentId")
+    List<StudyRoom> findAllWIthStudentByStudentId(Long studentId);
 }

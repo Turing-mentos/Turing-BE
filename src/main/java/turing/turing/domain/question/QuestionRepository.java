@@ -11,6 +11,9 @@ import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
+    @Query("select q from Question q left join fetch q.comments WHERE q.id = :id")
+    Optional<Question> findWithCommentsById(@Param("id") Long id);
+
     // 선생님용 질문 조회
     @Query(value = "select q from Question q join q.studyRoom s where s.teacher = :teacher")
     List<Question> findAllQuestionByTeacher(@Param(value = "teacher") Teacher teacher);

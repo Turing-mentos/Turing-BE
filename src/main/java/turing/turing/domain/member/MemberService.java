@@ -10,6 +10,7 @@ import turing.turing.domain.member.dto.SignUpRequest;
 import turing.turing.domain.member.dto.SignUpResponse;
 import turing.turing.domain.student.Student;
 import turing.turing.domain.student.StudentRepository;
+import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
@@ -23,6 +24,7 @@ public class MemberService {
 
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
+    private final StudyRoomRepository studyRoomRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -77,6 +79,22 @@ public class MemberService {
             teacherRepository.deleteById(memberId);
             return;
         }
+
+        // 학생의 경우 연결된 모든 과외공간에 대하여 학생 연결 해제 로직 적용
+        studyRoomRepository.findAllWIthStudentByStudentId(memberId)
+                .forEach(studyRoom -> {
+                    // 기존 학생의 정보를 통해 nonSignedUpStudent 생성
+                    Student nonSignUpStudent = new Student(
+                            studyRoom.getStudent().getFirstName(),
+                            studyRoom.getStudent().getLastName(),
+                            studyRoom.getStudent().getSchool(),
+                            studyRoom.getStudent().getYear(),
+                            studyRoom.getStudent().getPhone(),
+                            studyRoom.getStudent().getParentPhone()
+                    );
+                    studentRepository.save(nonSignUpStudent);
+                    studyRoom.disconnectStudent(nonSignUpStudent);
+                });
         studentRepository.deleteById(memberId);
     }
 

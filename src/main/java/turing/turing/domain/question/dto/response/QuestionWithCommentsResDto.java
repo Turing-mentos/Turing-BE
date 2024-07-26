@@ -17,7 +17,7 @@ public record QuestionWithCommentsResDto(
         Integer commentCount,
         List<CommentResDto> commentList
 ) {
-    public static QuestionWithCommentsResDto of(Question question, List<Comment> commentList){
+    public static QuestionWithCommentsResDto of(Question question){
         return new QuestionWithCommentsResDto(
                 question.getId(),
                 question.getTitle(),
@@ -27,7 +27,7 @@ public record QuestionWithCommentsResDto(
                 question.getSolveStatus(),
                 question.getPinStatus(),
                 question.getCommentCount(),
-                commentList.stream().map(CommentResDto::of).toList()
+                question.getComments().stream().map(CommentResDto::of).toList()
         );
     }
 }

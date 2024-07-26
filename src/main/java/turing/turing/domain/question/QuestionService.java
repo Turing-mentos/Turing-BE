@@ -59,11 +59,10 @@ public class QuestionService {
     }
 
     public QuestionWithCommentsResDto getDetailedQuestion(Long questionId){
-        Question question = questionRepository.findById(questionId)
+        Question question = questionRepository.findWithCommentsById(questionId)
                 .orElseThrow(() -> new RestApiException(QuestionErrorCode.QUESTION_NOT_FOUND));
-        List<Comment> commentList = commentRepository.findAllByQuestion(question);
 
-        return QuestionWithCommentsResDto.of(question, commentList);
+        return QuestionWithCommentsResDto.of(question);
     }
 
     @Transactional
