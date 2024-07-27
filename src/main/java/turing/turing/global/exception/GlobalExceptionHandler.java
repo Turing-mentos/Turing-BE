@@ -54,11 +54,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllException() {
-        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<Object> handleAllException() {
+//        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
+//        return handleExceptionInternal(errorCode);
+//    }
 
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
