@@ -18,6 +18,7 @@ public class HomeworkConverter {
                 .content(request.getContent())
                 .memo(request.getMemo())
                 .notebook(notebook)
+                .isDone(false)
                 .build();
     }
 

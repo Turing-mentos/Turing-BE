@@ -74,7 +74,7 @@ public class Homework extends BaseEntity {
     private Boolean isDone;
 
     @Builder
-    public Homework(String category, String title, String rangeType, int rangeStart, int rangeEnd, String content, String memo, Notebook notebook) {
+    public Homework(String category, String title, String rangeType, int rangeStart, int rangeEnd, String content, String memo, Notebook notebook, Boolean isDone) {
         super();
         this.category = category;
         this.title = title;
@@ -84,6 +84,7 @@ public class Homework extends BaseEntity {
         this.content = content;
         this.memo = memo;
         this.notebook = notebook;
+        this.isDone = false;
     }
 
     public Long update(DetailedHomeworkDto request) {
