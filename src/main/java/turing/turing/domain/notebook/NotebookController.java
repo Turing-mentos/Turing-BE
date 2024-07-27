@@ -92,9 +92,9 @@ public class NotebookController {
 
     @Operation(summary = "가장 최근 일정에 대해 알림장이 존재하는지 여부 확인")
     @GetMapping("/latest-notebook")
-    public ResponseEntity<CheckLatestResponse> checkLatestNotebook(@RequestBody CheckLatestRequest request) {
+    public ResponseEntity<CheckLatestResponse> checkLatestNotebook(@RequestParam Long studyRoomId) {
 
-        return ResponseEntity.ok(notebookService.isExistLatestNotebook(request));
+        return ResponseEntity.ok(notebookService.isExistLatestNotebook(studyRoomId));
     }
 
     @Operation(summary = "숙제 온도 조회")
