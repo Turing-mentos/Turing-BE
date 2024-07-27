@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import turing.turing.domain.gpt.dto.GPTRequest;
-import turing.turing.domain.gpt.dto.GPTResponse;
+import turing.turing.domain.gpt.dto.request.GPTRequestDto;
+import turing.turing.domain.gpt.dto.response.GPTResponseDto;
 
 @Slf4j
 @Service
@@ -21,15 +21,15 @@ public class GptService {
 
     private final RestTemplate restTemplate;
 
-    public GPTResponse getGptResponse(String prompt) {
-        GPTRequest request = new GPTRequest(model, prompt, 1, 275, 1, 2, 2);
-        return restTemplate.postForObject(apiUrl, request, GPTResponse.class);
+    public GPTResponseDto getGptResponse(String prompt) {
+        GPTRequestDto request = new GPTRequestDto(model, prompt, 1, 275, 1, 2, 2);
+        return restTemplate.postForObject(apiUrl, request, GPTResponseDto.class);
     }
 
-    public String parseData(GPTResponse gptResponse, String sectionTitle) {
+    public String parseData(GPTResponseDto gptResponse, String sectionTitle) {
         String content = "";
 
-        for (GPTResponse.Choice choice : gptResponse.getChoices()) {
+        for (GPTResponseDto.Choice choice : gptResponse.getChoices()) {
             String messageContent = choice.getMessage().getContent();
 
             if (messageContent.contains(sectionTitle)) {

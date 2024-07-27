@@ -1,14 +1,12 @@
-package turing.turing.domain.report.dto;
+package turing.turing.domain.report.dto.request;
 
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
 @Setter
 @Builder
-public class ReportReqDto {
+public class ReportRequestDto {
 
     @Getter
     @AllArgsConstructor

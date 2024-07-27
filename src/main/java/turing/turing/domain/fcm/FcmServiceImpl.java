@@ -1,4 +1,4 @@
-package turing.turing.domain.notice.fcm;
+package turing.turing.domain.fcm;
 
 import com.google.firebase.messaging.*;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
-import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
-import turing.turing.domain.notice.fcm.dto.FcmSendDto;
+import turing.turing.domain.fcm.dto.FcmSendDeviceDto;
+import turing.turing.domain.fcm.dto.FcmSendDto;
 import com.google.firebase.messaging.Notification;
 import turing.turing.domain.noticeSetting.NoticeSettingRepository;
 import turing.turing.domain.schedule.Schedule;
@@ -192,21 +192,5 @@ public class FcmServiceImpl implements FcmService{
 
         return message;
     }
-
-//    //테스트용
-//    public TestDto methodName7() {
-//        log.info("여기");
-//        TestDto f = TestDto.builder()
-//                .category("문풀")
-//                .questionId(10L)
-//                .receiverRole("STUDENT")
-//                .receiverId(1L)
-//                .senderId(1L)
-//                .senderRole("TEACHER")
-//                .scheduleDate(LocalDate.now())
-//                .alternativeDate(LocalDate.now())
-//                .build();
-//        return f;
-//    }
 
 }

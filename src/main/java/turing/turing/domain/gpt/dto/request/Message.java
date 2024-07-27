@@ -1,4 +1,4 @@
-package turing.turing.domain.gpt.dto;
+package turing.turing.domain.gpt.dto.request;
 
 
 import lombok.AllArgsConstructor;

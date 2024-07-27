@@ -1,4 +1,4 @@
-package turing.turing.domain.notice.dto;
+package turing.turing.domain.notice.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 
 @Getter
 @AllArgsConstructor
-public class NoticeDto {
+public class NoticeResponseDto {
     @Builder
     @Getter
     @Setter

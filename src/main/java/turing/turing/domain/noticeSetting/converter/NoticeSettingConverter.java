@@ -1,20 +1,20 @@
-package turing.turing.domain.noticeSetting;
+package turing.turing.domain.noticeSetting.converter;
 
-import org.springframework.http.ResponseEntity;
-import turing.turing.domain.noticeSetting.dto.NoticeSettingDto;
+import turing.turing.domain.noticeSetting.NoticeSetting;
+import turing.turing.domain.noticeSetting.dto.response.NoticeSettingResponseDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class NoticeSettingConverter {
-    public static List<NoticeSettingDto.ResponseDto> toDtoList(List<NoticeSetting> noticeSettingList) {
+    public static List<NoticeSettingResponseDto.ResponseDto> toDtoList(List<NoticeSetting> noticeSettingList) {
         return noticeSettingList.stream()
                 .map(NoticeSettingConverter::toDto)
                 .collect(Collectors.toList());
     }
 
-    public static NoticeSettingDto.ResponseDto toDto(NoticeSetting noticeSetting){
-        return NoticeSettingDto.ResponseDto
+    public static NoticeSettingResponseDto.ResponseDto toDto(NoticeSetting noticeSetting){
+        return NoticeSettingResponseDto.ResponseDto
                 .builder()
                 .noticeSettingId(noticeSetting.getId())
                 .category(noticeSetting.getCategory())

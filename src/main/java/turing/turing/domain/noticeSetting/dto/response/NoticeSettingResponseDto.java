@@ -1,12 +1,11 @@
-package turing.turing.domain.noticeSetting.dto;
+package turing.turing.domain.noticeSetting.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
 @Builder
 @Getter
-public class NoticeSettingDto {
+public class NoticeSettingResponseDto {
     @Builder
     @Getter
     public static class ResponseDto{

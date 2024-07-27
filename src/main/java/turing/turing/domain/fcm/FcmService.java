@@ -1,9 +1,9 @@
-package turing.turing.domain.notice.fcm;
+package turing.turing.domain.fcm;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.springframework.stereotype.Service;
-import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
-import turing.turing.domain.notice.fcm.dto.FcmSendDto;
+import turing.turing.domain.fcm.dto.FcmSendDeviceDto;
+import turing.turing.domain.fcm.dto.FcmSendDto;
 
 import java.io.IOException;
 import java.util.List;

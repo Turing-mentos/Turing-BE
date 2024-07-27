@@ -2,7 +2,7 @@ package turing.turing.domain.exam.dto;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-import turing.turing.domain.notice.dto.BaseNoticeInfo;
+import turing.turing.domain.notice.dto.response.BaseNoticeInfo;
 
 @Getter
 @SuperBuilder

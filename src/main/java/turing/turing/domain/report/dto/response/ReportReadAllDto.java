@@ -1,4 +1,4 @@
-package turing.turing.domain.report.dto;
+package turing.turing.domain.report.dto.response;
 
 import java.time.LocalDateTime;
 

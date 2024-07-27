@@ -1,4 +1,4 @@
-package turing.turing.domain.notice.fcm.scheduler.job;
+package turing.turing.domain.fcm.scheduler.job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -7,7 +7,7 @@ import org.quartz.JobListener;
 public class FcmJobListener implements JobListener {
     @Override
     public String getName() {
-        return "FcmJobListener"; // Providing a unique name for the JobListener
+        return "FcmJobListener";
     }
 
     @Override

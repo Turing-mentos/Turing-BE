@@ -3,10 +3,8 @@ package turing.turing.domain.noticeSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import turing.turing.domain.member.Role;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface NoticeSettingRepository extends JpaRepository<NoticeSetting, Long> {
     NoticeSetting findByMemberIdAndRoleAndCategory(Long memberId, String role, String category);

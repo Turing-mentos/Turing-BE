@@ -1,14 +1,14 @@
 package turing.turing.domain.report.converter;
 
 import turing.turing.domain.report.Report;
-import turing.turing.domain.report.dto.ReportResDto;
+import turing.turing.domain.report.dto.response.ReportResponseDto;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.studyRoom.StudyRoom;
 
 public class ReportConverter {
 
-    public static ReportResDto.ReadDto toDto(Report report) {
-        return ReportResDto.ReadDto.builder()
+    public static ReportResponseDto.ReadDto toDto(Report report) {
+        return ReportResponseDto.ReadDto.builder()
                 .reportId(report.getId())
                 .opening(report.getOpening())
                 .money(report.getMoney())
@@ -31,13 +31,13 @@ public class ReportConverter {
                 .build();
     }
 
-    public static ReportResDto.CreateDto toCreateDto(Report report) {
-        return ReportResDto.CreateDto.builder()
+    public static ReportResponseDto.CreateDto toCreateDto(Report report) {
+        return ReportResponseDto.CreateDto.builder()
                 .reportId(report.getId()).build();
     }
 
-    public static ReportResDto.StudentInfoDto toStudentInfoDto(StudyRoom s, int currentSession, int totalSession) {
-        return ReportResDto.StudentInfoDto.builder()
+    public static ReportResponseDto.StudentInfoDto toStudentInfoDto(StudyRoom s, int currentSession, int totalSession) {
+        return ReportResponseDto.StudentInfoDto.builder()
                 .studentId(s.getStudent().getId())
                 .currentSession(currentSession)
                 .subject(s.getSubject())

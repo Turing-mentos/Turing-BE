@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.auth.CustomUserDetails;
-import turing.turing.domain.noticeSetting.dto.NoticeSettingDto;
+import turing.turing.domain.noticeSetting.dto.response.NoticeSettingResponseDto;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class NoticeSettingController {
 
     @Operation(summary = "설정 조회")
     @GetMapping("")
-    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> readSetting(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<List<NoticeSettingResponseDto.ResponseDto>> readSetting(@AuthenticationPrincipal CustomUserDetails userDetails){
         return ResponseEntity.ok(noticeSettingService.readSetting(userDetails));
 
     }
@@ -33,7 +33,7 @@ public class NoticeSettingController {
 
     @Operation(summary = "설정 생성")
     @GetMapping("/init")
-    public ResponseEntity<List<NoticeSettingDto.ResponseDto>> createSetting(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam(defaultValue = "true") boolean enabled) {
+    public ResponseEntity<List<NoticeSettingResponseDto.ResponseDto>> createSetting(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam(defaultValue = "true") boolean enabled) {
 
         noticeSettingService.createSetting(userDetails, enabled);
 

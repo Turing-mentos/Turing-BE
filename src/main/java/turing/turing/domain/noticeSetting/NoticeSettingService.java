@@ -1,12 +1,11 @@
 package turing.turing.domain.noticeSetting;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.member.Role;
-import turing.turing.domain.noticeSetting.dto.NoticeSettingDto;
+import turing.turing.domain.noticeSetting.converter.NoticeSettingConverter;
+import turing.turing.domain.noticeSetting.dto.response.NoticeSettingResponseDto;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 import turing.turing.global.exception.errorCode.NotificationError;
@@ -30,7 +29,7 @@ public class NoticeSettingService {
         return  noticeSetting.getEnabled();
     }
 
-    public List<NoticeSettingDto.ResponseDto> readSetting(CustomUserDetails userDetails) {
+    public List<NoticeSettingResponseDto.ResponseDto> readSetting(CustomUserDetails userDetails) {
         List<NoticeSetting> noticeSettingList = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), String.valueOf(userDetails.getRole()));
 
         return NoticeSettingConverter.toDtoList(noticeSettingList);

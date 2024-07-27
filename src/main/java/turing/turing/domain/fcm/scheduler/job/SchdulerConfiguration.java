@@ -1,4 +1,4 @@
-package turing.turing.domain.notice.fcm.scheduler.job;
+package turing.turing.domain.fcm.scheduler.job;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +59,6 @@ public class SchdulerConfiguration implements WebMvcConfigurer {
         FcmJobListener fcmJobListener = new FcmJobListener();
         scheduler.getListenerManager().addJobListener(fcmJobListener);
         scheduler.scheduleJob(job, trigger);
-       //scheduler.start();
+       scheduler.start();
     }
 }

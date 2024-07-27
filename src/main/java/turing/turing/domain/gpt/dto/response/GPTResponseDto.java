@@ -1,15 +1,16 @@
-package turing.turing.domain.gpt.dto;
+package turing.turing.domain.gpt.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import turing.turing.domain.gpt.dto.request.Message;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GPTResponse {
+public class GPTResponseDto {
 
     private List<Choice> choices;
 

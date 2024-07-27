@@ -1,23 +1,21 @@
 package turing.turing.domain.report;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.auth.CustomUserDetails;
-import turing.turing.domain.gpt.dto.GPTResponse;
+import turing.turing.domain.gpt.dto.response.GPTResponseDto;
 import turing.turing.domain.gpt.GptService;
 import turing.turing.domain.gpt.PromptGenerator;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.report.converter.ReportConverter;
-import turing.turing.domain.report.dto.ReportReadAllDto;
-import turing.turing.domain.report.dto.ReportReqDto;
-import turing.turing.domain.report.dto.ReportResDto;
+import turing.turing.domain.report.dto.response.ReportReadAllDto;
+import turing.turing.domain.report.dto.request.ReportRequestDto;
+import turing.turing.domain.report.dto.response.ReportResponseDto;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
-import turing.turing.domain.studyRoom.StudyRoomService;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
 
@@ -36,7 +34,7 @@ public class ReportService {
     private final StudyRoomRepository studyRoomRepository;
     private final ScheduleRepository scheduleRepository;
 //    private final
-    public ReportResDto.CreateDto createReport(CustomUserDetails userDetails, ReportReqDto.CreateDto reportReq) {
+    public ReportResponseDto.CreateDto createReport(CustomUserDetails userDetails, ReportRequestDto.CreateDto reportReq) {
         //과외 공간 찾기
         if (userDetails.getRole() == Role.STUDENT){
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
@@ -52,7 +50,7 @@ public class ReportService {
             throw new RestApiException(CommonErrorCode.NO_SCHEDULE);
         }
         if (reportReq.isPay()) {
-            ReportReqDto.PayDto payDto = generatePayDto(reportReq, studyRoom);
+            ReportRequestDto.PayDto payDto = generatePayDto(reportReq, studyRoom);
             return processPaymentReport(reportReq, schedule, payDto);
         } else {
             return processNonPaymentReport(reportReq, schedule);
@@ -60,23 +58,23 @@ public class ReportService {
     }
 
     // 과외비 있는 경우 처리
-    private ReportResDto.CreateDto processPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule, ReportReqDto.PayDto payDto) {
+    private ReportResponseDto.CreateDto processPaymentReport(ReportRequestDto.CreateDto reportReq, Schedule schedule, ReportRequestDto.PayDto payDto) {
         String prompt1 = PromptGenerator.generatePrompt1(reportReq);
         String prompt2 = PromptGenerator.generatePrompt2(reportReq, payDto);
         return processReportCreation(schedule, prompt1, prompt2, null);
     }
     // 과외비 없는 경우 처리
-    private ReportResDto.CreateDto processNonPaymentReport(ReportReqDto.CreateDto reportReq, Schedule schedule) {
+    private ReportResponseDto.CreateDto processNonPaymentReport(ReportRequestDto.CreateDto reportReq, Schedule schedule) {
         String prompt1 = PromptGenerator.generatePrompt1(reportReq);
         String prompt3 = PromptGenerator.generatePrompt3(reportReq);
         return processReportCreation(schedule, prompt1, null, prompt3);
     }
 
-    private ReportResDto.CreateDto processReportCreation( Schedule schedule, String prompt1, String prompt2, String prompt3) {
+    private ReportResponseDto.CreateDto processReportCreation(Schedule schedule, String prompt1, String prompt2, String prompt3) {
         try{
-            GPTResponse gptResponse1 = gptService.getGptResponse(prompt1);
-            GPTResponse gptResponse2 = prompt2 != null ? gptService.getGptResponse(prompt2) : null;
-            GPTResponse gptResponse3 = prompt3 != null ? gptService.getGptResponse(prompt3) : null;
+            GPTResponseDto gptResponse1 = gptService.getGptResponse(prompt1);
+            GPTResponseDto gptResponse2 = prompt2 != null ? gptService.getGptResponse(prompt2) : null;
+            GPTResponseDto gptResponse3 = prompt3 != null ? gptService.getGptResponse(prompt3) : null;
 
             String opening = gptService.parseData(gptResponse1, "[인사말]");
             String studyProgress = gptService.parseData(gptResponse1, "[지난 수업 진행 방식]");
@@ -107,14 +105,14 @@ public class ReportService {
 
 
     // payDto 생성, 과외비를 위한
-    private ReportReqDto.PayDto generatePayDto(ReportReqDto.CreateDto reportReq, StudyRoom studyRoom) {
+    private ReportRequestDto.PayDto generatePayDto(ReportRequestDto.CreateDto reportReq, StudyRoom studyRoom) {
 
         //오늘날짜 이후에 baseSession만큼 schduleList 가져오기
         List<Schedule> scheduleList = scheduleRepository.findSchedulesInRange(studyRoom.getBaseSession());
 
         //요일별 시간과 임금 계산
         int wage = calculatePay(scheduleList, studyRoom.getWage());
-        ReportReqDto.PayDto payDto = ReportReqDto.PayDto
+        ReportRequestDto.PayDto payDto = ReportRequestDto.PayDto
                 .builder()
                 .wage(wage)
                 .build();
@@ -143,7 +141,7 @@ public class ReportService {
 
 
 
-    public ReportResDto.ReadDto readReport(CustomUserDetails userDetails, Long reportId) {
+    public ReportResponseDto.ReadDto readReport(CustomUserDetails userDetails, Long reportId) {
         if (userDetails.getRole() == Role.STUDENT){
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
         }
@@ -154,14 +152,14 @@ public class ReportService {
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
 
-        ReportResDto.ReadDto reportResDto = ReportConverter.toDto(report);
+        ReportResponseDto.ReadDto reportResDto = ReportConverter.toDto(report);
 
         return reportResDto;
     }
 
 
     @Transactional
-    public void updateReport(CustomUserDetails userDetails, ReportReqDto.UpdateDto updateDto) {
+    public void updateReport(CustomUserDetails userDetails, ReportRequestDto.UpdateDto updateDto) {
         if (userDetails.getRole() == Role.STUDENT){
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
         }
@@ -191,7 +189,7 @@ public class ReportService {
         return  studyRoomRepository.existsByTeacherId(teacherId);
     }
 
-    public List<ReportResDto.StudentInfoDto> checkStudentInfoForReport(CustomUserDetails userDetails) {
+    public List<ReportResponseDto.StudentInfoDto> checkStudentInfoForReport(CustomUserDetails userDetails) {
         if (userDetails.getRole() == Role.STUDENT){
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
         }
@@ -199,7 +197,7 @@ public class ReportService {
 
         List<StudyRoom> studyRoomList= studyRoomRepository.findAllByTeacherId(teacherId);
 
-        List<ReportResDto.StudentInfoDto> list = new ArrayList<>();
+        List<ReportResponseDto.StudentInfoDto> list = new ArrayList<>();
         for (StudyRoom s : studyRoomList) {
             List<Schedule> schedules = scheduleRepository.findAllByStudyRoom(s);
 

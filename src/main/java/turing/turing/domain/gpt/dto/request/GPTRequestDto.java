@@ -1,4 +1,4 @@
-package turing.turing.domain.gpt.dto;
+package turing.turing.domain.gpt.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GPTRequest {
+public class GPTRequestDto {
 
     private String model;
     private List<Message> messages;
@@ -19,12 +19,12 @@ public class GPTRequest {
     private int frequencyPenalty;
     private int presencePenalty;
 
-    public GPTRequest(String model, String prompt,
-                      int temperature,
-                      int maxTokens,
-                      int topP,
-                      int frequencyPenalty,
-                      int presencePenalty){
+    public GPTRequestDto(String model, String prompt,
+                         int temperature,
+                         int maxTokens,
+                         int topP,
+                         int frequencyPenalty,
+                         int presencePenalty){
         this.model = model;
         this.messages = new ArrayList<>();
         this.messages.add(new Message("user", prompt));

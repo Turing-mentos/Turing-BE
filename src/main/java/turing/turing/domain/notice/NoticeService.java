@@ -8,7 +8,7 @@ import turing.turing.domain.member.Role;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
 import turing.turing.domain.notice.converter.NoticeConverter;
-import turing.turing.domain.notice.dto.NoticeDto;
+import turing.turing.domain.notice.dto.response.NoticeResponseDto;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.global.exception.RestApiException;
 import turing.turing.global.exception.errorCode.CommonErrorCode;
@@ -42,7 +42,7 @@ public class NoticeService {
 
     }
 
-    public List<NoticeDto.ResponseDto> readAllNotification(CustomUserDetails userDetails) {
+    public List<NoticeResponseDto.ResponseDto> readAllNotification(CustomUserDetails userDetails) {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minus(1, ChronoUnit.MONTHS);
 
         List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRoleAndCreatedAtAfter(userDetails.getMemberId(), String.valueOf(userDetails.getRole()), oneMonthAgo);
@@ -53,7 +53,7 @@ public class NoticeService {
 
     }
 
-    public NoticeDto.ResponseForNotice remindNoteBook(CustomUserDetails userDetails, Long notebookId) {
+    public NoticeResponseDto.ResponseForNotice remindNoteBook(CustomUserDetails userDetails, Long notebookId) {
 
         Notebook notebook = notebookRepository.findById(notebookId).orElseThrow(()-> new RestApiException(CommonErrorCode.NOT_FOUND));
 
@@ -61,7 +61,7 @@ public class NoticeService {
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
         }
         StudyRoom studyRoom = notebook.getSchedule().getStudyRoom();
-        NoticeDto.ResponseForNotice notice = NoticeDto.ResponseForNotice.builder().
+        NoticeResponseDto.ResponseForNotice notice = NoticeResponseDto.ResponseForNotice.builder().
                 receiverId(studyRoom.getStudent().getId())
                 .senderId(userDetails.getMemberId())
                 .build();

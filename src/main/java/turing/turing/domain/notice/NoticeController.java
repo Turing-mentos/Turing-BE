@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import turing.turing.domain.auth.CustomUserDetails;
-import turing.turing.domain.notice.dto.NoticeDto;
-import turing.turing.domain.notice.fcm.FcmServiceImpl;
+import turing.turing.domain.notice.dto.response.NoticeResponseDto;
+import turing.turing.domain.fcm.FcmServiceImpl;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class NoticeController {
 
     @Operation(summary = "알림 전체 조회")
     @GetMapping("/all")
-    public ResponseEntity<List<NoticeDto.ResponseDto>> readAllNotification(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<NoticeResponseDto.ResponseDto>> readAllNotification(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(noticeService.readAllNotification(userDetails));
     }
 

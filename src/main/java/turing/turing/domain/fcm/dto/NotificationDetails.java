@@ -1,4 +1,4 @@
-package turing.turing.domain.notice.fcm.dto;
+package turing.turing.domain.fcm.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

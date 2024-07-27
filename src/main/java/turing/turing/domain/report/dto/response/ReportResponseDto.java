@@ -1,19 +1,13 @@
-package turing.turing.domain.report.dto;
+package turing.turing.domain.report.dto.response;
 
 import lombok.*;
-import org.springframework.stereotype.Service;
-import turing.turing.domain.report.Report;
-import turing.turing.domain.schedule.Schedule;
-import turing.turing.domain.teacher.Teacher;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
 @Getter
 @AllArgsConstructor
-public class ReportResDto {
+public class ReportResponseDto {
     @Builder
     @Getter
     @AllArgsConstructor
