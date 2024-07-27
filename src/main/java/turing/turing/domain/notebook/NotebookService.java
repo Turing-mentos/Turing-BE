@@ -108,7 +108,8 @@ public class NotebookService {
         Notebook notebook = new Notebook(schedule, timestamp);
         Long notebookId = notebookRepository.save(notebook).getId();
 
-        Long studentId = studentRepository.findByScheduleId(schedule.getId());
+        Long studentId = studentRepository.findByScheduleId(schedule.getId()).orElse(null);
+
         return CreateNotebookResponse.builder()
                 .notebookId(notebookId)
                 .receiverId(studentId)

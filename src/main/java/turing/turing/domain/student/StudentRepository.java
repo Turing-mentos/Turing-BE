@@ -16,5 +16,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             + "join StudyRoom sr on s.id = sr.student.id "
             + "join Schedule sd on sr.id = sd.studyRoom.id "
             + "where sd.id = :scheduleId")
-    Long findByScheduleId(@Param("scheduleId") Long scheduleId);
+    Optional<Long> findByScheduleId(@Param("scheduleId") Long scheduleId) ;
 }

@@ -160,7 +160,7 @@ public class ScheduleService {
             targetSchedule.updateWithSession(dto);
         }
 
-        Long studentId = studentRepository.findByScheduleId(scheduleId);
+        Long studentId = studentRepository.findByScheduleId(scheduleId).orElse(null);
 
         return ModifyScheduleResponse.builder()
                 .scheduleId(scheduleId)
