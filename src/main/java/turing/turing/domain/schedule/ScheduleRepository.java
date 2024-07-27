@@ -115,7 +115,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + "where s.studyRoom.id = :studyRoomId "
             + "and (s.date > current_date or (s.date = current_date and s.startTime > current_time)) "
             + "order by s.date asc, s.startTime asc")
-    Long findIdByDateAndStudyRoomId(@Param("studyRoomId") Long studyRoomId);
+    List<Long> findIdByDateAndStudyRoomId(@Param("studyRoomId") Long studyRoomId, Pageable pageable);
 
     List<Schedule> findAllByStudyRoom(StudyRoom studyRoom);
 }

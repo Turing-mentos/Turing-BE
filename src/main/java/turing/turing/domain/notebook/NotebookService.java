@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -188,7 +189,8 @@ public class NotebookService {
     }
 
     public CheckLatestResponse isExistLatestNotebook(Long studyRoomId) {
-        Long scheduleId = scheduleRepository.findIdByDateAndStudyRoomId(studyRoomId);
+        Pageable pageable = PageRequest.of(0, 1);
+        Long scheduleId = scheduleRepository.findIdByDateAndStudyRoomId(studyRoomId, pageable).get(0);
         Boolean isExist = scheduleId != null && notebookRepository.existsByScheduleId(scheduleId);
 
         return new CheckLatestResponse(scheduleId, isExist);
