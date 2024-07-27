@@ -12,7 +12,7 @@ public class BaseNoticeInfo {
     protected Role senderRole;
     protected Long receiverId;
     protected Role receiverRole;
-
+//
     public void setSender(Long senderId, Role senderRole) {
         this.senderId = senderId;
         this.senderRole = senderRole;
