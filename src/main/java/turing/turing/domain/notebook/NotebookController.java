@@ -62,8 +62,10 @@ public class NotebookController {
     @PostMapping("")
     public ResponseEntity<CreateNotebookResponse> createNotebook(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateNotebookRequest request) {
-        CreateNotebookResponse response = notebookService.createNotebooks(request);
+        CreateNotebookResponse response = notebookService.createNotebooks(customUserDetails, request);
+        //수정
         response.setSender(customUserDetails.getMemberId(), Role.TEACHER);
+
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{notebookId}")
