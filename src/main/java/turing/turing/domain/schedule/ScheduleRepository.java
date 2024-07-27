@@ -73,7 +73,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @NonNull
     @Query("select s from Schedule s "
-            + "join fetch StudyRoom sr "
+            + "join fetch s.studyRoom sr "
             + "where s.id = :scheduleId")
     Optional<Schedule> findById(@NonNull @Param("scheduleId") Long scheduleId);
 
