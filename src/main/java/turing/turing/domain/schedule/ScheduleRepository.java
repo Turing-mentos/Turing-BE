@@ -113,8 +113,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s.id from Schedule s "
             + "where s.studyRoom.id = :studyRoomId "
-            + "and (s.date < current_date or (s.date = current_date and s.startTime < current_time)) "
-            + "order by s.date desc, s.startTime desc")
+            + "and (s.date > current_date or (s.date = current_date and s.startTime > current_time)) "
+            + "order by s.date asc, s.startTime asc")
     Long findIdByDateAndStudyRoomId(@Param("studyRoomId") Long studyRoomId);
 
     List<Schedule> findAllByStudyRoom(StudyRoom studyRoom);
