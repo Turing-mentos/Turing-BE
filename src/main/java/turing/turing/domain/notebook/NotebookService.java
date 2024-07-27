@@ -18,7 +18,6 @@ import turing.turing.domain.homework.Homework;
 import turing.turing.domain.homework.HomeworkRepository;
 import turing.turing.domain.homework.converter.HomeworkConverter;
 import turing.turing.domain.homework.dto.HomeworkDto;
-import turing.turing.domain.notebook.dto.CheckLatestRequest;
 import turing.turing.domain.notebook.dto.CheckLatestResponse;
 import turing.turing.domain.notebook.dto.CreateNotebookRequest;
 import turing.turing.domain.notebook.dto.CreateNotebookResponse;
@@ -187,8 +186,8 @@ public class NotebookService {
         return result;
     }
 
-    public CheckLatestResponse isExistLatestNotebook(CheckLatestRequest request) {
-        Long scheduleId = scheduleRepository.findIdByDateAndStudyRoomId(request.getStudyRoomId());
+    public CheckLatestResponse isExistLatestNotebook(Long studyRoomId) {
+        Long scheduleId = scheduleRepository.findIdByDateAndStudyRoomId(studyRoomId);
         Boolean isExist = scheduleId != null && notebookRepository.existsByScheduleId(scheduleId);
 
         return new CheckLatestResponse(scheduleId, isExist);
