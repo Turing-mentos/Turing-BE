@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.context.ApplicationContext;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.notice.Notice;
 import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
@@ -100,9 +101,9 @@ public class FcmJob implements Job {
                 .body(fcmSendDto.getBody())
                 .title(fcmSendDto.getTitle())
                 .senderId(fcmSendItem.getSenderId())
-                .senderRole("STUDENT")
+                .senderRole(Role.TEACHER)
                 .receiverId(fcmSendItem.getReceiverId())
-                .receiverRole("TEACHER")
+                .receiverRole(Role.STUDENT)
                 .targetId(fcmSendItem.getTargetId())
                 .readStatus(false)
                 .category(fcmSendItem.getCategory())

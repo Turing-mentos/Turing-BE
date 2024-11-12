@@ -20,7 +20,7 @@ public class NoticeSettingService {
 
     private final NoticeSettingRepository noticeSettingRepository;
     public boolean changeSetting(CustomUserDetails userDetails, Long notificationSettingId) {
-        NoticeSetting noticeSetting = noticeSettingRepository.findByMemberIdAndRoleAndId(userDetails.getMemberId(), String.valueOf(userDetails.getRole()), notificationSettingId);
+        NoticeSetting noticeSetting = noticeSettingRepository.findByMemberIdAndRoleAndId(userDetails.getMemberId(), userDetails.getRole(), notificationSettingId);
         if(noticeSetting == null){
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
@@ -31,7 +31,7 @@ public class NoticeSettingService {
     }
 
     public List<NoticeSettingDto.ResponseDto> readSetting(CustomUserDetails userDetails) {
-        List<NoticeSetting> noticeSettingList = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), String.valueOf(userDetails.getRole()));
+        List<NoticeSetting> noticeSettingList = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), userDetails.getRole());
 
         return NoticeSettingConverter.toDtoList(noticeSettingList);
     }
@@ -43,7 +43,7 @@ public class NoticeSettingService {
         final String[] studentCategories = {"NOTEBOOK", "HOMEWORK", "SCHEDULE_CHANGE", "COMMENT"};
 
 
-        List<NoticeSetting> checkSetting = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), String.valueOf(userDetails.getRole()));
+        List<NoticeSetting> checkSetting = noticeSettingRepository.findAllByMemberIdAndRole(userDetails.getMemberId(), userDetails.getRole());
         if(!checkSetting.isEmpty()){
             throw new RestApiException(NotificationError.NOTIFICATION_SETTING_FAILURE);
 
@@ -56,7 +56,7 @@ public class NoticeSettingService {
             for (String category : teacherCategories) {
                 NoticeSetting noticeSetting = NoticeSetting.builder()
                         .memberId(userDetails.getMemberId())
-                        .role(String.valueOf(userDetails.getRole()))
+                        .role(userDetails.getRole())
                         .enabled(enabled)
                         .category(category)
                         .build();
@@ -69,7 +69,7 @@ public class NoticeSettingService {
             for (String category : studentCategories) {
                 NoticeSetting noticeSetting = NoticeSetting.builder()
                         .memberId(userDetails.getMemberId())
-                        .role(String.valueOf(userDetails.getRole()))
+                        .role(userDetails.getRole())
                         .enabled(enabled)
                         .category(category)
                         .build();

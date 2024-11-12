@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import turing.turing.domain.homework.HomeworkRepository;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.notebook.Notebook;
 import turing.turing.domain.notebook.NotebookRepository;
 import turing.turing.domain.notice.fcm.dto.FcmSendDeviceDto;
@@ -89,9 +90,9 @@ public class FcmServiceImpl implements FcmService{
 
                 boolean isNotificationEnabled = false;
                 if (notificationType.equals("REPORT")) {
-                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), "TEACHER", "REPORT");
+                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), Role.TEACHER, "REPORT");
                 } else if (notificationType.equals("SESSION")) {
-                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), "TEACHER", "SESSION")
+                    isNotificationEnabled = isNotificationEnabled(teacher.getId(), Role.TEACHER, "SESSION")
                             //다음 스케줄이 없음 - 기준회차 등록 안했다는 뜻
                             && !scheduleRepository.existsLatestScheduleAfterDate(targetDate, schedule.getStudyRoom().getId());
                 }
@@ -129,7 +130,7 @@ public class FcmServiceImpl implements FcmService{
             Long targetId = getLatestNotebookId(schedule.getStudyRoom());
 
             log.info("알림 켜져 있는지 확인");
-            if (isNotificationEnabled(teacher.getId(), "TEACHER", "NOTEBOOK")) {
+            if (isNotificationEnabled(teacher.getId(), Role.TEACHER, "NOTEBOOK")) {
                 fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "NOTEBOOK", schedule.getSession(), targetId));
             }
         }
@@ -159,7 +160,7 @@ public class FcmServiceImpl implements FcmService{
                 Teacher teacher = schedule.getStudyRoom().getTeacher();
                 Student student = schedule.getStudyRoom().getStudent();
 
-                if (isNotificationEnabled(teacher.getId(), "TEACHER", "HOMEWORK")) {
+                if (isNotificationEnabled(teacher.getId(), Role.TEACHER, "HOMEWORK")) {
                     fcmSendDeviceDtos.add(buildFcmSendDeviceDto(teacher, student, "HOMEWORK", schedule.getSession(), 0L));
                 }
             }
@@ -169,7 +170,7 @@ public class FcmServiceImpl implements FcmService{
     private boolean hasPendingHomework(Notebook notebook) {
         return homeworkRepository.findAllByNotebook(notebook).stream().anyMatch(homework -> !homework.getIsDone());
     }
-    private boolean isNotificationEnabled(Long memberId, String role, String category) {
+    private boolean isNotificationEnabled(Long memberId, Role role, String category) {
         return noticeSettingRepository.findByMemberIdAndRoleAndCategory(memberId, role, category).getEnabled();
     }
 

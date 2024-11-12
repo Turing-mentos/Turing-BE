@@ -1,15 +1,14 @@
 package turing.turing.domain.comment.dto.response;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import turing.turing.domain.notice.dto.BaseNoticeInfo;
 
-@Builder
-public record CommentCreateResDto(
-        Long commentId,
-        // 아래는 알림을 위해 필요한 필드
-        Long senderId,
-        String senderRole,
-        Long receiverId,
-        String receiverRole,
-        Long questionId
-) {
+@SuperBuilder
+@Getter
+public class CommentCreateResDto extends BaseNoticeInfo {
+    Long commentId;
+
+    Long questionId;
 }

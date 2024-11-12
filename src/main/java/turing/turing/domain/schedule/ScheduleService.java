@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.dto.CreateScheduleRequest;
 import turing.turing.domain.schedule.dto.ModifyScheduleRequest;
@@ -113,7 +114,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ModifyScheduleResponse modifySchedules(ModifyScheduleRequest request) {
+    public ModifyScheduleResponse modifySchedules(CustomUserDetails customUserDetails, ModifyScheduleRequest request) {
         Long scheduleId = request.getScheduleId();
         LocalDate modifiedDate = request.getDate();
         List<Schedule> scheduleList = scheduleRepository.findAllByIdAndDate(scheduleId, modifiedDate);
@@ -168,6 +169,8 @@ public class ScheduleService {
                 .alterDate(modifiedDate)
                 .receiverId(studentId)
                 .receiverRole(Role.STUDENT)
+                .senderId(customUserDetails.getMemberId())
+                .senderRole(Role.TEACHER)
                 .build();
     }
 

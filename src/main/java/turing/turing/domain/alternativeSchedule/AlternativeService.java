@@ -14,6 +14,7 @@ import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleRequest;
 import turing.turing.domain.alternativeSchedule.dto.AllAlterSchedules;
 import turing.turing.domain.alternativeSchedule.dto.CreateAlterScheduleResponse;
 import turing.turing.domain.alternativeSchedule.dto.TimePairDto;
+import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.schedule.Schedule;
 import turing.turing.domain.schedule.ScheduleRepository;
@@ -77,7 +78,7 @@ public class AlternativeService {
 
     //TODO saveAll -> bulkInsert 개선 필요
     @Transactional
-    public CreateAlterScheduleResponse createAlterSchedules(CreateAlterScheduleRequest request) {
+    public CreateAlterScheduleResponse createAlterSchedules(CustomUserDetails customUserDetails, CreateAlterScheduleRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getTargetScheduleId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
         Long teacherId = schedule.getStudyRoom()
@@ -110,6 +111,8 @@ public class AlternativeService {
                 .scheduleDate(schedule.getDate())
                 .receiverId(teacherId)
                 .receiverRole(Role.TEACHER)
+                .senderId(customUserDetails.getMemberId())
+                .senderRole(Role.STUDENT)
                 .build();
     }
 }

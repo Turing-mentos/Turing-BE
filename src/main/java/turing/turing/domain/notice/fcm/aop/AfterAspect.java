@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 import turing.turing.domain.comment.CommentRepository;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.notice.Notice;
 import turing.turing.domain.notice.NoticeRepository;
 import turing.turing.domain.notice.fcm.FcmService;
@@ -47,7 +48,7 @@ public class AfterAspect {
     private final StudyRoomRepository studyRoomRepository;
 
 
-    @Pointcut("execution(* createQuestion(..)) || execution(* createComment(..)) || execution(* remindNoteBook(..)) || execution(* modifySchedules(..)) || execution(* getAllAlterSchedules(..)) || execution(* createExamSchedules(..)) || execution(* createNotebooks(..))")
+    @Pointcut("execution(* createQuestion(..)) || execution(* turing.turing.domain.comment.CommentService.createComment(..)) || execution(* remindNoteBook(..)) || execution(* modifySchedules(..)) || execution(* createAlterSchedules(..)) || execution(* createExamSchedules(..)) || execution(* createNotebooks(..))")
     public void pointcut() {}
 
 
@@ -75,7 +76,7 @@ public class AfterAspect {
                 return  "COMMENT";
             case "createQuestion":
                 return  "QUESTION";
-            case "modifySchedules", "getAllAlterSchedules":
+            case "modifySchedules", "createAlterSchedules":
                 return  "SCHEDULE_CHANGE";
             case "createExamSchedules":
                 return  "NEW_SCHEDULE";
@@ -89,10 +90,10 @@ public class AfterAspect {
 
 
     private NotificationDetails extractNotificationDetails(Object result) throws NoSuchFieldException, IllegalAccessException {
-        Field senderIdField = result.getClass().getDeclaredField("senderId");
-        Field senderRoleField = result.getClass().getDeclaredField("senderRole");
-        Field receiverIdField = result.getClass().getDeclaredField("receiverId");
-        Field receiverRoleField = result.getClass().getDeclaredField("receiverRole");
+        Field senderIdField = result.getClass().getSuperclass().getDeclaredField("senderId");
+        Field senderRoleField = result.getClass().getSuperclass().getDeclaredField("senderRole");
+        Field receiverIdField = result.getClass().getSuperclass().getDeclaredField("receiverId");
+        Field receiverRoleField = result.getClass().getSuperclass().getDeclaredField("receiverRole");
 
         senderIdField.setAccessible(true);
         senderRoleField.setAccessible(true);
@@ -100,9 +101,9 @@ public class AfterAspect {
         receiverRoleField.setAccessible(true);
 
         Long senderId = (Long) senderIdField.get(result);
-        String senderRole = (String) senderRoleField.get(result);
+        Role senderRole = (Role) senderRoleField.get(result);
         Long receiverId = (Long) receiverIdField.get(result);
-        String receiverRole = (String) receiverRoleField.get(result);
+        Role receiverRole = (Role) receiverRoleField.get(result);
 
         senderIdField.setAccessible(false);
         senderRoleField.setAccessible(false);
@@ -112,12 +113,12 @@ public class AfterAspect {
         return new NotificationDetails(senderId, senderRole, receiverId, receiverRole);
     }
 
-    private String getFcmToken(String receiverRole, Long receiverId) {
-        if ("TEACHER".equals(receiverRole)) {
+    private String getFcmToken(Role receiverRole, Long receiverId) {
+        if (Role.TEACHER == receiverRole) {
             return teacherRepository.findById(receiverId)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
                     .getFcmToken();
-        } else if ("STUDENT".equals(receiverRole)) {
+        } else if (Role.STUDENT ==receiverRole) {
             return studentRepository.findById(receiverId)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND))
                     .getFcmToken();
@@ -126,13 +127,13 @@ public class AfterAspect {
         }
     }
 
-    private String getSenderName(String senderRole, Long senderId, Long receiverId) {
-        if ("TEACHER".equals(senderRole)) {
+    private String getSenderName(Role senderRole, Long senderId, Long receiverId) {
+        if (Role.TEACHER == senderRole) {
             Teacher teacher = teacherRepository.findById(senderId).orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
             StudyRoom studyRoom = studyRoomRepository.findByTeacherIdAndStudentId(senderId, receiverId);
             return studyRoom.getSubject()+" "+teacher.getLastName()+teacher.getFirstName()+"T";
 
-        } else if ("STUDENT".equals(senderRole)) {
+        } else if (Role.STUDENT == senderRole) {
             Student student = studentRepository.findById(senderId)
                     .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
             return student.getLastName()+student.getFirstName();
@@ -140,7 +141,7 @@ public class AfterAspect {
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
     }
-    private NotificationContent buildNotificationContent(String notiCategory, String senderName,String senderRole, Object result) throws NoSuchFieldException, IllegalAccessException {
+    private NotificationContent buildNotificationContent(String notiCategory, String senderName,Role senderRole, Object result) throws NoSuchFieldException, IllegalAccessException {
         String title = null;
         String body = null;
         Long targetId = 0L;
@@ -148,7 +149,7 @@ public class AfterAspect {
 
         switch (notiCategory) {
             case "COMMENT":
-                if(senderRole.equals("TEACHER")){
+                if(Role.TEACHER == senderRole){
                     title = "질문 답변";
                     body = "작성한 질문에 "+senderName + "가 댓글을 달았어요.";
                 }
@@ -164,9 +165,9 @@ public class AfterAspect {
                 body = senderName + " 학생이 [" + category + "] 질문을 남겼어요";
                 break;
             case "SCHEDULE_CHANGE":
-                LocalDate scheduleDate = (LocalDate) getFieldValue(result, "scheduleDate");
-                if(senderRole.equals("TEACHER")){
-                    LocalDate alternativeDate1 = (LocalDate) getFieldValue(result, "alternativeDate");
+                LocalDate scheduleDate = (LocalDate) getFieldValue(result, "prevDate");
+                if(senderRole == Role.TEACHER){
+                    LocalDate alternativeDate1 = (LocalDate) getFieldValue(result, "alterDate");
                     title = "일정 변동 확정";
                     body = senderName+" ["+scheduleDate.format(formatter)+"] 수업이 ["+alternativeDate1.format(formatter)+"]로 변경되었어요.";
                 }else{

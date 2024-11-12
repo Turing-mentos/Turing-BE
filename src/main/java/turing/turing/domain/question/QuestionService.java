@@ -88,9 +88,9 @@ public class QuestionService {
         return QuestionCreateResDto.builder()
                 .questionId(question.getId())
                 .senderId(studyRoom.getStudent().getId())
-                .senderRole("STUDENT")  // 추후 Role로 변경
+                .senderRole(Role.STUDENT)
                 .receiverId(studyRoom.getTeacher().getId())
-                .receiverRole("TEACHER")  // 추후 Role로 변경
+                .receiverRole(Role.TEACHER)
                 .build();
     }
 
