@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
 
@@ -30,14 +31,9 @@ public class NoticeDto {
         private Long targetId;
     }
 
-    @Builder
+    @SuperBuilder
     @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class ResponseForNotice{
-        private Long receiverId;
-        private final String receiverRole = "STUDENT";
-        private Long senderId;
-        private final String senderRole = "TEACHER";
+    public static class ResponseForNotice extends BaseNoticeInfo{
+
     }
 }

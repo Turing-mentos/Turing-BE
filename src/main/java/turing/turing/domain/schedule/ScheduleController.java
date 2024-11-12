@@ -62,8 +62,7 @@ public class ScheduleController {
 
     @PatchMapping("/")
     public ResponseEntity<ModifyScheduleResponse> modifySchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ModifyScheduleRequest request) {
-        ModifyScheduleResponse response = scheduleService.modifySchedules(request);
-        response.setSender(customUserDetails.getMemberId(), Role.TEACHER);
+        ModifyScheduleResponse response = scheduleService.modifySchedules(customUserDetails, request);
 
         return ResponseEntity.ok(response);
 

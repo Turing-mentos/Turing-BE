@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import turing.turing.domain.comment.dto.request.CommentReqDto;
 import turing.turing.domain.comment.dto.response.CommentCreateResDto;
+import turing.turing.domain.member.Role;
 import turing.turing.domain.question.Question;
 import turing.turing.domain.question.QuestionRepository;
 import turing.turing.global.exception.RestApiException;
@@ -52,9 +53,9 @@ public class CommentService {
         // 이 부분 Role Enum 클래스 리턴하는 로직으로 변경 필요 !
         return CommentCreateResDto.builder()
                 .commentId(savedComment.getId())
-                .senderRole(isTeacher ? "TEACHER" : "STUDENT")
+                .senderRole(isTeacher ? Role.TEACHER : Role.STUDENT)
                 .senderId(isTeacher ? teacherId : studentId)
-                .receiverRole(isTeacher ? "STUDENT" : "TEACHER")
+                .receiverRole(isTeacher ? Role.STUDENT : Role.TEACHER)
                 .receiverId(isTeacher ? studentId : teacherId)
                 .questionId(questionId)
                 .build();

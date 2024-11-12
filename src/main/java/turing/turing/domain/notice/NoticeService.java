@@ -36,7 +36,7 @@ public class NoticeService {
 
     public int unCheckedNotification(CustomUserDetails userDetails) {
 
-        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRoleAndReadStatus(userDetails.getMemberId(), String.valueOf(userDetails.getRole()), false);
+        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRoleAndReadStatus(userDetails.getMemberId(), userDetails.getRole(), false);
 
         return noticeList.size();
 
@@ -45,7 +45,7 @@ public class NoticeService {
     public List<NoticeDto.ResponseDto> readAllNotification(CustomUserDetails userDetails) {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minus(1, ChronoUnit.MONTHS);
 
-        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRoleAndCreatedAtAfter(userDetails.getMemberId(), String.valueOf(userDetails.getRole()), oneMonthAgo);
+        List<Notice> noticeList = noticeRepository.findAllByReceiverIdAndReceiverRoleAndCreatedAtAfter(userDetails.getMemberId(), userDetails.getRole(), oneMonthAgo);
         if (noticeList.isEmpty()) {
             throw new RestApiException(CommonErrorCode.NOT_FOUND);
         }
@@ -61,8 +61,10 @@ public class NoticeService {
             throw new RestApiException(CommonErrorCode.UNAUTHORIZED_ROLE);
         }
         StudyRoom studyRoom = notebook.getSchedule().getStudyRoom();
-        NoticeDto.ResponseForNotice notice = NoticeDto.ResponseForNotice.builder().
-                receiverId(studyRoom.getStudent().getId())
+        NoticeDto.ResponseForNotice notice = NoticeDto.ResponseForNotice.builder()
+                        .receiverRole(Role.STUDENT)
+                                .senderRole(Role.TEACHER)
+                .receiverId(studyRoom.getStudent().getId())
                 .senderId(userDetails.getMemberId())
                 .build();
         return notice;

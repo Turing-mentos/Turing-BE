@@ -8,8 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
-import turing.turing.domain.noticeSetting.NoticeSetting;
-import turing.turing.domain.schedule.Schedule;
+import turing.turing.domain.member.Role;
+
+
 
 @Getter
 @Entity
@@ -27,19 +28,17 @@ public class Notice extends BaseEntity {
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
 
-    @Size(max = 20)
-    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "sender_role", nullable = false, length = 20)
-    private String senderRole;
+    private Role senderRole;
 
     @NotNull
     @Column(name = "receiver_id", nullable = false)
     private Long receiverId;
 
-    @Size(max = 20)
-    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "receiver_role", nullable = false, length = 20)
-    private String receiverRole;
+    private Role receiverRole;
 
     @NotNull
     @Builder.Default

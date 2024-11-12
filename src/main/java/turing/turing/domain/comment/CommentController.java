@@ -29,7 +29,7 @@ public class CommentController {
         // 추후 Role 가져와 선생인지 학생인지 전달 필요 !
         CommentCreateResDto commentCreateResDto = commentService.createComment("TEACHER", questionId, commentReqDto, file);
 
-        Long commentId = commentCreateResDto.commentId();
+        Long commentId = commentCreateResDto.getCommentId();
         URI location = URI.create("/api/comments/" + commentId);
 
         return ResponseEntity.created(location).body(commentId);

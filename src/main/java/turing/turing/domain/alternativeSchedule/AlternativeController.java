@@ -33,8 +33,7 @@ public class AlternativeController {
 
     @PostMapping("/")
     public ResponseEntity<CreateAlterScheduleResponse> createAlterSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateAlterScheduleRequest request) {
-        CreateAlterScheduleResponse response = alternativeService.createAlterSchedules(request);
-        response.setSender(customUserDetails.getMemberId(), Role.STUDENT);
+        CreateAlterScheduleResponse response = alternativeService.createAlterSchedules(customUserDetails, request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{alterScheduleId}")

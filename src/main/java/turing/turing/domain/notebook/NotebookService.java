@@ -96,7 +96,7 @@ public class NotebookService {
     }
 
     @Transactional
-    public CreateNotebookResponse createNotebook(CreateNotebookRequest request) {
+    public CreateNotebookResponse createNotebooks(CustomUserDetails customUserDetails, CreateNotebookRequest request) {
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
@@ -115,6 +115,8 @@ public class NotebookService {
                 .notebookId(notebookId)
                 .receiverId(studentId)
                 .receiverRole(Role.STUDENT)
+                .senderId(customUserDetails.getMemberId())
+                .senderRole(Role.TEACHER)
                 .build();
     }
 
