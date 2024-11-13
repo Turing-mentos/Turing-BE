@@ -65,11 +65,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Modifying
     @Query("update Schedule s set s.session = s.session + 1 where s.id in :scheduleIds")
-    Void postponeSchedules(@Param("scheduleIds") List<Long> scheduleIds);
+    void postponeSchedules(@Param("scheduleIds") List<Long> scheduleIds);
 
     @Modifying
     @Query("update Schedule s set s.session = s.session - 1 where s.id in :scheduleIds")
-    Void moveUpSchedules(@Param("scheduleIds") List<Long> scheduleIds);
+    void moveUpSchedules(@Param("scheduleIds") List<Long> scheduleIds);
 
     @NonNull
     @Query("select s from Schedule s "
