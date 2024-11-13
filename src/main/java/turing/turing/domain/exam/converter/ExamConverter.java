@@ -12,6 +12,7 @@ public class ExamConverter {
                 .examName(request.getExamName())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
+                .studentName(studyRoom.getStudentName())
                 .studyRoom(studyRoom)
                 .build();
     }

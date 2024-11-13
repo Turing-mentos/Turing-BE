@@ -80,4 +80,8 @@ public class StudyRoom extends BaseEntity {
         this.baseSession = baseSession;
         this.wage = wage;
     }
+
+    public String getStudentName() {
+        return student.getFirstName() + student.getLastName();
+    }
 }
