@@ -41,7 +41,7 @@ public class Student extends Member {
     private String school;
 
     @Size(max = 10)
-    @Column(name = "year", length = 10)
+    @Column(name = "\"year\"", length = 10)
     private String year;
 
     @Size(max = 30)
