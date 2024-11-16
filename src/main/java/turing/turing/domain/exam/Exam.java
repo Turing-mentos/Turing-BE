@@ -63,4 +63,8 @@ public class Exam extends BaseEntity {
 
         return this.id;
     }
+
+    public Long getStudyRoomId() {
+        return this.studyRoom.getId();
+    }
 }
