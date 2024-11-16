@@ -12,7 +12,8 @@ import turing.turing.domain.member.Role;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.global.exception.RestApiException;
-import turing.turing.global.exception.errorCode.CommonErrorCode;
+import turing.turing.global.exception.errorCode.ExamErrorCode;
+import turing.turing.global.exception.errorCode.StudyRoomErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +24,8 @@ public class ExamService {
     private final StudyRoomRepository studyRoomRepository;
 
     public ExamDto getExamSchedule(Long examId) {
-        Exam exam = examRepository.findById(examId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+        Exam exam = examRepository.findExamWithStudyRoomById(examId)
+                .orElseThrow(() -> new RestApiException(ExamErrorCode.EXAM_NOT_FOUND));
 
         return ExamConverter.toDto(exam);
     }
@@ -32,7 +33,7 @@ public class ExamService {
     @Transactional
     public CreateExamResponse createExamSchedules(CustomUserDetails customUserDetails, CreateExamRequest request) {
         StudyRoom studyRoom = studyRoomRepository.findWithStudentById(request.getStudyRoomId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         Exam exam = ExamConverter.toEntity(request, studyRoom);
         Long examId = examRepository.save(exam).getId();
@@ -46,10 +47,10 @@ public class ExamService {
     @Transactional
     public Long modifyExamSchedule(ExamDto request) {
         Exam exam = examRepository.findById(request.getExamId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(ExamErrorCode.EXAM_NOT_FOUND));
 
         StudyRoom studyRoom = studyRoomRepository.findById(request.getStudyRoomId())
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(StudyRoomErrorCode.STUDY_ROOM_NOT_FOUND));
 
         return exam.update(request, studyRoom);
     }
@@ -57,7 +58,7 @@ public class ExamService {
     @Transactional
     public void deleteExamSchedule(Long examId) {
         Exam exam = examRepository.findById(examId)
-                .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(ExamErrorCode.EXAM_NOT_FOUND));
 
         examRepository.delete(exam);
     }
