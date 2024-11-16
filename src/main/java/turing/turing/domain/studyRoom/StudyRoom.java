@@ -82,6 +82,6 @@ public class StudyRoom extends BaseEntity {
     }
 
     public String getStudentName() {
-        return student.getFirstName() + student.getLastName();
+        return student.getLastName() + student.getFirstName();
     }
 }
