@@ -13,6 +13,7 @@ import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
@@ -21,7 +22,7 @@ import turing.turing.domain.member.Role;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     private static String SECRET_KEY;
     private static long EXPIRATION_TIME;
