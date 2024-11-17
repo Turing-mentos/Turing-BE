@@ -6,3 +6,34 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+#JWT
+jwt:
+  secret: secret
+  access-expiration: 3600
+  refresh-expiration: 7200
+
+#S3
+cloud:
+  aws:
+    credentials:
+      access-key: test-access-key
+      secret-key: test-secret-key
+    s3:
+      bucket: test-bucket
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+#GPT
+gpt:
+  model: test-model
+  api:
+    key: test-key
+    url: test-url
