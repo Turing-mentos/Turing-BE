@@ -9,9 +9,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import turing.turing.domain.IntegrationTestSupport;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.exam.dto.CreateExamRequest;
-import turing.turing.domain.exam.dto.ExamDto;
+import turing.turing.domain.exam.dto.UpdateExamRequest;
 import turing.turing.domain.member.Provider;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.student.Student;
@@ -102,7 +103,12 @@ class ExamServiceImplTest extends IntegrationTestSupport{
 
         LocalDate startDate = LocalDate.of(2024, 11, 16);
         LocalDate endDate = LocalDate.of(2024, 11, 17);
-        CreateExamRequest createExamRequest = new CreateExamRequest("시험명", startDate, endDate, savedStudyRoomId);
+        CreateExamRequest createExamRequest = CreateExamRequest.builder()
+                .examName("시험명")
+                .startDate(startDate)
+                .endDate(endDate)
+                .studyRoomId(savedStudyRoomId)
+                .build();
         CustomUserDetails customUserDetails = new CustomUserDetails(teacher.getEmail())
                 .role(Role.TEACHER)
                 .memberId(teacher.getId())
@@ -139,7 +145,7 @@ class ExamServiceImplTest extends IntegrationTestSupport{
 
         LocalDate updatedStartDate = LocalDate.of(2024,11,26);
         LocalDate updatedEndDate = LocalDate.of(2024,11,27);
-        ExamDto examDto = ExamDto.builder()
+        UpdateExamRequest request = UpdateExamRequest.builder()
                 .examId(savedId)
                 .examName("변경시험명")
                 .startDate(updatedStartDate)
@@ -148,7 +154,7 @@ class ExamServiceImplTest extends IntegrationTestSupport{
                 .build();
 
         // when
-        Long updatedId = examService.modifyExamSchedule(examDto);
+        Long updatedId = examService.updateExamSchedule(request);
 
         // then
         Exam updatedExam = examRepository.findById(updatedId).get();

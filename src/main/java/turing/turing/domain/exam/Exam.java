@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import turing.turing.domain.BaseEntity;
-import turing.turing.domain.exam.dto.ExamDto;
+import turing.turing.domain.exam.dto.UpdateExamRequest;
 import turing.turing.domain.studyRoom.StudyRoom;
 
 @Getter
@@ -55,10 +55,10 @@ public class Exam extends BaseEntity {
     @JoinColumn(name = "study_room_id", nullable = false)
     private StudyRoom studyRoom;
 
-    public Long update(ExamDto examDto, StudyRoom studyRoom) {
-        this.examName = examDto.getExamName();
-        this.startDate = examDto.getStartDate();
-        this.endDate = examDto.getEndDate();
+    public Long update(UpdateExamRequest request, StudyRoom studyRoom) {
+        this.examName = request.getExamName();
+        this.startDate = request.getStartDate();
+        this.endDate = request.getEndDate();
         this.studyRoom = studyRoom;
 
         return this.id;

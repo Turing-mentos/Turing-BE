@@ -8,6 +8,7 @@ import turing.turing.domain.exam.converter.ExamConverter;
 import turing.turing.domain.exam.dto.CreateExamRequest;
 import turing.turing.domain.exam.dto.CreateExamResponse;
 import turing.turing.domain.exam.dto.ExamDto;
+import turing.turing.domain.exam.dto.UpdateExamRequest;
 import turing.turing.domain.member.Role;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
@@ -45,7 +46,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Transactional
-    public Long modifyExamSchedule(ExamDto request) {
+    public Long updateExamSchedule(UpdateExamRequest request) {
         Exam exam = examRepository.findById(request.getExamId())
                 .orElseThrow(() -> new RestApiException(ExamErrorCode.EXAM_NOT_FOUND));
 
