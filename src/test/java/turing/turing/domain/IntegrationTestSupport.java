@@ -1,4 +1,4 @@
-package turing.turing.domain.exam;
+package turing.turing.domain;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
