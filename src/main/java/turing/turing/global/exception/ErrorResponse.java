@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 @Getter
 @Builder
@@ -34,5 +35,11 @@ public class ErrorResponse {
                     .build();
         }
 
+        public static ValidationError of(final ObjectError objectError) {
+            return ValidationError.builder()
+                    .field("request class")
+                    .message(objectError.getDefaultMessage())
+                    .build();
+        }
     }
 }

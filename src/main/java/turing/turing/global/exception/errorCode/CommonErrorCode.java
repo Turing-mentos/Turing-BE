@@ -13,7 +13,8 @@ public enum CommonErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     NO_CONTENT(HttpStatus.NO_CONTENT, "No Content"),
     NO_SCHEDULE(HttpStatus.NOT_FOUND, "NO SCHEDULE"),
-    UNAUTHORIZED_ROLE(HttpStatus.BAD_REQUEST, "UNAUTHORIZED_ROLE");
+    UNAUTHORIZED_ROLE(HttpStatus.BAD_REQUEST, "UNAUTHORIZED_ROLE"),
+    END_DATE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "EndDate is before StartDate")
     ;
 
     private final HttpStatus httpStatus;
