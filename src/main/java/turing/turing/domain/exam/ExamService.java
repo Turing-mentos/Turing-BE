@@ -31,7 +31,7 @@ public class ExamService {
 
     @Transactional
     public CreateExamResponse createExamSchedules(CustomUserDetails customUserDetails, CreateExamRequest request) {
-        StudyRoom studyRoom = studyRoomRepository.findById(request.getStudyRoomId())
+        StudyRoom studyRoom = studyRoomRepository.findWithStudentById(request.getStudyRoomId())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.NOT_FOUND));
 
         Exam exam = ExamConverter.toEntity(request, studyRoom);
