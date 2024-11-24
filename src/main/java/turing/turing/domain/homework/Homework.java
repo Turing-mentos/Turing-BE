@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import turing.turing.domain.BaseEntity;
-import turing.turing.domain.homework.dto.DetailedHomeworkDto;
+import turing.turing.domain.homework.dto.UpdateHomeworkRequest;
 import turing.turing.domain.notebook.Notebook;
 
 @Getter
@@ -87,7 +87,7 @@ public class Homework extends BaseEntity {
         this.isDone = false;
     }
 
-    public Long update(DetailedHomeworkDto request) {
+    public Long update(UpdateHomeworkRequest request) {
         this.category = request.getCategory();
         this.title = request.getTitle();
         this.rangeType = request.getRangeType();
@@ -99,8 +99,8 @@ public class Homework extends BaseEntity {
         return request.getHomeworkId();
     }
 
-    public Long updateDone(Boolean newDone) {
-        this.isDone = newDone;
+    public Long updateDone(Boolean doneStatus) {
+        this.isDone = doneStatus;
 
         return this.id;
     }

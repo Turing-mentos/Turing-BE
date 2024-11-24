@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.homework.dto.CreateHomeworkRequest;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
+import turing.turing.domain.homework.dto.UpdateHomeworkRequest;
 
 @Tag(name = "Homework", description = "숙제")
 @RestController
@@ -57,7 +58,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 수정")
     @PutMapping("")
-    public ResponseEntity<Long> updateHomework(@RequestBody DetailedHomeworkDto request) {
+    public ResponseEntity<Long> updateHomework(@RequestBody UpdateHomeworkRequest request) {
         return ResponseEntity.ok(homeworkService.updateHomework(request));
     }
 
