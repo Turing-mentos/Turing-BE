@@ -74,7 +74,7 @@ public class Homework extends BaseEntity {
     private Boolean isDone;
 
     @Builder
-    public Homework(String category, String title, String rangeType, int rangeStart, int rangeEnd, String content, String memo, Notebook notebook, Boolean isDone) {
+    private Homework(String category, String title, String rangeType, int rangeStart, int rangeEnd, String content, String memo, Notebook notebook) {
         super();
         this.category = category;
         this.title = title;
