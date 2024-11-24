@@ -1,8 +1,12 @@
 package turing.turing.domain.homework.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateHomeworkRequest {
 
     private String category;
