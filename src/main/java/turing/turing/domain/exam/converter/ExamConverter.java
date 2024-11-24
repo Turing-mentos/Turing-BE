@@ -23,7 +23,7 @@ public class ExamConverter {
                 .examName(exam.getExamName())
                 .startDate(exam.getStartDate())
                 .endDate(exam.getEndDate())
-                .studyRoomId(exam.getStudyRoom().getId())
+                .studyRoomId(exam.getStudyRoomId())
                 .build();
     }
 }

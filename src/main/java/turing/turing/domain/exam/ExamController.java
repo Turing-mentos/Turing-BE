@@ -1,5 +1,6 @@
 package turing.turing.domain.exam;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.exam.dto.CreateExamRequest;
 import turing.turing.domain.exam.dto.CreateExamResponse;
 import turing.turing.domain.exam.dto.ExamDto;
+import turing.turing.domain.exam.dto.UpdateExamRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,16 +27,15 @@ public class ExamController {
 
     private final ExamService examService;
 
-
     @GetMapping("/{examId}")
     public ResponseEntity<ExamDto> getExamSchedule(@PathVariable("examId") Long examId) {
 
         return ResponseEntity.ok(examService.getExamSchedule(examId));
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<CreateExamResponse> createExamSchedule(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateExamRequest request) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody @Valid CreateExamRequest request) {
         CreateExamResponse response = examService.createExamSchedules(customUserDetails, request);
       
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -45,10 +46,10 @@ public class ExamController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @PatchMapping("/")
-    public ResponseEntity<Long> modifyExamSchedule(@RequestBody ExamDto request) {
+    @PatchMapping
+    public ResponseEntity<Long> modifyExamSchedule(@RequestBody @Valid UpdateExamRequest request) {
 
-        return ResponseEntity.ok(examService.modifyExamSchedule(request));
+        return ResponseEntity.ok(examService.updateExamSchedule(request));
     }
 
     @DeleteMapping("/{examId}")

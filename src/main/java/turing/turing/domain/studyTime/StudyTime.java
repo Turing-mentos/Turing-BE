@@ -26,7 +26,7 @@ public class StudyTime extends BaseEntity {
     private Long id;
 
     @NotNull
-    @Column(name = "day", nullable = false)
+    @Column(name = "\"day\"", nullable = false)
     private Integer day;
 
     @NotNull

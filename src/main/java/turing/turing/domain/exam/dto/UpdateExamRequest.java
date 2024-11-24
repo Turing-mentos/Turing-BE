@@ -7,12 +7,14 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.global.util.validation.dateRange.ValidDateRange;
 
 @Getter
 @NoArgsConstructor
-@ValidDateRange
-public class CreateExamRequest {
+public class UpdateExamRequest {
+
+    @NotNull(message = "시험Id는 필수입니다.")
+    @Positive(message = "시험Id는 양수여야 합니다.")
+    private Long examId;
 
     @NotEmpty(message = "시험명은 필수입니다.")
     private String examName;
@@ -28,8 +30,9 @@ public class CreateExamRequest {
     private Long studyRoomId;
 
     @Builder
-    private CreateExamRequest(String examName, LocalDate startDate, LocalDate endDate,
+    private UpdateExamRequest(Long examId, String examName, LocalDate startDate, LocalDate endDate,
             Long studyRoomId) {
+        this.examId = examId;
         this.examName = examName;
         this.startDate = startDate;
         this.endDate = endDate;

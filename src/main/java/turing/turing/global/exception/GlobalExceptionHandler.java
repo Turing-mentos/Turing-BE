@@ -78,7 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
         List<ErrorResponse.ValidationError> validationErrorList = e.getBindingResult()
-                .getFieldErrors()
+                .getAllErrors()
                 .stream()
                 .map(ErrorResponse.ValidationError::of)
                 .collect(Collectors.toList());
