@@ -1,6 +1,6 @@
 package turing.turing.domain.exam.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ public class UpdateExamRequest {
     @Positive(message = "시험Id는 양수여야 합니다.")
     private Long examId;
 
-    @NotEmpty(message = "시험명은 필수입니다.")
+    @NotBlank(message = "시험명은 필수입니다.")
     private String examName;
 
     @NotNull(message = "시작일은 필수입니다.")

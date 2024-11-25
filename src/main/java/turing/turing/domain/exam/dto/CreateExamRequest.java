@@ -1,6 +1,6 @@
 package turing.turing.domain.exam.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import turing.turing.global.util.validation.dateRange.ValidDateRange;
 @ValidDateRange
 public class CreateExamRequest {
 
-    @NotEmpty(message = "시험명은 필수입니다.")
+    @NotBlank(message = "시험명은 필수입니다.")
     private String examName;
 
     @NotNull(message = "시작일은 필수입니다.")
