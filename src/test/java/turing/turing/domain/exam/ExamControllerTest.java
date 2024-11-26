@@ -38,12 +38,12 @@ class ExamControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/exam")
+                        post("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/exam/1"));
+                .andExpect(header().string("Location", "http://localhost/api/exam/1"));
     }
 
     @DisplayName("시험을 등록할 때 시험명은 필수값이다.")
@@ -66,7 +66,7 @@ class ExamControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/exam")
+                        post("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -94,7 +94,7 @@ class ExamControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/exam")
+                        post("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -121,7 +121,7 @@ class ExamControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/exam")
+                        post("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -145,7 +145,7 @@ class ExamControllerTest extends ControllerTestSupport {
                 .thenReturn(request.getExamId());
         // when then
         mockMvc.perform(
-                        patch("/exam")
+                        patch("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -168,7 +168,7 @@ class ExamControllerTest extends ControllerTestSupport {
                 .thenReturn(request.getExamId());
         // when then
         mockMvc.perform(
-                        patch("/exam")
+                        patch("/api/exam")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())

@@ -22,7 +22,7 @@ import turing.turing.domain.exam.dto.UpdateExamRequest;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/exam")
+@RequestMapping("/api/exam")
 public class ExamController {
 
     private final ExamService examService;
