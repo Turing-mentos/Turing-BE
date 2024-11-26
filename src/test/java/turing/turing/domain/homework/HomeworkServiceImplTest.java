@@ -93,8 +93,15 @@ class HomeworkServiceImplTest extends IntegrationTestSupport {
     @Test
     void createHomework() {
         // given
-        CreateHomeworkRequest request = new CreateHomeworkRequest("카테고리", "제목",
-                "범위타입", 1, 10, "내용", "메모", notebook.getId());
+        CreateHomeworkRequest request = CreateHomeworkRequest.builder()
+                .category("카테고리")
+                .title("제목")
+                .rangeType("범위타입")
+                .rangeStart(1)
+                .rangeEnd(10)
+                .content("내용")
+                .notebookId(1L)
+                .build();
         // when
         Long savedId = homeworkService.createHomework(request);
 

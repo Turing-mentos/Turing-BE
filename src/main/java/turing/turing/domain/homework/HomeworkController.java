@@ -1,5 +1,6 @@
 package turing.turing.domain.homework;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +38,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 생성")
     @PostMapping("")
-    public ResponseEntity<Long> createHomework(@RequestBody CreateHomeworkRequest request) {
+    public ResponseEntity<Long> createHomework(@RequestBody @Valid CreateHomeworkRequest request) {
         Long savedId = homeworkService.createHomework(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -58,7 +59,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 수정")
     @PutMapping("")
-    public ResponseEntity<Long> updateHomework(@RequestBody UpdateHomeworkRequest request) {
+    public ResponseEntity<Long> updateHomework(@RequestBody @Valid UpdateHomeworkRequest request) {
         return ResponseEntity.ok(homeworkService.updateHomework(request));
     }
 
