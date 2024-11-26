@@ -7,9 +7,11 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import turing.turing.global.util.validation.range.ValidRange;
 
 @Getter
 @NoArgsConstructor
+@ValidRange(startField = "startDate", endField = "endDate", type = LocalDate.class, message = "종료일은 시작일과 같거나 미래여야 합니다.")
 public class UpdateExamRequest {
 
     @NotNull(message = "시험Id는 필수입니다.")

@@ -7,11 +7,11 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import turing.turing.global.util.validation.dateRange.ValidDateRange;
+import turing.turing.global.util.validation.range.ValidRange;
 
 @Getter
 @NoArgsConstructor
-@ValidDateRange
+@ValidRange(startField = "startDate", endField = "endDate", type = LocalDate.class, message = "종료일은 시작일과 같거나 미래여야 합니다.")
 public class CreateExamRequest {
 
     @NotBlank(message = "시험명은 필수입니다.")
