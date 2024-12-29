@@ -15,7 +15,7 @@ public interface StudyTimeRepository extends JpaRepository<StudyTime, Long> {
 
 
     @Query("select st from StudyTime st "
-            + "join fetch StudyRoom "
-            + "where st.studyRoom.id=:studyRoomId")
-    List<StudyTime> findByStudyRoomId(Long studyRoomId);
+            + "join fetch st.studyRoom sr "
+            + "where st.studyRoom.id = :studyRoomId")
+    List<StudyTime> findByStudyRoomId(@Param("studyRoomId") Long studyRoomId);
 }
