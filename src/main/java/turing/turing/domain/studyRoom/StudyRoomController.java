@@ -2,6 +2,7 @@ package turing.turing.domain.studyRoom;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,7 @@ public class StudyRoomController {
 
     @Operation(summary = "[선생님] 과외 정보 등록")
     @PostMapping
-    public ResponseEntity<Long> createStudyRoom(@AuthenticationPrincipal CustomUserDetails user, @RequestBody StudyRoomCreateReqDto studyRoomCreateReqDto){
+    public ResponseEntity<Long> createStudyRoom(@AuthenticationPrincipal CustomUserDetails user, @Valid @RequestBody StudyRoomCreateReqDto studyRoomCreateReqDto){
         Long teacherId = user.getMemberId();
         Long studyRoomId = studyRoomService.createStudyRoom(teacherId, studyRoomCreateReqDto);
         return ResponseEntity.ok(studyRoomId);
@@ -35,7 +36,7 @@ public class StudyRoomController {
 
     @Operation(summary = "[선생님] 과외 정보 수정")
     @PutMapping("/{studyRoomId}")
-    public ResponseEntity<Void> updateStudyRoom(@PathVariable Long studyRoomId, @RequestBody StudyRoomUpdateReqDto studyRoomUpdateReqDto){
+    public ResponseEntity<Void> updateStudyRoom(@PathVariable Long studyRoomId, @Valid @RequestBody StudyRoomUpdateReqDto studyRoomUpdateReqDto){
         studyRoomService.updateStudyRoom(studyRoomId, studyRoomUpdateReqDto);
         return ResponseEntity.ok().build();
     }
@@ -89,7 +90,7 @@ public class StudyRoomController {
     @GetMapping("/{studyRoomId}")
     public ResponseEntity<DetailedStudyRoomResDto> getDetailedStudyRooms(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long studyRoomId){
         Role role = user.getRole();
-        DetailedStudyRoomResDto detailedStudyRoomResDto = studyRoomService.getDetailedStudyRooms(studyRoomId, role);
+        DetailedStudyRoomResDto detailedStudyRoomResDto = studyRoomService.getDetailedStudyRoom(studyRoomId, role);
         return ResponseEntity.ok(detailedStudyRoomResDto);
     }
 

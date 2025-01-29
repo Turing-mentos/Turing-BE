@@ -1,6 +1,8 @@
 package turing.turing.domain.studyRoom.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import turing.turing.domain.studyTime.dto.StudyTimeReqDto;
 
 import java.time.LocalDate;
@@ -8,7 +10,7 @@ import java.util.List;
 
 public record StudyRoomUpdateReqDto(
         String subject,
-        List<StudyTimeReqDto> studyTimes,
+        @NotEmpty List<StudyTimeReqDto> studyTimes,
         Integer baseSession,
         @JsonFormat(pattern = "yyyy-MM-dd")
         Integer wage

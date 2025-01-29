@@ -33,11 +33,11 @@ public record DetailedStudyRoomResDto(
 
         // 현재 회차 / 총 회차 계산
         Schedule schedule = null;
-        int i = schedules.size() - 1;
+        int i = schedules.size() - 1;   // i를 기준으로 현재 회차를 계산할 것임
         while (i >= 0) {
             schedule = schedules.get(i);
             LocalDateTime scheduleDateTime = LocalDateTime.of(schedule.getDate(), schedule.getEndTime());
-            if(scheduleDateTime.isBefore(LocalDateTime.now()))  // 날짜 역순으로 조회하며, 현재 시간보다 과거인 스케줄을 기준으로 현재 회차를 계산
+            if(scheduleDateTime.isBefore(LocalDateTime.now()))  // 날짜 역순(내림차순)으로 조회하며, 현재 시간보다 과거인 스케줄이 나왔을 때 break
                 break;
             i--;
         }
@@ -53,13 +53,8 @@ public record DetailedStudyRoomResDto(
                 role == Role.TEACHER ? studyRoom.getStudent().getSchool() : null,
                 role == Role.TEACHER ? studyRoom.getStudent().getYear() : null,
                 studyRoom.getStudyTimes().stream().map(StudyTimeResDto::of).toList(),
-                studyRoom.getBaseSession(),
-                firstSchedule,
-                studyRoom.getWage(),
-                curSession,
-                curBaseSession,
-                totalSession,
-                totalBaseSession
+                studyRoom.getBaseSession(), firstSchedule, studyRoom.getWage(),
+                curSession, curBaseSession, totalSession, totalBaseSession
         );
     }
 }

@@ -4,7 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 import turing.turing.domain.IntegrationTestSupport;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.code.ConnectionCode;
@@ -24,17 +29,21 @@ import turing.turing.domain.student.StudentRepository;
 import turing.turing.domain.studyRoom.StudyRoom;
 import turing.turing.domain.studyRoom.StudyRoomRepository;
 import turing.turing.domain.studyRoom.StudyRoomService;
+import turing.turing.domain.studyRoom.StudyRoomServiceImpl;
+import turing.turing.domain.studyRoom.dto.BaseTemplateDto;
 import turing.turing.domain.studyRoom.dto.request.StudyRoomCreateReqDto;
 import turing.turing.domain.studyRoom.dto.request.StudyRoomUpdateReqDto;
 import turing.turing.domain.studyRoom.dto.response.DetailedStudyRoomResDto;
 import turing.turing.domain.studyRoom.dto.response.StudyRoomResDto;
 import turing.turing.domain.studyRoom.dto.response.SubjectAndTeacherResDto;
 import turing.turing.domain.studyTime.StudyTime;
+import turing.turing.domain.studyTime.StudyTimeRepository;
 import turing.turing.domain.studyTime.dto.StudyTimeReqDto;
 import turing.turing.domain.studyTime.dto.StudyTimeResDto;
 import turing.turing.domain.teacher.Teacher;
 import turing.turing.domain.teacher.TeacherRepository;
 import turing.turing.global.exception.RestApiException;
+import turing.turing.global.exception.errorCode.StudyRoomErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,8 +53,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static turing.turing.global.exception.errorCode.ExamErrorCode.EXAM_NOT_FOUND;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
 class StudyRoomServiceImplTest extends IntegrationTestSupport{
 
     @Autowired
@@ -59,11 +71,9 @@ class StudyRoomServiceImplTest extends IntegrationTestSupport{
     @Autowired
     private ExamRepository examRepository;
     @Autowired
-    private ExamService examService;
-    @Autowired
     private ConnectionCodeRepository connectionCodeRepository;
     @Autowired
-    private ScheduleService scheduleService;
+    private StudyTimeRepository studyTimeRepository;
 
     private Teacher teacher;
     private Student student;
@@ -134,7 +144,7 @@ class StudyRoomServiceImplTest extends IntegrationTestSupport{
         assertThat(studyRoom).isEmpty();
     }
 
-    @DisplayName("연결 코드 생성 및 조회할 수 있다.")
+    @DisplayName("연결 코드를 생성 및 조회할 수 있다.")
     @Test
     void getConnectionCode() {
         // given
@@ -142,14 +152,35 @@ class StudyRoomServiceImplTest extends IntegrationTestSupport{
         StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId).get();
 
         // when
-        Integer code = studyRoomService.getConnectionCode(studyRoomId);
-        Integer codeAgain = studyRoomService.getConnectionCode(studyRoomId);
+        Integer code = studyRoomService.getConnectionCode(studyRoomId);  // 연결 코드 생성
+        Integer codeAgain = studyRoomService.getConnectionCode(studyRoomId);  // 이미 생성된 연결 코드 조회
 
         // then
         ConnectionCode connectionCode = connectionCodeRepository.findByStudyRoom(studyRoom).get();
-        assertThat(connectionCode.getCode()).isEqualTo(code);
-        assertThat(codeAgain).isEqualTo(code);
+        assertThat(code).isEqualTo(connectionCode.getCode());  // 연결 코드 검증
+        assertThat(code).isEqualTo(codeAgain);  // 조회한 연결 코드 검증
     }
+
+    @DisplayName("연결 코드를 생성 및 조회할 때, 이미 연결된 과외 공간인 경우 예외가 발생한다.")
+    @Test
+    void getConnectionCodeFailed() {
+        // given
+        Long studyRoomId = studyRoomService.createStudyRoom(teacher.getId(), studyRoomCreateReqDto);
+        StudyRoom studyRoom = studyRoomRepository.findById(studyRoomId).get();
+        Integer code = studyRoomService.getConnectionCode(studyRoomId);  // 연결 코드 생성
+
+        Student student = new Student("student@naver.com", Role.STUDENT, Provider.KAKAO, "학생", "김");
+        studentRepository.save(student);  // 학생 가입
+
+        studyRoomService.connectTeacherStudent(student.getId(), code);  // 선생님 - 학생 연결
+
+        // when
+        // then
+        assertThatThrownBy(() -> studyRoomService.getConnectionCode(studyRoomId))
+                .isInstanceOf(RestApiException.class)
+                .extracting("errorCode").isEqualTo(StudyRoomErrorCode.ALREADY_CONNECTED_STUDY_ROOM);  // 예외 발생 확인
+    }
+
 
     @DisplayName("연결 코드를 통해 선생님 정보를 조회할 수 있다.")
     @Test
@@ -294,34 +325,65 @@ class StudyRoomServiceImplTest extends IntegrationTestSupport{
         // totalBaseSession
     }
 
-    @DisplayName("연결 코드를 생성할 수 있다.")
+    @DisplayName("중복되지 않는 6자리 연결 코드를 생성할 수 있다.")
+    @Test
+    void generateCode() {
+        // given
+        // when
+        Integer code1 = studyRoomService.generateCode();
+        Integer code2 = studyRoomService.generateCode();
 
+        // then
+        assertThat(code1).isBetween(100000, 999999);  // 6자리 코드인지 확인
+        assertThat(code1).isNotEqualTo(code2);  // 중복되지 않는 코드인지 확인
+    }
 
+    @DisplayName("중복되지 않는 6자리 연결 코드 생성을 maxAttempts번 실패하면 예외가 발생한다.")
+    @Test
+    void generateCodeFailed() {
+        // given
+        ConnectionCodeRepository mockRepository = mock(ConnectionCodeRepository.class);
+        when(mockRepository.existsByCode(anyInt())).thenReturn(true);  // existsByCode가 항상 true를 반환하도록 설정
+        ReflectionTestUtils.setField(studyRoomService, "connectionCodeRepository", mockRepository);  // 테스트를 위해 mock repository를 주입
 
-//    @DisplayName("존재하지 않는 Id로 조회할 경우 예외가 발생한다.")
-//    @Test
-//    void getExamScheduleWhenIdDoesNotExist() {
-//        // given
-//        Teacher teacher = new Teacher("teacher@naver.com", Role.TEACHER, Provider.KAKAO, "범준", "김");
-//        Student student = new Student("student@naver.com", Role.STUDENT, Provider.KAKAO, "학생이름",
-//                "학생성");
-//
-//        StudyRoom studyRoom = new StudyRoom("과목", 8, 20000, teacher, student);
-//        teacherRepository.save(teacher);
-//        studentRepository.save(student);
-//        studyRoomRepository.save(studyRoom);
-//
-//        LocalDate startDate = LocalDate.of(2024, 11, 16);
-//        LocalDate endDate = LocalDate.of(2024, 11, 17);
-//        Exam exam = new Exam(1L, "시험명", startDate, endDate, "학생명", studyRoom);
-//
-//        Long savedId = examRepository.save(exam).getId();
-//
-//        // when // then
-//        assertThatThrownBy(() -> examService.getExamSchedule(savedId + 1))
-//                .isInstanceOf(RestApiException.class)
-//                .extracting("ErrorCode").isEqualTo(EXAM_NOT_FOUND);
-//
-//    }
+        // when
+        // then
+        assertThatThrownBy(() -> studyRoomService.generateCode())
+                .isInstanceOf(RestApiException.class)
+                .extracting("errorCode").isEqualTo(StudyRoomErrorCode.CONNECTION_CODE_GENERATE_FAILED);  // 예외 발생 확인
+        verify(mockRepository, times(10)).existsByCode(anyInt());  // mock 호출 확인
+
+        ReflectionTestUtils.setField(studyRoomService, "connectionCodeRepository", connectionCodeRepository);  // 원래 repository로 복원
+    }
+
+    @DisplayName("과외공간의 기본 템플릿 정보를 조회할 수 있다.")
+    @Test
+    void getBaseTemplate() {
+        // given
+        Long studyRoomId = studyRoomService.createStudyRoom(teacher.getId(), studyRoomCreateReqDto);
+
+        // when
+        BaseTemplateDto baseTemplate = studyRoomService.getBaseTemplate(studyRoomId);
+
+        // then
+        assertThat(baseTemplate).extracting("studyRoomId", "baseSession", "wage")
+                .contains(studyRoomId, 8, 20000);
+        assertThat(baseTemplate.getStudyTimeList().get(0)).extracting("day", "startTime", "endTime")
+                .contains(1, LocalTime.of(12, 0), LocalTime.of(14, 0));
+    }
+
+    @DisplayName("과외공간의 기본 템플릿 정보 조회 시, StudyTime이 존재하지 않으면 예외가 발생한다.")
+    @Test
+    void getBaseTemplateFailed() {
+        // given
+        Long studyRoomId = studyRoomService.createStudyRoom(teacher.getId(), studyRoomCreateReqDto);
+        studyTimeRepository.deleteByStudyRoomId(studyRoomId);  // StudyTime 삭제
+
+        // when
+        // then
+        assertThatThrownBy(() -> studyRoomService.getBaseTemplate(studyRoomId))  // 예외 발생 확인
+                .isInstanceOf(RestApiException.class)
+                .extracting("errorCode").isEqualTo(StudyRoomErrorCode.STUDY_TIME_NOT_FOUND);
+    }
 
 }
