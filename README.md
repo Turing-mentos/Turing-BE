@@ -61,7 +61,7 @@
 
 ## Architecture
 
-
+<img width="838" alt="image" src="https://github.com/user-attachments/assets/dd8c9934-02c1-4bca-ba02-33d443677674" />
 
 <br>
 
