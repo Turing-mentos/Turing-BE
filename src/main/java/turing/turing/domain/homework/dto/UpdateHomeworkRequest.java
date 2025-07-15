@@ -11,7 +11,11 @@ import turing.turing.global.util.validation.range.ValidRange;
 @Getter
 @NoArgsConstructor
 @ValidRange(startField = "rangeStart", endField = "rangeEnd", type = Integer.class, message = "끝범위는 시작범위와 같거나 커야 합니다.")
-public class CreateHomeworkRequest {
+public class UpdateHomeworkRequest {
+
+    @NotNull(message = "숙제Id는 필수입니다.")
+    @Positive(message = "숙제Id는 양수여야 합니다.")
+    private Long homeworkId;
 
     @NotBlank(message = "카테고리는 필수입니다.")
     private String category;
@@ -35,14 +39,10 @@ public class CreateHomeworkRequest {
 
     private String memo;
 
-    @NotNull(message = "알림장Id는 필수입니다.")
-    @Positive(message = "알림장Id는 양수여야 합니다.")
-    private Long notebookId;
-
     @Builder
-    private CreateHomeworkRequest(String category, String title, String rangeType,
-            Integer rangeStart,
-            Integer rangeEnd, String content, String memo, Long notebookId) {
+    private UpdateHomeworkRequest(Long homeworkId, String category, String title, String rangeType,
+            Integer rangeStart, Integer rangeEnd, String content, String memo) {
+        this.homeworkId = homeworkId;
         this.category = category;
         this.title = title;
         this.rangeType = rangeType;
@@ -50,6 +50,5 @@ public class CreateHomeworkRequest {
         this.rangeEnd = rangeEnd;
         this.content = content;
         this.memo = memo;
-        this.notebookId = notebookId;
     }
 }

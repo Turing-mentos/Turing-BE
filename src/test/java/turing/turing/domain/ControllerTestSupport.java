@@ -9,10 +9,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import turing.turing.domain.auth.CustomUserDetails;
 import turing.turing.domain.exam.ExamController;
 import turing.turing.domain.exam.ExamService;
+import turing.turing.domain.homework.HomeworkController;
+import turing.turing.domain.homework.HomeworkService;
 import turing.turing.global.security.JwtAuthenticationFilter;
 
 @WebMvcTest(controllers = {
-        ExamController.class
+        ExamController.class,
+        HomeworkController.class
 })
 @AutoConfigureMockMvc(addFilters = false)
 public abstract class ControllerTestSupport {
@@ -24,11 +27,14 @@ public abstract class ControllerTestSupport {
     protected ObjectMapper objectMapper;
 
     @MockBean
-    protected ExamService examService;
-
-    @MockBean
     protected JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @MockBean
     protected CustomUserDetails customUserDetails;
+
+    @MockBean
+    protected ExamService examService;
+
+    @MockBean
+    protected HomeworkService homeworkService;
 }

@@ -1,5 +1,6 @@
 package turing.turing.domain.homework;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import turing.turing.domain.homework.dto.CreateHomeworkRequest;
 import turing.turing.domain.homework.dto.DetailedHomeworkDto;
+import turing.turing.domain.homework.dto.UpdateHomeworkRequest;
 
 @Tag(name = "Homework", description = "숙제")
 @RestController
@@ -36,7 +38,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 생성")
     @PostMapping("")
-    public ResponseEntity<Long> createHomework(@RequestBody CreateHomeworkRequest request) {
+    public ResponseEntity<Long> createHomework(@RequestBody @Valid CreateHomeworkRequest request) {
         Long savedId = homeworkService.createHomework(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -57,7 +59,7 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 수정")
     @PutMapping("")
-    public ResponseEntity<Long> updateHomework(@RequestBody DetailedHomeworkDto request) {
+    public ResponseEntity<Long> updateHomework(@RequestBody @Valid UpdateHomeworkRequest request) {
         return ResponseEntity.ok(homeworkService.updateHomework(request));
     }
 
