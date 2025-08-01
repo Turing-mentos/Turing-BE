@@ -14,6 +14,7 @@ public enum StudyRoomErrorCode implements ErrorCode {
     // ConnectionCode
     CONNECTION_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "ConnectionCode Not Found"),
     ALREADY_CONNECTED_STUDY_ROOM(HttpStatus.BAD_REQUEST, "Already Connected StudyRoom"),
+    CONNECTION_CODE_GENERATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "ConnectionCode Generate Failed (생성 가능한 코드 없음)"),
 
     // StudyTime
     STUDY_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "StudyTime Not Found"),
